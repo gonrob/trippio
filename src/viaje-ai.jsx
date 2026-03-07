@@ -917,6 +917,60 @@ function SRow({icon,label,val,muted}){
 }
 
 /* ── Booking Modal ──────────────────────────────────────────────────────────── */
+
+function ScanModal({lang,onClose}){
+  const[preview,setPreview]=React.useState(null);
+  const[imgB64,setImgB64]=React.useState(null);
+  const[result,setResult]=React.useState(null);
+  const[loading,setLoading]=React.useState(false);
+  const P={gold:"#C9A96E",black:"#0D0D0D",white:"#FFFFFF",card:"#1C1C1E"};
+  const handleFile=async(e)=>{
+    const file=e.target.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=(ev)=>{setPreview(ev.target.result);setImgB64(ev.target.result.split(",")[1]);};
+    reader.readAsDataURL(file);
+  };
+  const analyze=async()=>{
+    if(!imgB64)return;
+    setLoading(true);setResult(null);
+    const langInstr=lang==="en"?"Respond in English":lang==="fr"?"Reponds en francais":"Responde en espanol";
+    try{
+      const r=await fetch("https://api.anthropic.com/v1/messages",{
+        method:"POST",
+        headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+        body:JSON.stringify({model:"claude-opus-4-5",max_tokens:800,messages:[{role:"user",content:[
+          {type:"image",source:{type:"base64",media_type:"image/jpeg",data:imgB64}},
+          {type:"text",text:langInstr+". Eres un guia de viaje experto. Analiza esta imagen e identifica el monumento, edificio u obra de arte. Proporciona: 1) Nombre y ubicacion 2) Historia breve (2-3 frases) 3) 2-3 curiosidades fascinantes 4) Mejor momento para visitar y consejos. Si no es un lugar reconocible, describe lo que ves."}
+        ]}]})
+      });
+      const d=await r.json();
+      setResult(d.content?.[0]?.text||"No se pudo analizar.");
+    }catch(e){setResult("Error al analizar.");}
+    setLoading(false);
+  };
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.88)",zIndex:1000,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={onClose}>
+      <div style={{background:P.card,borderRadius:"20px 20px 0 0",padding:24,width:"100%",maxWidth:600,maxHeight:"90vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
+        <div style={{width:40,height:4,background:"#555",borderRadius:2,margin:"0 auto 20px"}}/>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+          <div style={{fontSize:20,fontWeight:700,color:P.white}}>{"\uD83D\uDCF8"} {lang==="en"?"Scan a Place":lang==="fr"?"Scanner un lieu":"Escanear lugar"}</div>
+          <button onClick={onClose} style={{background:"none",border:"none",color:"#888",fontSize:24,cursor:"pointer"}}>x</button>
+        </div>
+        <p style={{color:"#aaa",fontSize:14,marginBottom:16}}>{lang==="en"?"Photo any monument or place — AI tells you its full history and secrets.":lang==="fr"?"Photographiez un monument et l IA vous dit tout.":"Fotografía cualquier monumento y la IA te cuenta su historia completa."}</p>
+        <label style={{display:"block",background:"rgba(201,169,110,.08)",border:"2px dashed rgba(201,169,110,.35)",borderRadius:16,padding:preview?"8px":"36px",textAlign:"center",cursor:"pointer",marginBottom:16}}>
+          <input type="file" accept="image/*" capture="environment" onChange={handleFile} style={{display:"none"}}/>
+          {preview?<img src={preview} style={{width:"100%",borderRadius:12,maxHeight:260,objectFit:"cover"}} alt="prev"/>
+          :<div><div style={{fontSize:44}}>{"\uD83D\uDCF7"}</div><div style={{color:P.gold,fontWeight:600,marginTop:8}}>{lang==="en"?"Tap to take photo":lang==="fr"?"Appuyer pour photo":"Toca para tomar foto"}</div></div>}
+        </label>
+        {preview&&<button onClick={analyze} disabled={loading} style={{width:"100%",padding:14,background:loading?"#333":"linear-gradient(135deg,#C9A96E,#a0824f)",color:loading?"#888":P.black,border:"none",borderRadius:12,fontSize:16,fontWeight:700,cursor:loading?"not-allowed":"pointer",marginBottom:16}}>
+          {loading?"Analizando...":lang==="en"?"Identify this place":lang==="fr"?"Identifier ce lieu":"Identificar este lugar"}
+        </button>}
+        {result&&<div style={{background:"rgba(201,169,110,.08)",border:"1px solid rgba(201,169,110,.2)",borderRadius:16,padding:20,color:"#fff",fontSize:14,lineHeight:1.75,whiteSpace:"pre-wrap"}}>{result}</div>}
+      </div>
+    </div>
+  );
+}
+
 function BookModal({flight,hotel,nights,travelers,dest,lang,onClose,onDone}){
   const t=T[lang||"es"];
   const[step,setStep]=useState(0);
@@ -1134,6 +1188,7 @@ export default function ViajeIA(){
   const[booked,setBooked]=useState(false);
   const[exIdx,setExIdx]=useState(0);
   const[shareToast,setShareToast]=useState(false);
+  const[scanOpen,setScanOpen]=useState(false);
   const leafReady=useLeaflet();
   const days=diffDays(start,end);
   const nights=days?days-1:plan?.days||5;
@@ -1379,12 +1434,13 @@ ${isRetreat?"Generate 4 rich detailed":"Generate 2 brief"} spiritual retreats ne
             {Object.entries(CURRENCIES).map(([k,v])=><option key={k} value={k}>{v.sym} {k}</option>)}
           </select>
           <LangSelector lang={lang} setLang={setLang}/>
-          {plan&&!loading&&<button onClick={shareTrip} style={{background:P.card2,border:`1px solid ${P.border}`,color:P.sub,borderRadius:8,padding:"6px 12px",fontSize:12,cursor:"pointer",fontFamily:"-apple-system,sans-serif",fontWeight:600,display:"flex",alignItems:"center",gap:5}}>↑ {t.shareBtn||"Share"}</button>}
+          {plan&&!loading&&<><button onClick={()=>setScanOpen(true)} style={{background:"rgba(201,169,110,.15)",color:"#C9A96E",border:"1px solid rgba(201,169,110,.3)",borderRadius:8,padding:"6px 12px",fontSize:12,cursor:"pointer",fontFamily:"-apple-system,sans-serif",fontWeight:600,display:"flex",alignItems:"center",gap:5}}>{"\uD83D\uDCF8"} Scan</button><button onClick={shareTrip} style={{background:P.card2,border:`1px solid ${P.border}`,color:P.sub,borderRadius:8,padding:"6px 12px",fontSize:12,cursor:"pointer",fontFamily:"-apple-system,sans-serif",fontWeight:600,display:"flex",alignItems:"center",gap:5}}>↑ {t.shareBtn||"Share"}</button>}
           {plan&&!loading&&flightSel&&hotelSel&&!booked&&<IBtn size="sm" outline color={P.gold} onClick={()=>setBooking(true)}>{t.bookNav}</IBtn>}
           {plan&&!loading&&<IBtn size="sm" outline color={P.muted} onClick={reset}>{t.newSearch}</IBtn>}
         </div>
       </nav>
 
+      {scanOpen&&<ScanModal lang={lang} onClose={()=>setScanOpen(false)}/>}
       {booking&&<BookModal flight={flightSel} hotel={hotelSel} nights={nights} travelers={travelers} dest={plan?.destination} lang={lang} onClose={()=>setBooking(false)} onDone={()=>{setBooking(false);setBooked(true);}}/>}
 
       <main style={{maxWidth:1100,margin:"0 auto",padding:"0 20px 100px"}}>
