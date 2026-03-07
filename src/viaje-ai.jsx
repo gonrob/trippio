@@ -980,7 +980,7 @@ function BookModal({flight,hotel,nights,travelers,dest,lang,onClose,onDone}){
               ))}
               <div style={{display:"flex",gap:10,marginTop:6}}>
                 <IBtn outline color={iOS.fill} onClick={()=>setStep(0)}>{t.backBtn}</IBtn>
-                <IBtn full style={{background:GOLD_GRAD,color:P.black,fontWeight:700}} onClick={()=>setStep(2)} disabled={!form.name||!form.email}>{t.payBtn}</IBtn>
+                <IBtn full style={{background:GOLD_GRAD,color:P.black,fontWeight:700}} onClick={()=>{window.open("https://www.booking.com/search.html?ss="+encodeURIComponent(dest||"hotel"),"_blank");window.open("https://www.skyscanner.es/vuelos/"+encodeURIComponent(dest||""),"_blank");onDone();}} disabled={!form.name||!form.email}>{t.payBtn}</IBtn>
               </div>
             </>
           )}
