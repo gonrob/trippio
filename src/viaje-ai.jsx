@@ -1285,17 +1285,17 @@ ${isRetreat?"Generate 4 rich detailed":"Generate 2 brief"} spiritual retreats ne
 
     setLoadStep(2);
     let fl=[],hs=[],rs=[],vrs=[],prs=[],rts=[];
-    try{const d=await r1.json();fl=JSON.parse((d.content||[]).map(b=>b.text||"").join("").replace(/```json|```/g,"").trim());}catch{}
-    try{const d=await r2.json();hs=JSON.parse((d.content||[]).map(b=>b.text||"").join("").replace(/```json|```/g,"").trim()).map((h,i)=>({...h,_imgIdx:i}));}catch{}
-    try{const d=await r3.json();rs=JSON.parse((d.content||[]).map(b=>b.text||"").join("").replace(/```json|```/g,"").trim());}catch{}
-    try{const d=await r4.json();vrs=JSON.parse((d.content||[]).map(b=>b.text||"").join("").replace(/```json|```/g,"").trim());}catch{}
-    try{const d=await r5.json();prs=JSON.parse((d.content||[]).map(b=>b.text||"").join("").replace(/```json|```/g,"").trim());}catch{}
-    try{const d=await r6.json();rts=JSON.parse((d.content||[]).map(b=>b.text||"").join("").replace(/```json|```/g,"").trim());}catch{}
+
+    const parse = d => JSON.parse((d.content||[]).map(b=>b.text||"").join("").replace(/```json|```/g,"").trim());
+
+    r1.json().then(d=>{try{fl=parse(d);setFlights(fl);setSelF(0);}catch{}});
+    r2.json().then(d=>{try{hs=parse(d).map((h,i)=>({...h,_imgIdx:i}));setHotels(hs);setSelH(0);setMapPlaces(buildPlaces(planData,hs,rs,vrs));}catch{}});
+    r3.json().then(d=>{try{rs=parse(d);setRests(rs);setMapPlaces(buildPlaces(planData,hs,rs,vrs));}catch{}});
+    r4.json().then(d=>{try{vrs=parse(d);setVegRests(vrs);}catch{}});
+    r5.json().then(d=>{try{prs=parse(d);setPromos(prs);}catch{}});
+    r6.json().then(d=>{try{rts=parse(d);setRetreats(rts);}catch{}});
 
     setLoadStep(3);await sleep(200);
-    setFlights(fl);setHotels(hs);setRests(rs);setVegRests(vrs);setPromos(prs);setRetreats(rts);
-    if(fl.length)setSelF(0);if(hs.length)setSelH(0);
-    setMapPlaces(buildPlaces(planData,hs,rs,vrs));
 
     // Weather (Open-Meteo, free, no key needed)
     setLoadStep(4);
