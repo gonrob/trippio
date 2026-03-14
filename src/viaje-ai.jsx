@@ -1242,9 +1242,19 @@ export default function ViajeIA(){
 Include 8-10 map_places with real precise GPS. Also include destination lat/lng at root level.`;
     let planData=null;
     try{
-      const r=await fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:3500,system:sys1,messages:[{role:"user",content:input+(dctx?"\n\n"+dctx:"")}]})});
-      const d=await r.json();
-      planData=JSON.parse((d.content||[]).map(b=>b.text||"").join("").replace(/```json|```/g,"").trim());
+      const r=await fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:3500,stream:true,system:sys1,messages:[{role:"user",content:input+(dctx?"\n\n"+dctx:"")}]})});
+      const reader=r.body.getReader();const dec=new TextDecoder();
+      let buf="",fullText="";
+      while(true){
+        const{done,value}=await reader.read();if(done)break;
+        buf+=dec.decode(value,{stream:true});
+        const parts=buf.split("\n");buf=parts.pop();
+        for(const line of parts){
+          if(!line.startsWith("data: "))continue;
+          try{const ev=JSON.parse(line.slice(6));if(ev.type==="content_block_delta")fullText+=ev.delta?.text||"";}catch{}
+        }
+      }
+      planData=JSON.parse(fullText.replace(/```json|```/g,"").trim());
       setPlan(planData);
       setLoading(false);
     }catch(e){setLoading(false);setLoadStep(-1);setApiError(t.errorMsg||"Error al generar el itinerario. Inténtalo de nuevo.");return;}
