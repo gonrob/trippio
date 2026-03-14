@@ -5,24 +5,15 @@ const P = {
   black:"#0D0D0D",card:"#141414",card2:"#1A1A1A",card3:"#252525",
   border:"#2A2A2A",border2:"#333333",muted:"#6B6B6B",sub:"#A0A0A0",
   white:"#FFFFFF",gold:"#C9A96E",goldDim:"rgba(201,169,110,.18)",
-  goldBorder:"rgba(201,169,110,.25)",goldGlow:"rgba(201,169,110,.35)",
-};
-const iOS={
-  blue:P.gold,teal:P.gold,green:P.gold,orange:P.gold,red:"#E05A4E",
-  pink:P.gold,purple:P.gold,indigo:P.gold,yellow:P.gold,mint:P.gold,cyan:P.gold,
-  bg:P.black,card:P.card2,card2:P.card3,label:P.white,
-  label2:"rgba(255,255,255,.75)",fill:P.muted,sep:P.border,sep2:P.border2,
+  goldBorder:"rgba(201,169,110,.25)",
 };
 const GOLD_GRAD="linear-gradient(135deg,#C9A96E,#E8C98A)";
 const GOLD_GRAD2="linear-gradient(135deg,#B8935A,#C9A96E)";
 
 function TrippioLogo({size=34}){
   return(
-    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"
-      style={{flexShrink:0,filter:`drop-shadow(0 ${size*.06}px ${size*.18}px rgba(201,169,110,0.4))`}}>
-      <defs><linearGradient id="lg" x1="15%" y1="15%" x2="85%" y2="85%">
-        <stop offset="0%" stopColor="#E8C98A"/><stop offset="100%" stopColor="#B8935A"/>
-      </linearGradient></defs>
+    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style={{flexShrink:0,filter:`drop-shadow(0 ${size*.06}px ${size*.18}px rgba(201,169,110,0.4))`}}>
+      <defs><linearGradient id="lg" x1="15%" y1="15%" x2="85%" y2="85%"><stop offset="0%" stopColor="#E8C98A"/><stop offset="100%" stopColor="#B8935A"/></linearGradient></defs>
       <circle cx="50" cy="50" r="45" stroke="url(#lg)" strokeWidth="2.5" opacity="0.6"/>
       <path d="M 24 72 L 68 20 L 76 54 Z" fill="url(#lg)" opacity="0.95"/>
       <path d="M 24 72 L 76 54 L 52 68 Z" fill="#B8935A" opacity="0.7"/>
@@ -32,131 +23,92 @@ function TrippioLogo({size=34}){
 }
 
 const TRIP_TYPES={
-  adventure:{icon:"🏔️",grad:GOLD_GRAD,col:P.gold,budgetMult:0.7},
-  culture:{icon:"🏛️",grad:GOLD_GRAD2,col:P.gold,budgetMult:1.0},
-  beach:{icon:"🏖️",grad:GOLD_GRAD,col:P.gold,budgetMult:1.1},
-  gastro:{icon:"🍜",grad:GOLD_GRAD,col:P.gold,budgetMult:1.1},
-  nature:{icon:"🌿",grad:GOLD_GRAD2,col:P.gold,budgetMult:0.8},
-  city:{icon:"🏙️",grad:GOLD_GRAD,col:P.gold,budgetMult:1.0},
-  wellness:{icon:"🧘",grad:GOLD_GRAD2,col:P.gold,budgetMult:1.3},
-  nightlife:{icon:"🎉",grad:GOLD_GRAD,col:P.gold,budgetMult:1.0},
-  retreat:{icon:"🌀",grad:GOLD_GRAD2,col:P.gold,budgetMult:1.4},
+  adventure:{icon:"🏔️"},culture:{icon:"🏛️"},beach:{icon:"🏖️"},
+  gastro:{icon:"🍜"},nature:{icon:"🌿"},city:{icon:"🏙️"},
+  wellness:{icon:"🧘"},nightlife:{icon:"🎉"},retreat:{icon:"🌀"},
 };
 const TRAVELER_STYLES={
-  backpacker:{icon:"🎒",grad:GOLD_GRAD,col:P.gold,hotelStars:"1",hotelBudgetPct:0.15},
-  comfort:{icon:"🛎️",grad:GOLD_GRAD2,col:P.gold,hotelStars:"2-3",hotelBudgetPct:0.35},
-  luxury:{icon:"💎",grad:GOLD_GRAD,col:P.gold,hotelStars:"4-5",hotelBudgetPct:0.60},
+  backpacker:{icon:"🎒",stars:"1",pct:0.15},
+  comfort:{icon:"🛎️",stars:"2-3",pct:0.35},
+  luxury:{icon:"💎",stars:"4-5",pct:0.60},
 };
 
 const T={
-  es:{
-    flag:"🇪🇸",name:"Español",locale:"es-ES",langPrompt:"Responde en español.",
-    newSearch:"Nueva búsqueda",bookNav:"Reservar →",
-    badge:"Trippio · Vuelos + Hoteles + Clima",
+  es:{flag:"🇪🇸",name:"Español",locale:"es-ES",lp:"Responde en español.",
+    newSearch:"Nueva búsqueda",
     h1a:"Tu próximo viaje,",h1b:"en un clic.",
-    sub:"Elige tu estilo, destino y presupuesto. La IA construye todo al instante.",
-    stepTripType:"¿Qué tipo de viaje buscas?",
-    stepTripTypeSub:"Elige uno o varios",
-    selectedLabel:"Elegido:",
-    stepTravelerStyle:"¿Cómo prefieres viajar?",
-    stepDetails:"Cuéntanos más",
-    tripTypes:{adventure:"Aventura",culture:"Cultura",beach:"Playa",gastro:"Gastronomía",nature:"Naturaleza",city:"Ciudad",wellness:"Bienestar",nightlife:"Vida Nocturna",retreat:"Retiro Espiritual"},
-    travelerStyles:{backpacker:"Mochilero",comfort:"Confort",luxury:"Lujo"},
-    travelerDescs:{backpacker:"Hostels 1★, transporte local, experiencia auténtica",comfort:"Hoteles 2-3★, vuelos directos, buen equilibrio",luxury:"Hoteles 4-5★, business class, experiencias VIP"},
-    originL:"Origen",destinationL:"Destino",budgetL:"Presupuesto (€)",
-    originPh:"Madrid, España",destinationPh:"Tokio, París, Bangkok...",budgetPh:"1000",
+    sub:"Elige tu estilo, destino y presupuesto.",
+    stepTripType:"¿Qué tipo de viaje?",stepSub:"Elige uno o varios",
+    stepStyle:"¿Cómo prefieres viajar?",stepDetails:"Cuéntanos más",
+    tripNames:{adventure:"Aventura",culture:"Cultura",beach:"Playa",gastro:"Gastronomía",nature:"Naturaleza",city:"Ciudad",wellness:"Bienestar",nightlife:"Vida Nocturna",retreat:"Retiro"},
+    styleNames:{backpacker:"Mochilero",comfort:"Confort",luxury:"Lujo"},
+    styleDesc:{backpacker:"Hostels 1★, auténtico",comfort:"Hoteles 2-3★, equilibrio",luxury:"Hoteles 4-5★, VIP"},
+    originL:"Origen",destL:"Destino",budgetL:"Presupuesto (€)",
+    originPh:"Madrid, España",destPh:"Tokio, París, Bangkok...",budgetPh:"1000",
     arrival:"Llegada",departure:"Salida",
-    travelersL:"Viajeros",traveler1:"1 viajero",travelersN:n=>`${n} viajeros`,
-    searchBtn:"Buscar mi viaje ✦",nextBtn:"Siguiente →",backBtn2:"← Atrás",
-    loadTitle:"Preparando tu aventura…",loadSub:"Buscando las mejores opciones para ti",
-    steps:["Creando itinerario","Buscando vuelos","Buscando hoteles","Restaurantes","Clima","¡Listo!"],
+    travelersL:"Viajeros",t1:"1 viajero",tN:n=>`${n} viajeros`,
+    searchBtn:"Buscar mi viaje ✦",nextBtn:"Siguiente →",backBtn:"← Atrás",
+    loadTitle:"Preparando tu aventura…",loadSub:"Buscando las mejores opciones",
+    steps:["Creando itinerario","Vuelos","Hoteles","Restaurantes","Clima","¡Listo!"],
     flightsT:"Vuelos disponibles",flightsSub:(d,n,o)=>`${o||"Madrid"} → ${d} · ${n} viajero${n>1?"s":""}`,
-    direct:"✈ Directo",stops:n=>`${n} escala${n>1?"s":""}`,perPerson:"por persona",selBadge:"Seleccionado ✓",
-    hotelsT:"Hoteles recomendados",hotelsSub:n=>`${n} noches`,
-    perNight:"/ noche",mapBtn:"🗺 Mapa",totalNights:(n,p)=>`${p*n}€ total`,
-    mapT:"Mapa del viaje",mapSub:"Hoteles · Restaurantes · Lugares de interés",
-    restsT:"Dónde comer",restsSub:"Los mejores restaurantes seleccionados por IA",
+    direct:"✈ Directo",stops:n=>`${n} escala${n>1?"s":""}`,pp:"por persona",
+    hotelsT:"Hoteles",hotelsSub:n=>`${n} noches`,pn:"/ noche",mapBtn:"🗺 Mapa",
+    mapT:"Mapa del viaje",mapSub:"Hoteles · Restaurantes · Lugares",
+    restsT:"Dónde comer",restsSub:"Mejores restaurantes",
     vegT:"Opciones vegetarianas",vegSub:"Restaurantes plant-based",
-    vegBadge:"Vegetariano",veganBadge:"Vegano",
     itinT:"Itinerario día a día",itinSub:"Tu plan personalizado",
     morning:"☀️ Mañana",afternoon:"🌤 Tarde",evening:"🌙 Noche",transport:"🚇 Transporte",
-    tipsT:"Tips del viaje",
-    transportT:"Transporte en destino",transportSub:"Opciones de movilidad local",
-    weatherT:"Previsión meteorológica",weatherSub:"Durante tu viaje",
-    promoT:"Promociones & Descuentos",promoSub:"Ofertas activas en tu destino",
-    pkgT:"Resumen del paquete",taxes:"Tasas e impuestos",totalL:"Total estimado",
-    bookBtn:"🔒 Reservar paquete →",
-    bookFlightBtn:"✈️ Reservar vuelo",bookHotelBtn:"🏨 Reservar hotel",
-    bookRestBtn:"🍽️ Reservar mesa",bookTourBtn:"🎟️ Reservar tour",
-    demoNote:"Demo · No se realizan cargos reales",bookedL:"¡Reservado!",
-    modalT:"Confirmar reserva",processing:"Procesando…",doneT:"¡Reserva confirmada! 🎉",
-    continueBtn:"Continuar →",payBtn:"Reservar →",
-    bookedBannerT:"¡Reserva confirmada!",bookedBannerSub:(a,h,n)=>`${a} + ${h} · ${n} noches`,
-    days:n=>`${n} días`,nights:n=>`${n} noches`,
-    pkgSave:"🎁 Ahorra un 8% reservando el paquete completo",
-    demoSmall:"Precios orientativos · Modo demo",
-    affiliateT:"Reserva con nuestros socios",affiliateSub:"Comisión incluida · Sin coste extra",
-    weatherFeel:"Sensación",weatherWind:"Viento",
-    promoCode:"Código",
+    tipsT:"Tips del viaje",transportT:"Transporte",transportSub:"Movilidad local",
+    weatherT:"Previsión del tiempo",weatherSub:"Durante tu viaje",
+    promoT:"Promociones",promoSub:"Ofertas activas",promoCode:"Código",
+    pkgT:"Resumen",taxes:"Tasas",totalL:"Total estimado",
+    bookBtn:"🔒 Reservar paquete",bookFlight:"✈️ Reservar vuelo",bookHotel:"🏨 Reservar hotel",bookRest:"🍽️ Reservar mesa",bookTour:"🎟️ Ver tours",
+    demoNote:"Demo · Sin cargos reales",demoSmall:"Precios orientativos",
+    affiliateT:"Reserva con socios",affiliateSub:"Comisión incluida",
     shareBtn:"Compartir",shareCopied:"Enlace copiado",
     errorTitle:"Algo salió mal",errorMsg:"Error al generar. Inténtalo de nuevo.",
-    retreatT:"Retiros espirituales",retreatSub:"Yoga, meditación y medicina ancestral",
-    retreatTypes:{yoga:"Yoga",meditation:"Meditación",ayahuasca:"Ayahuasca",breathwork:"Respiración",sound:"Sonidos",digital:"Detox Digital",shamanic:"Chamanismo",silent:"Silencio"},
-    retreatBook:"Solicitar plaza →",retreatBadge:"Retiro verificado",
-    loginBtn:"Entrar",logoutBtn:"Salir",myTripsBtn:"Mis viajes",saveTrip:"Guardar viaje",
+    loginBtn:"Entrar",logoutBtn:"Salir",
+    days:n=>`${n} días`,
+    guideName:"Marco",guideHi:"¡Hola! Soy Marco, tu guía personal. ¿En qué te ayudo?",
+    guideNear:"Estás cerca de",guidePh:"Pregúntame sobre este destino...",
   },
-  en:{
-    flag:"🇬🇧",name:"English",locale:"en-GB",langPrompt:"Respond in English.",
-    newSearch:"New search",bookNav:"Book →",
-    badge:"AI Planner · Flights + Hotels",
+  en:{flag:"🇬🇧",name:"English",locale:"en-GB",lp:"Respond in English.",
+    newSearch:"New search",
     h1a:"Your next trip,",h1b:"in one click.",
-    sub:"Choose your style, destination and budget. AI builds everything instantly.",
-    stepTripType:"What kind of trip?",stepTripTypeSub:"Choose one or more",
-    selectedLabel:"Selected:",stepTravelerStyle:"How do you travel?",stepDetails:"Tell us more",
-    tripTypes:{adventure:"Adventure",culture:"Culture",beach:"Beach",gastro:"Gastronomy",nature:"Nature",city:"City Break",wellness:"Wellness",nightlife:"Nightlife",retreat:"Spiritual Retreat"},
-    travelerStyles:{backpacker:"Backpacker",comfort:"Comfort",luxury:"Luxury"},
-    travelerDescs:{backpacker:"Hostels & 1★, local transport, authentic experience",comfort:"2-3★ hotels, direct flights, great value",luxury:"4-5★ hotels, business class, VIP experiences"},
-    originL:"Origin",destinationL:"Destination",budgetL:"Budget (€)",
-    originPh:"London, UK",destinationPh:"Tokyo, Paris, Bangkok...",budgetPh:"1000",
+    sub:"Choose your style, destination and budget.",
+    stepTripType:"What kind of trip?",stepSub:"Choose one or more",
+    stepStyle:"How do you travel?",stepDetails:"Tell us more",
+    tripNames:{adventure:"Adventure",culture:"Culture",beach:"Beach",gastro:"Gastronomy",nature:"Nature",city:"City Break",wellness:"Wellness",nightlife:"Nightlife",retreat:"Retreat"},
+    styleNames:{backpacker:"Backpacker",comfort:"Comfort",luxury:"Luxury"},
+    styleDesc:{backpacker:"Hostels 1★, authentic",comfort:"2-3★ hotels, value",luxury:"4-5★ hotels, VIP"},
+    originL:"Origin",destL:"Destination",budgetL:"Budget (€)",
+    originPh:"London, UK",destPh:"Tokyo, Paris, Bangkok...",budgetPh:"1000",
     arrival:"Check-in",departure:"Check-out",
-    travelersL:"Travelers",traveler1:"1 traveler",travelersN:n=>`${n} travelers`,
-    searchBtn:"Find my trip ✦",nextBtn:"Next →",backBtn2:"← Back",
-    loadTitle:"Preparing your adventure…",loadSub:"Searching the best options for you",
-    steps:["Creating itinerary","Searching flights","Finding hotels","Restaurants","Weather","All ready!"],
+    travelersL:"Travelers",t1:"1 traveler",tN:n=>`${n} travelers`,
+    searchBtn:"Find my trip ✦",nextBtn:"Next →",backBtn:"← Back",
+    loadTitle:"Preparing your adventure…",loadSub:"Searching best options",
+    steps:["Creating itinerary","Flights","Hotels","Restaurants","Weather","All ready!"],
     flightsT:"Available flights",flightsSub:(d,n,o)=>`${o||"Madrid"} → ${d} · ${n} traveler${n>1?"s":""}`,
-    direct:"✈ Direct",stops:n=>`${n} stop${n>1?"s":""}`,perPerson:"per person",selBadge:"Selected ✓",
-    hotelsT:"Recommended hotels",hotelsSub:n=>`${n} nights`,
-    perNight:"/ night",mapBtn:"🗺 Map",totalNights:(n,p)=>`€${p*n} total`,
-    mapT:"Trip map",mapSub:"Hotels · Restaurants · Points of interest",
-    restsT:"Where to eat",restsSub:"Best restaurants selected by AI",
+    direct:"✈ Direct",stops:n=>`${n} stop${n>1?"s":""}`,pp:"per person",
+    hotelsT:"Hotels",hotelsSub:n=>`${n} nights`,pn:"/ night",mapBtn:"🗺 Map",
+    mapT:"Trip map",mapSub:"Hotels · Restaurants · Places",
+    restsT:"Where to eat",restsSub:"Best restaurants",
     vegT:"Vegetarian options",vegSub:"Plant-based restaurants",
-    vegBadge:"Vegetarian",veganBadge:"Vegan",
     itinT:"Day by day itinerary",itinSub:"Your personalized plan",
     morning:"☀️ Morning",afternoon:"🌤 Afternoon",evening:"🌙 Evening",transport:"🚇 Transport",
-    tipsT:"Travel tips",
-    transportT:"Transport at destination",transportSub:"Local mobility options",
+    tipsT:"Travel tips",transportT:"Transport",transportSub:"Local mobility",
     weatherT:"Weather forecast",weatherSub:"During your trip",
-    promoT:"Promotions & Discounts",promoSub:"Active deals at your destination",
-    pkgT:"Package summary",taxes:"Taxes & fees",totalL:"Estimated total",
-    bookBtn:"🔒 Book package →",
-    bookFlightBtn:"✈️ Book flight",bookHotelBtn:"🏨 Book hotel",
-    bookRestBtn:"🍽️ Book table",bookTourBtn:"🎟️ Book tour",
-    demoNote:"Demo · No real charges apply",bookedL:"Booked!",
-    modalT:"Confirm booking",processing:"Processing…",doneT:"Booking confirmed! 🎉",
-    continueBtn:"Continue →",payBtn:"Book →",
-    bookedBannerT:"Booking confirmed!",bookedBannerSub:(a,h,n)=>`${a} + ${h} · ${n} nights`,
-    days:n=>`${n} days`,nights:n=>`${n} nights`,
-    pkgSave:"🎁 Save 8% booking the full package",
-    demoSmall:"Estimated prices · Demo mode",
-    affiliateT:"Book with our partners",affiliateSub:"Commission included · No extra cost",
-    weatherFeel:"Feels like",weatherWind:"Wind",
-    promoCode:"Code",
+    promoT:"Promotions",promoSub:"Active deals",promoCode:"Code",
+    pkgT:"Summary",taxes:"Taxes",totalL:"Estimated total",
+    bookBtn:"🔒 Book package",bookFlight:"✈️ Book flight",bookHotel:"🏨 Book hotel",bookRest:"🍽️ Book table",bookTour:"🎟️ View tours",
+    demoNote:"Demo · No real charges",demoSmall:"Estimated prices",
+    affiliateT:"Book with partners",affiliateSub:"Commission included",
     shareBtn:"Share",shareCopied:"Link copied",
-    errorTitle:"Something went wrong",errorMsg:"Error generating itinerary. Please try again.",
-    retreatT:"Spiritual retreats",retreatSub:"Yoga, meditation & ancestral medicine",
-    retreatTypes:{yoga:"Yoga",meditation:"Meditation",ayahuasca:"Ayahuasca",breathwork:"Breathwork",sound:"Sound Bath",digital:"Digital Detox",shamanic:"Shamanic",silent:"Silent Retreat"},
-    retreatBook:"Request a spot →",retreatBadge:"Verified retreat",
-    loginBtn:"Sign in",logoutBtn:"Sign out",myTripsBtn:"My trips",saveTrip:"Save trip",
+    errorTitle:"Something went wrong",errorMsg:"Error generating. Please try again.",
+    loginBtn:"Sign in",logoutBtn:"Sign out",
+    days:n=>`${n} days`,
+    guideName:"Marco",guideHi:"Hi! I'm Marco, your personal guide. How can I help?",
+    guideNear:"You are near",guidePh:"Ask me about this destination...",
   },
 };
 
@@ -175,44 +127,19 @@ const DEST_IMGS={
   berlin:"https://images.unsplash.com/photo-1560969184-10fe8719e047?w=900&q=85",
   dubai:"https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=900&q=85",
 };
-const HOTEL_IMGS=["https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500&q=80","https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=500&q=80","https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=500&q=80","https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=500&q=80","https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=500&q=80","https://images.unsplash.com/photo-1590490360182-c33d57733427?w=500&q=80"];
-const REST_IMGS=["https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500&q=80","https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=500&q=80","https://images.unsplash.com/photo-1552566626-52f8b828add9?w=500&q=80","https://images.unsplash.com/photo-1544148103-0773bf10d330?w=500&q=80","https://images.unsplash.com/photo-1559339352-11d035aa65de?w=500&q=80","https://images.unsplash.com/photo-1424847651672-bf20a4b0982b?w=500&q=80"];
-const VEG_IMGS=["https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500&q=80","https://images.unsplash.com/photo-1540914124281-342587941389?w=500&q=80","https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=500&q=80","https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=500&q=80"];
+const HOTEL_IMGS=["https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=75","https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=400&q=75","https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&q=75","https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=400&q=75","https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=400&q=75","https://images.unsplash.com/photo-1590490360182-c33d57733427?w=400&q=75"];
+const REST_IMGS=["https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&q=75","https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&q=75","https://images.unsplash.com/photo-1552566626-52f8b828add9?w=400&q=75","https://images.unsplash.com/photo-1544148103-0773bf10d330?w=400&q=75","https://images.unsplash.com/photo-1559339352-11d035aa65de?w=400&q=75","https://images.unsplash.com/photo-1424847651672-bf20a4b0982b?w=400&q=75"];
 
 function getImg(dest=""){const d=dest.toLowerCase();for(const[k,v]of Object.entries(DEST_IMGS))if(d.includes(k))return v;return DEST_IMGS.default;}
 const diffDays=(a,b)=>(!a||!b)?null:Math.round((new Date(b+"T12:00:00")-new Date(a+"T12:00:00"))/86400000)+1;
 const fmtDate=(s,o,loc)=>!s?"":new Date(s+"T12:00:00").toLocaleDateString(loc||"es-ES",o||{day:"numeric",month:"short"});
-const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-const haversine=(lat1,lon1,lat2,lon2)=>{const R=6371e3,p=Math.PI/180,a=Math.sin((lat2-lat1)*p/2)**2+Math.cos(lat1*p)*Math.cos(lat2*p)*Math.sin((lon2-lon1)*p/2)**2;return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));};
+const haversine=(a,b,c,d)=>{const R=6371e3,p=Math.PI/180,x=Math.sin((c-a)*p/2)**2+Math.cos(a*p)*Math.cos(c*p)*Math.sin((d-b)*p/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));};
 
-async function fetchWeather(lat,lon,startDate){
-  try{
-    const url=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode,windspeed_10m_max&timezone=auto&start_date=${startDate}&forecast_days=7`;
-    const r=await fetch(url);const d=await r.json();return d.daily;
-  }catch{return null;}
+async function fetchWeather(lat,lon,start){
+  try{const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&timezone=auto&start_date=${start}&forecast_days=7`);const d=await r.json();return d.daily;}catch{return null;}
 }
-
-const WX_ICONS={0:"☀️",1:"🌤",2:"⛅",3:"☁️",45:"🌫",51:"🌦",53:"🌧",61:"🌧",71:"❄️",80:"🌦",95:"⛈️"};
-const wxIcon=c=>WX_ICONS[c]||"🌡";
-
-function getTransportLinks(dest="",lat=null,lon=null){
-  const d=encodeURIComponent(dest);
-  const isAsia=lat&&lon&&(lat>-10&&lat<55&&lon>60&&lon<150);
-  return[
-    {id:"uber",name:"Uber",icon:"🚗",available:true,url:`https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=${d}`,desc:"Ride-hailing"},
-    {id:"grab",name:"Grab",icon:"🟢",available:isAsia,url:`https://grab.onelink.me/2695613898`,desc:"Best in SE Asia"},
-    {id:"cabify",name:"Cabify",icon:"🟣",available:true,url:`https://cabify.com/`,desc:"Spain & LatAm"},
-    {id:"metro",name:"Metro",icon:"🚇",available:true,url:`https://www.google.com/maps/dir/?api=1&destination=${d}&travelmode=transit`,desc:"Public transit"},
-    {id:"bike",name:"Bike",icon:"🚲",available:true,url:`https://www.google.com/maps/dir/?api=1&destination=${d}&travelmode=bicycling`,desc:"Cycling"},
-  ];
-}
-
-const AFFILIATE_LINKS=[
-  {name:"Booking.com",icon:"🏨",grad:"linear-gradient(135deg,#003580,#0057B8)",desc:"Hotels & Stays",url:"https://www.booking.com",cta:"~€50/booking"},
-  {name:"Skyscanner",icon:"✈️",grad:"linear-gradient(135deg,#0770E3,#0557B0)",desc:"Flights",url:"https://www.skyscanner.es",cta:"CPA per flight"},
-  {name:"GetYourGuide",icon:"🎟️",grad:"linear-gradient(135deg,#FF5533,#CC3311)",desc:"Tours & Activities",url:"https://www.getyourguide.es",cta:"8% commission"},
-  {name:"Rentalcars",icon:"🚗",grad:"linear-gradient(135deg,#FF6600,#CC5200)",desc:"Car rental",url:"https://www.rentalcars.com",cta:"Up to 6% CPA"},
-];
+const WX={0:"☀️",1:"🌤",2:"⛅",3:"☁️",45:"🌫",51:"🌦",61:"🌧",71:"❄️",80:"🌦",95:"⛈️"};
+const wxI=c=>WX[c]||"🌡";
 
 function useLeaflet(){
   const[r,setR]=useState(!!window.L);
@@ -224,31 +151,27 @@ function useLeaflet(){
 }
 
 function TravelMap({places,active,onSelect,userPos}){
-  const userMRef=useRef(null);
-  const nodeRef=useRef(null),lRef=useRef(null),mRef=useRef([]);
+  const nRef=useRef(null),lRef=useRef(null),mRef=useRef([]),uRef=useRef(null);
   useEffect(()=>{
-    if(!nodeRef.current||lRef.current)return;
+    if(!nRef.current||lRef.current)return;
     const L=window.L;if(!L)return;
-    const map=L.map(nodeRef.current,{zoomControl:false,attributionControl:false});
+    const map=L.map(nRef.current,{zoomControl:false,attributionControl:false});
     L.control.zoom({position:"bottomright"}).addTo(map);
     L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",{maxZoom:19}).addTo(map);
     lRef.current=map;return()=>{map.remove();lRef.current=null;};
   },[]);
   useEffect(()=>{
-    const L=window.L,map=lRef.current;
-    if(!L||!map||!places?.length)return;
+    const L=window.L,map=lRef.current;if(!L||!map||!places?.length)return;
     mRef.current.forEach(m=>m.remove());mRef.current=[];
     const bounds=[];
     places.forEach((p,i)=>{
       if(!p.lat||!p.lng)return;
       const isA=active===i,isH=p.type==="hotel";
-      const em=isH?"🏨":p.type==="restaurant"?"🍽️":p.type==="veg"?"🌿":"◆";
+      const em=isH?"🏨":p.type==="restaurant"?"🍽️":"◆";
       const sz=isA?44:34;
       const html=`<div style="width:${sz}px;height:${sz}px;background:${isA?P.gold:"#2C2C2E"};border:2.5px solid ${P.gold};border-radius:${isH?"12px":"50%"};display:flex;align-items:center;justify-content:center;font-size:${isA?18:13}px;cursor:pointer">${isA?em:i+1}</div>`;
       const icon=L.divIcon({className:"",html,iconSize:[sz,sz],iconAnchor:[sz/2,sz/2]});
-      const mk=L.marker([p.lat,p.lng],{icon}).addTo(map)
-        .bindPopup(`<div style="font-family:-apple-system,sans-serif;min-width:150px"><b>${em} ${p.name}</b>${p.desc?`<p style="font-size:11px;color:#555;margin:4px 0 0">${p.desc}</p>`:""}</div>`,{className:"ios-pop"})
-        .on("click",()=>onSelect(i));
+      const mk=L.marker([p.lat,p.lng],{icon}).addTo(map).bindPopup(`<b>${em} ${p.name}</b>${p.desc?`<p style="font-size:11px;color:#555;margin:4px 0 0">${p.desc}</p>`:""}`).on("click",()=>onSelect(i));
       mRef.current.push(mk);bounds.push([p.lat,p.lng]);
     });
     if(bounds.length)map.fitBounds(bounds,{padding:[44,44],maxZoom:14,animate:true});
@@ -258,167 +181,150 @@ function TravelMap({places,active,onSelect,userPos}){
     const p=places[active];if(p.lat&&p.lng){map.flyTo([p.lat,p.lng],15,{animate:true,duration:1});mRef.current[active]?.openPopup();}
   },[active]);
   useEffect(()=>{
-    const L=window.L,map=lRef.current;
-    if(!L||!map||!userPos)return;
-    if(userMRef.current)userMRef.current.remove();
-    const html=`<div style="width:20px;height:20px;background:#3B82F6;border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 6px rgba(59,130,246,.3)"></div>`;
-    const icon=L.divIcon({className:"",html,iconSize:[20,20],iconAnchor:[10,10]});
-    userMRef.current=L.marker([userPos.lat,userPos.lng],{icon}).addTo(map).bindPopup("Tu posicion");
+    const L=window.L,map=lRef.current;if(!L||!map||!userPos)return;
+    if(uRef.current)uRef.current.remove();
+    const html=`<div style="width:18px;height:18px;background:#3B82F6;border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 6px rgba(59,130,246,.3)"></div>`;
+    const icon=L.divIcon({className:"",html,iconSize:[18,18],iconAnchor:[9,9]});
+    uRef.current=L.marker([userPos.lat,userPos.lng],{icon}).addTo(map).bindPopup("Tu posición");
   },[userPos]);
   return(
     <div style={{borderRadius:20,overflow:"hidden",boxShadow:"0 8px 32px rgba(0,0,0,.4)"}}>
-      <div ref={nodeRef} style={{height:320}}/>
-      <style>{`.ios-pop .leaflet-popup-content-wrapper{background:#1C1C1E!important;border:1px solid #3A3A3C!important;border-radius:14px!important}.ios-pop .leaflet-popup-tip{background:#1C1C1E!important}.leaflet-control-zoom{border:none!important;border-radius:12px!important;overflow:hidden}.leaflet-control-zoom a{background:#1C1C1E!important;color:#fff!important;border:none!important}`}</style>
+      <div ref={nRef} style={{height:340}}/>
     </div>
   );
 }
 
-function Spin({size=22,color}){return<div style={{width:size,height:size,border:`2.5px solid rgba(255,255,255,.1)`,borderTop:`2.5px solid ${color||P.gold}`,borderRadius:"50%",animation:"spin .7s linear infinite",flexShrink:0}}/>;}
-const Stars=({n=4,sz=11})=><span>{[1,2,3,4,5].map(i=><span key={i} style={{color:i<=n?P.gold:P.border2,fontSize:sz}}>★</span>)}</span>;
-const Dot=({color})=><span style={{width:7,height:7,background:color||P.gold,borderRadius:"50%",animation:"pulse 1.6s ease infinite",display:"inline-block"}}/>;
-
-function IBtn({children,onClick,disabled,grad,color,size="md",outline,full,style:ex}){
-  const[hov,setHov]=useState(false);
-  const pad=size==="sm"?"8px 16px":size==="lg"?"16px 28px":"11px 22px";
-  const fz=size==="sm"?12:size==="lg"?16:14;
-  let bg,col,border;
-  if(outline){bg=hov?(color||P.gold)+"18":"transparent";col=color||P.gold;border=`1.5px solid ${color||P.gold}`;}
-  else{bg=grad||GOLD_GRAD;col="#fff";border="none";}
-  return(
-    <button onClick={onClick} disabled={disabled} onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
-      style={{background:bg,color:col,border,borderRadius:14,padding:pad,fontSize:fz,fontWeight:700,cursor:disabled?"not-allowed":"pointer",fontFamily:"-apple-system,sans-serif",display:"inline-flex",alignItems:"center",justifyContent:"center",gap:7,opacity:disabled?.4:1,transition:"all .2s",width:full?"100%":undefined,transform:hov&&!disabled?"translateY(-2px)":"none",...ex}}>
-      {children}
-    </button>
-  );
-}
-
-function SectionHdr({icon,title,sub,right}){
-  return(
-    <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:18,gap:10,flexWrap:"wrap"}}>
-      <div style={{display:"flex",alignItems:"center",gap:12}}>
-        <div style={{width:40,height:40,background:P.card3,border:`1px solid ${P.border2}`,borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,flexShrink:0}}>{icon}</div>
-        <div>
-          <div style={{fontSize:18,fontWeight:700,color:P.white}}>{title}</div>
-          {sub&&<div style={{fontSize:12,color:"rgba(235,235,245,.45)",marginTop:2}}>{sub}</div>}
-        </div>
-      </div>
-      {right}
-    </div>
-  );
-}
-
-
-function GuideCharacter({mood,speaking,size}){
-  mood=mood||"happy";size=size||80;
+function GuideChar({mood,speaking,size}){
+  mood=mood||"happy";size=size||60;
   const[blink,setBlink]=useState(false);
-  useEffect(()=>{const bi=setInterval(()=>{setBlink(true);setTimeout(()=>setBlink(false),150);},3500);return()=>clearInterval(bi);},[]);
-  const colors={happy:{body:"#F4A261",face:"#E76F51"},thinking:{body:"#7ECBA1",face:"#52B788"},excited:{body:"#C9A96E",face:"#B8935A"},nearby:{body:"#8B7CF8",face:"#7C3AED"}};
-  const c=colors[mood]||colors.happy;
+  useEffect(()=>{const i=setInterval(()=>{setBlink(true);setTimeout(()=>setBlink(false),150);},3500);return()=>clearInterval(i);},[]);
+  const c={happy:{b:"#F4A261",f:"#E76F51"},thinking:{b:"#7ECBA1",f:"#52B788"},excited:{b:"#C9A96E",f:"#B8935A"},nearby:{b:"#8B7CF8",f:"#7C3AED"}}[mood]||{b:"#F4A261",f:"#E76F51"};
   return(
-    <div style={{width:size,height:size,flexShrink:0,animation:speaking?"wiggle 0.3s ease infinite":"float 3s ease-in-out infinite"}}>
+    <div style={{width:size,height:size,flexShrink:0,animation:speaking?"wiggle .3s ease infinite":"float 3s ease-in-out infinite"}}>
       <svg width={size} height={size} viewBox="0 0 80 80">
-        <circle cx="40" cy="50" r="22" fill={c.body} opacity="0.9"/>
-        <circle cx="40" cy="28" r="18" fill={c.face}/>
-        <ellipse cx="34" cy="26" rx="3" ry={blink?0.5:3} fill="#fff"/>
-        <ellipse cx="46" cy="26" rx="3" ry={blink?0.5:3} fill="#fff"/>
+        <circle cx="40" cy="50" r="22" fill={c.b} opacity="0.9"/>
+        <circle cx="40" cy="28" r="18" fill={c.f}/>
+        <ellipse cx="34" cy="26" rx="3" ry={blink?.5:3} fill="#fff"/>
+        <ellipse cx="46" cy="26" rx="3" ry={blink?.5:3} fill="#fff"/>
         <circle cx="34" cy="27" r="1.5" fill="#1a1a1a"/>
         <circle cx="46" cy="27" r="1.5" fill="#1a1a1a"/>
-        {(mood==="happy"||mood==="excited")?<path d="M 34 33 Q 40 38 46 33" stroke="#1a1a1a" strokeWidth="2" fill="none" strokeLinecap="round"/>:<path d="M 34 35 Q 40 32 46 35" stroke="#1a1a1a" strokeWidth="2" fill="none" strokeLinecap="round"/>}
+        {mood==="happy"||mood==="excited"?<path d="M34 33Q40 38 46 33" stroke="#1a1a1a" strokeWidth="2" fill="none" strokeLinecap="round"/>:<path d="M34 35Q40 32 46 35" stroke="#1a1a1a" strokeWidth="2" fill="none" strokeLinecap="round"/>}
         <rect x="24" y="12" width="32" height="4" rx="2" fill="#0D0D0D" opacity="0.7"/>
         <rect x="29" y="6" width="22" height="8" rx="3" fill="#0D0D0D" opacity="0.7"/>
         <rect x="24" y="12" width="32" height="2" rx="1" fill="#C9A96E" opacity="0.8"/>
-        <line x1="18" y1="48" x2="26" y2="55" stroke={c.body} strokeWidth="5" strokeLinecap="round"/>
-        <line x1="62" y1="48" x2="54" y2="55" stroke={c.body} strokeWidth="5" strokeLinecap="round"/>
-        <line x1="34" y1="70" x2="32" y2="78" stroke={c.body} strokeWidth="5" strokeLinecap="round"/>
-        <line x1="46" y1="70" x2="48" y2="78" stroke={c.body} strokeWidth="5" strokeLinecap="round"/>
-        {speaking&&<><circle cx="58" cy="14" r="4" fill="#C9A96E" opacity="0.9"/><circle cx="65" cy="10" r="3" fill="#C9A96E" opacity="0.7"/><circle cx="70" cy="7" r="2" fill="#C9A96E" opacity="0.5"/></>}
+        <line x1="18" y1="48" x2="26" y2="55" stroke={c.b} strokeWidth="5" strokeLinecap="round"/>
+        <line x1="62" y1="48" x2="54" y2="55" stroke={c.b} strokeWidth="5" strokeLinecap="round"/>
+        <line x1="34" y1="70" x2="32" y2="78" stroke={c.b} strokeWidth="5" strokeLinecap="round"/>
+        <line x1="46" y1="70" x2="48" y2="78" stroke={c.b} strokeWidth="5" strokeLinecap="round"/>
+        {speaking&&<><circle cx="58" cy="14" r="4" fill="#C9A96E" opacity=".9"/><circle cx="65" cy="10" r="3" fill="#C9A96E" opacity=".7"/><circle cx="70" cy="7" r="2" fill="#C9A96E" opacity=".5"/></>}
       </svg>
     </div>
   );
 }
 
-function VirtualGuide({plan,mapPlaces,userPos,lang,onClose}){
+function VirtualGuide({plan,places,userPos,lang,onClose}){
   const t=T[lang||"es"];
-  const[messages,setMessages]=useState([{role:"assistant",text:t.guideGreeting,mood:"happy"}]);
-  const[input,setInput]=useState("");
-  const[loading,setLoading]=useState(false);
+  const[msgs,setMsgs]=useState([{r:"a",txt:t.guideHi,mood:"happy"}]);
+  const[inp,setInp]=useState("");
+  const[load,setLoad]=useState(false);
   const[mood,setMood]=useState("happy");
-  const[speaking,setSpeaking]=useState(false);
-  const[nearbyPlace,setNearbyPlace]=useState(null);
-  const messagesEndRef=useRef(null);
-  useEffect(()=>{messagesEndRef.current?.scrollIntoView({behavior:"smooth"});},[messages]);
+  const[speak,setSpeak]=useState(false);
+  const[near,setNear]=useState(null);
+  const endRef=useRef(null);
+  useEffect(()=>{endRef.current?.scrollIntoView({behavior:"smooth"});},[msgs]);
   useEffect(()=>{
-    if(!userPos||!mapPlaces?.length)return;
-    const nearby=mapPlaces.find(p=>p.lat&&p.lng&&haversine(userPos.lat,userPos.lng,p.lat,p.lng)<200);
-    if(nearby&&nearby.name!==nearbyPlace?.name){
-      setNearbyPlace(nearby);setMood("nearby");setSpeaking(true);setTimeout(()=>setSpeaking(false),2000);
-      setMessages(prev=>[...prev,{role:"assistant",text:t.guideNearby+" "+nearby.name+"! "+(nearby.desc||""),mood:"nearby"}]);
-    }
-  },[userPos,mapPlaces]);
-  async function sendMessage(){
-    if(!input.trim()||loading)return;
-    const userMsg=input.trim();setInput("");
-    setMessages(prev=>[...prev,{role:"user",text:userMsg}]);
-    setLoading(true);setMood("thinking");
-    const ctx=plan?`Destino: ${plan.destination}. Dias: ${plan.days}. ${userPos?"GPS activo.":""} Lugares: ${mapPlaces?.slice(0,5).map(p=>p.name).join(", ")||""}.`:"";
+    if(!userPos||!places?.length)return;
+    const n=places.find(p=>p.lat&&p.lng&&haversine(userPos.lat,userPos.lng,p.lat,p.lng)<200);
+    if(n&&n.name!==near?.name){setNear(n);setMood("nearby");setSpeak(true);setTimeout(()=>setSpeak(false),2000);setMsgs(prev=>[...prev,{r:"a",txt:t.guideNear+" "+n.name+"! "+(n.desc||""),mood:"nearby"}]);}
+  },[userPos,places]);
+  async function send(){
+    if(!inp.trim()||load)return;
+    const q=inp.trim();setInp("");setMsgs(prev=>[...prev,{r:"u",txt:q}]);setLoad(true);setMood("thinking");
+    const ctx=plan?`Destino: ${plan.destination}. Dias: ${plan.days}. Lugares: ${places?.slice(0,5).map(p=>p.name).join(",")||""}.`:"";
     try{
-      const r=await fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:350,system:`Eres Marco, guia turistico virtual amigable. ${t.langPrompt} ${ctx} Responde conciso. Max 3 frases.`,messages:[...messages.slice(-6).map(m=>({role:m.role,content:m.text})),{role:"user",content:userMsg}]})});
+      const r=await fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:300,system:`Eres Marco, guia turistico virtual amigable y experto. ${t.lp} ${ctx} Responde conciso. Max 3 frases.`,messages:[...msgs.slice(-6).map(m=>({role:m.r==="a"?"assistant":"user",content:m.txt})),{role:"user",content:q}]})});
       const d=await r.json();
-      const reply=(d.content||[]).map(b=>b.text||"").join("");
-      setMessages(prev=>[...prev,{role:"assistant",text:reply,mood:"happy"}]);
-      setMood("happy");setSpeaking(true);setTimeout(()=>setSpeaking(false),2000);
-    }catch{setMessages(prev=>[...prev,{role:"assistant",text:"Error. Intentalo de nuevo!",mood:"happy"}]);}
-    setLoading(false);
+      const txt=(d.content||[]).map(b=>b.text||"").join("")||"Error. Intenta de nuevo.";
+      setMsgs(prev=>[...prev,{r:"a",txt,mood:"happy"}]);setMood("happy");setSpeak(true);setTimeout(()=>setSpeak(false),2000);
+    }catch{setMsgs(prev=>[...prev,{r:"a",txt:"Error de conexion.",mood:"happy"}]);}
+    setLoad(false);
   }
   return(
-    <div style={{position:"fixed",bottom:90,right:20,width:320,background:"#1C1C1E",border:"1px solid #2A2A2A",borderRadius:24,boxShadow:"0 20px 60px rgba(0,0,0,.7)",zIndex:500,display:"flex",flexDirection:"column",maxHeight:"65vh",overflow:"hidden"}}>
-      <div style={{background:"linear-gradient(135deg,#1E1E20,#252528)",padding:"14px 16px",borderRadius:"24px 24px 0 0",display:"flex",alignItems:"center",gap:10,borderBottom:"1px solid #2A2A2A"}}>
-        <div style={{position:"relative"}}><GuideCharacter mood={mood} speaking={speaking} size={52}/><div style={{position:"absolute",bottom:2,right:2,width:11,height:11,background:"#22C55E",borderRadius:"50%",border:"2px solid #1C1C1E"}}/></div>
-        <div style={{flex:1}}><div style={{fontSize:14,fontWeight:700,color:"#fff"}}>{t.guideName}</div><div style={{fontSize:11,color:"#C9A96E"}}>AI Guide · {plan?.destination||"..."}</div></div>
-        <button onClick={onClose} style={{background:"#2C2C2E",border:"none",color:"#6B6B6B",borderRadius:8,width:28,height:28,cursor:"pointer",fontSize:16,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+    <div style={{position:"fixed",bottom:90,right:20,width:310,background:"#1C1C1E",border:`1px solid ${P.border}`,borderRadius:22,boxShadow:"0 20px 60px rgba(0,0,0,.7)",zIndex:500,display:"flex",flexDirection:"column",maxHeight:"60vh",overflow:"hidden"}}>
+      <div style={{background:"#1E1E20",padding:"13px 15px",borderRadius:"22px 22px 0 0",display:"flex",alignItems:"center",gap:9,borderBottom:`1px solid ${P.border}`}}>
+        <div style={{position:"relative"}}><GuideChar mood={mood} speaking={speak} size={48}/><div style={{position:"absolute",bottom:2,right:2,width:10,height:10,background:"#22C55E",borderRadius:"50%",border:"2px solid #1C1C1E"}}/></div>
+        <div style={{flex:1}}><div style={{fontSize:14,fontWeight:700,color:"#fff"}}>{t.guideName}</div><div style={{fontSize:11,color:P.gold}}>AI Guide · {plan?.destination||"..."}</div></div>
+        <button onClick={onClose} style={{background:"#2C2C2E",border:"none",color:P.muted,borderRadius:8,width:26,height:26,cursor:"pointer",fontSize:14,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
       </div>
-      {nearbyPlace&&(<div style={{background:"rgba(139,124,248,.15)",border:"1px solid rgba(139,124,248,.3)",margin:"10px 10px 0",borderRadius:12,padding:"8px 12px",display:"flex",gap:8,alignItems:"center"}}><span style={{fontSize:18}}>📍</span><div><div style={{fontSize:11,fontWeight:700,color:"#8B7CF8"}}>{t.guideNearby}</div><div style={{fontSize:13,color:"#fff",fontWeight:600}}>{nearbyPlace.name}</div></div></div>)}
-      <div style={{flex:1,overflowY:"auto",padding:"10px",display:"flex",flexDirection:"column",gap:8}}>
-        {messages.map((msg,i)=>(
-          <div key={i} style={{display:"flex",gap:7,alignItems:"flex-end",flexDirection:msg.role==="user"?"row-reverse":"row"}}>
-            {msg.role==="assistant"&&<GuideCharacter mood={msg.mood||"happy"} size={28}/>}
-            <div style={{background:msg.role==="user"?GOLD_GRAD:"#2C2C2E",color:msg.role==="user"?"#0D0D0D":"#fff",borderRadius:msg.role==="user"?"16px 16px 4px 16px":"16px 16px 16px 4px",padding:"9px 13px",fontSize:13,lineHeight:1.5,maxWidth:"75%"}}>{msg.text}</div>
+      {near&&<div style={{background:"rgba(139,124,248,.15)",border:"1px solid rgba(139,124,248,.3)",margin:"8px 8px 0",borderRadius:10,padding:"7px 11px",display:"flex",gap:7,alignItems:"center"}}><span>📍</span><div><div style={{fontSize:10,fontWeight:700,color:"#8B7CF8"}}>{t.guideNear}</div><div style={{fontSize:12,color:"#fff",fontWeight:600}}>{near.name}</div></div></div>}
+      <div style={{flex:1,overflowY:"auto",padding:"10px",display:"flex",flexDirection:"column",gap:7}}>
+        {msgs.map((m,i)=>(
+          <div key={i} style={{display:"flex",gap:6,alignItems:"flex-end",flexDirection:m.r==="u"?"row-reverse":"row"}}>
+            {m.r==="a"&&<GuideChar mood={m.mood||"happy"} size={26}/>}
+            <div style={{background:m.r==="u"?GOLD_GRAD:"#2C2C2E",color:m.r==="u"?"#0D0D0D":"#fff",borderRadius:m.r==="u"?"14px 14px 3px 14px":"14px 14px 14px 3px",padding:"8px 12px",fontSize:12,lineHeight:1.5,maxWidth:"76%"}}>{m.txt}</div>
           </div>
         ))}
-        {loading&&(<div style={{display:"flex",gap:7,alignItems:"flex-end"}}><GuideCharacter mood="thinking" size={28}/><div style={{background:"#2C2C2E",borderRadius:"16px 16px 16px 4px",padding:"12px 14px",display:"flex",gap:4}}>{[0,1,2].map(i=><div key={i} style={{width:5,height:5,background:"#C9A96E",borderRadius:"50%",animation:`dot .8s ${i*.2}s ease-in-out infinite`}}/>)}</div></div>)}
-        <div ref={messagesEndRef}/>
+        {load&&<div style={{display:"flex",gap:6,alignItems:"flex-end"}}><GuideChar mood="thinking" size={26}/><div style={{background:"#2C2C2E",borderRadius:"14px 14px 14px 3px",padding:"10px 12px",display:"flex",gap:3}}>{[0,1,2].map(i=><div key={i} style={{width:5,height:5,background:P.gold,borderRadius:"50%",animation:`dot .8s ${i*.2}s ease-in-out infinite`}}/>)}</div></div>}
+        <div ref={endRef}/>
       </div>
-      <div style={{padding:"10px",borderTop:"1px solid #2A2A2A",display:"flex",gap:7}}>
-        <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&sendMessage()} placeholder={t.guidePlaceholder} style={{flex:1,background:"#2C2C2E",border:"1px solid #2A2A2A",borderRadius:10,padding:"9px 12px",fontSize:13,color:"#fff",outline:"none",fontFamily:"-apple-system,sans-serif"}} onFocus={e=>e.target.style.borderColor="#C9A96E"} onBlur={e=>e.target.style.borderColor="#2A2A2A"}/>
-        <button onClick={sendMessage} disabled={!input.trim()||loading} style={{background:GOLD_GRAD,border:"none",borderRadius:10,width:38,height:38,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,opacity:!input.trim()||loading?.5:1}}>↑</button>
+      <div style={{padding:"9px",borderTop:`1px solid ${P.border}`,display:"flex",gap:6}}>
+        <input value={inp} onChange={e=>setInp(e.target.value)} onKeyDown={e=>e.key==="Enter"&&send()} placeholder={t.guidePh} style={{flex:1,background:"#2C2C2E",border:`1px solid ${P.border}`,borderRadius:9,padding:"8px 11px",fontSize:12,color:"#fff",outline:"none",fontFamily:"-apple-system,sans-serif"}} onFocus={e=>e.target.style.borderColor=P.gold} onBlur={e=>e.target.style.borderColor=P.border}/>
+        <button onClick={send} disabled={!inp.trim()||load} style={{background:GOLD_GRAD,border:"none",borderRadius:9,width:36,height:36,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,opacity:!inp.trim()||load?.5:1}}>↑</button>
       </div>
     </div>
   );
 }
 
-function GuideBubble({onClick,mood,speaking}){
+function GuideBubble({onClick,mood,speak}){
   return(
-    <button onClick={onClick} style={{position:"fixed",bottom:20,right:20,width:68,height:68,background:"linear-gradient(135deg,#1E1E20,#252528)",border:"2px solid rgba(201,169,110,.25)",borderRadius:"50%",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 8px 32px rgba(0,0,0,.5),0 0 0 4px rgba(201,169,110,.1)",zIndex:499,padding:0}}>
-      <GuideCharacter mood={mood||"happy"} speaking={speaking} size={58}/>
+    <button onClick={onClick} style={{position:"fixed",bottom:20,right:20,width:64,height:64,background:"#1E1E20",border:`2px solid ${P.goldBorder}`,borderRadius:"50%",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 8px 32px rgba(0,0,0,.5),0 0 0 4px rgba(201,169,110,.08)",zIndex:499,padding:0}}>
+      <GuideChar mood={mood||"happy"} speaking={speak} size={54}/>
     </button>
   );
 }
 
-function LangSelector({lang,setLang}){
+function Spin({size=20,color}){return<div style={{width:size,height:size,border:`2.5px solid rgba(255,255,255,.1)`,borderTop:`2.5px solid ${color||P.gold}`,borderRadius:"50%",animation:"spin .7s linear infinite",flexShrink:0}}/>;}
+const Stars=({n=4,sz=11})=><span>{[1,2,3,4,5].map(i=><span key={i} style={{color:i<=n?P.gold:P.border2,fontSize:sz}}>★</span>)}</span>;
+
+function IBtn({children,onClick,disabled,color,size="md",outline,full,style:ex}){
+  const[hov,setHov]=useState(false);
+  const pad=size==="sm"?"7px 14px":size==="lg"?"15px 26px":"10px 20px";
+  const fz=size==="sm"?12:size==="lg"?16:14;
+  const bg=outline?(hov?(color||P.gold)+"18":"transparent"):GOLD_GRAD;
+  const col=outline?(color||P.gold):"#0D0D0D";
+  const border=outline?`1.5px solid ${color||P.gold}`:"none";
+  return(
+    <button onClick={onClick} disabled={disabled} onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
+      style={{background:bg,color:col,border,borderRadius:12,padding:pad,fontSize:fz,fontWeight:700,cursor:disabled?"not-allowed":"pointer",fontFamily:"-apple-system,sans-serif",display:"inline-flex",alignItems:"center",justifyContent:"center",gap:6,opacity:disabled?.4:1,transition:"all .2s",width:full?"100%":undefined,transform:hov&&!disabled?"translateY(-2px)":"none",...ex}}>
+      {children}
+    </button>
+  );
+}
+
+function SHdr({icon,title,sub}){
+  return(
+    <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:16}}>
+      <div style={{width:38,height:38,background:P.card3,border:`1px solid ${P.border2}`,borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",fontSize:17,flexShrink:0}}>{icon}</div>
+      <div>
+        <div style={{fontSize:17,fontWeight:700,color:P.white}}>{title}</div>
+        {sub&&<div style={{fontSize:12,color:"rgba(235,235,245,.4)",marginTop:1}}>{sub}</div>}
+      </div>
+    </div>
+  );
+}
+
+function LangSel({lang,setLang}){
   const[open,setOpen]=useState(false);
   return(
     <div style={{position:"relative"}}>
       <button onClick={()=>setOpen(!open)} style={{background:"#2C2C2E",border:"0.5px solid #3A3A3C",borderRadius:10,padding:"6px 12px",display:"flex",alignItems:"center",gap:6,cursor:"pointer",color:"#fff",fontSize:13,fontWeight:600,fontFamily:"-apple-system,sans-serif"}}>
-        <span style={{fontSize:16}}>{T[lang].flag}</span><span>{lang.toUpperCase()}</span>
-        <span style={{fontSize:9,color:P.muted}}>▾</span>
+        <span style={{fontSize:15}}>{T[lang].flag}</span><span>{lang.toUpperCase()}</span><span style={{fontSize:9,color:P.muted}}>▾</span>
       </button>
       {open&&(
-        <div style={{position:"absolute",right:0,top:"calc(100% + 6px)",background:"#1C1C1E",border:"0.5px solid #3A3A3C",borderRadius:14,overflow:"hidden",zIndex:999,boxShadow:"0 12px 40px rgba(0,0,0,.7)",minWidth:150}}>
+        <div style={{position:"absolute",right:0,top:"calc(100% + 6px)",background:"#1C1C1E",border:"0.5px solid #3A3A3C",borderRadius:14,overflow:"hidden",zIndex:999,boxShadow:"0 12px 40px rgba(0,0,0,.7)",minWidth:140}}>
           {Object.entries(T).map(([k,l])=>(
-            <button key={k} onClick={()=>{setLang(k);setOpen(false);}}
-              style={{width:"100%",background:lang===k?"#2C2C2E":"transparent",border:"none",padding:"11px 16px",display:"flex",alignItems:"center",gap:10,cursor:"pointer",color:lang===k?P.gold:"#fff",fontSize:14,fontFamily:"-apple-system,sans-serif",fontWeight:lang===k?700:400,textAlign:"left"}}>
-              <span style={{fontSize:20}}>{l.flag}</span><span>{l.name}</span>
-              {lang===k&&<span style={{marginLeft:"auto",fontSize:12}}>✓</span>}
+            <button key={k} onClick={()=>{setLang(k);setOpen(false);}} style={{width:"100%",background:lang===k?"#2C2C2E":"transparent",border:"none",padding:"10px 15px",display:"flex",alignItems:"center",gap:9,cursor:"pointer",color:lang===k?P.gold:"#fff",fontSize:13,fontFamily:"-apple-system,sans-serif",fontWeight:lang===k?700:400,textAlign:"left"}}>
+              <span style={{fontSize:18}}>{l.flag}</span><span>{l.name}</span>{lang===k&&<span style={{marginLeft:"auto",fontSize:11}}>✓</span>}
             </button>
           ))}
         </div>
@@ -430,50 +336,33 @@ function LangSelector({lang,setLang}){
 function AuthModal({onClose,onAuth}){
   const[mode,setMode]=useState("login");
   const[email,setEmail]=useState("");
-  const[password,setPassword]=useState("");
-  const[loading,setLoading]=useState(false);
-  const[error,setError]=useState(null);
-  const[success,setSuccess]=useState(null);
-
-  async function handleSubmit(){
-    setLoading(true);setError(null);setSuccess(null);
+  const[pw,setPw]=useState("");
+  const[load,setLoad]=useState(false);
+  const[err,setErr]=useState(null);
+  const[ok,setOk]=useState(null);
+  async function submit(){
+    setLoad(true);setErr(null);setOk(null);
     try{
-      if(mode==="register"){
-        const{error:e}=await supabase.auth.signUp({email,password});
-        if(e)throw e;
-        setSuccess("Cuenta creada. Revisa tu email para confirmar.");
-      }else{
-        const{data,error:e}=await supabase.auth.signInWithPassword({email,password});
-        if(e)throw e;
-        onAuth(data.user);onClose();
-      }
-    }catch(e){setError(e.message);}
-    setLoading(false);
+      if(mode==="reg"){const{error:e}=await supabase.auth.signUp({email,password:pw});if(e)throw e;setOk("Cuenta creada. Revisa tu email.");}
+      else{const{data,error:e}=await supabase.auth.signInWithPassword({email,password:pw});if(e)throw e;onAuth(data.user);onClose();}
+    }catch(e){setErr(e.message);}
+    setLoad(false);
   }
-
-  const inp={width:"100%",padding:"13px 16px",border:"1.5px solid #3A3A3C",borderRadius:14,fontSize:15,fontFamily:"-apple-system,sans-serif",color:"#fff",background:"#2C2C2E",boxSizing:"border-box",outline:"none"};
+  const inp={width:"100%",padding:"12px 15px",border:"1.5px solid #3A3A3C",borderRadius:12,fontSize:14,fontFamily:"-apple-system,sans-serif",color:"#fff",background:"#2C2C2E",boxSizing:"border-box",outline:"none"};
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.75)",zIndex:1000,display:"flex",alignItems:"flex-end",justifyContent:"center",backdropFilter:"blur(12px)"}} onClick={e=>{if(e.target===e.currentTarget)onClose();}}>
-      <div style={{background:"#1C1C1E",borderRadius:"28px 28px 0 0",width:"100%",maxWidth:480,padding:"24px 28px 48px",boxShadow:"0 -8px 60px rgba(0,0,0,.6)"}}>
-        <div style={{width:40,height:5,background:"#3A3A3C",borderRadius:3,margin:"0 auto 24px"}}/>
-        <div style={{fontSize:24,fontWeight:900,color:"#fff",marginBottom:6}}>{mode==="login"?"Bienvenido de nuevo":"Crea tu cuenta"}</div>
-        <p style={{fontSize:14,color:"#6B6B6B",marginBottom:24}}>{mode==="login"?"Accede para guardar tus viajes":"Guarda y comparte tus viajes"}</p>
-        <button onClick={()=>supabase.auth.signInWithOAuth({provider:"google",options:{redirectTo:window.location.origin}})} style={{width:"100%",background:"#2C2C2E",border:"1.5px solid #3A3A3C",borderRadius:14,padding:"13px 16px",color:"#fff",fontSize:15,fontWeight:600,cursor:"pointer",fontFamily:"-apple-system,sans-serif",display:"flex",alignItems:"center",justifyContent:"center",gap:10,marginBottom:16}}>
-          🔍 Continuar con Google
-        </button>
-        <div style={{display:"flex",alignItems:"center",gap:12,margin:"16px 0"}}>
-          <div style={{flex:1,height:"0.5px",background:"#3A3A3C"}}/><span style={{fontSize:12,color:"#6B6B6B"}}>o con email</span><div style={{flex:1,height:"0.5px",background:"#3A3A3C"}}/>
-        </div>
-        <div style={{marginBottom:12}}><input value={email} onChange={e=>setEmail(e.target.value)} placeholder="tu@email.com" type="email" style={inp} onFocus={e=>e.target.style.borderColor=P.gold} onBlur={e=>e.target.style.borderColor="#3A3A3C"}/></div>
-        <div style={{marginBottom:20}}><input value={password} onChange={e=>setPassword(e.target.value)} placeholder="Contrasena" type="password" style={inp} onFocus={e=>e.target.style.borderColor=P.gold} onBlur={e=>e.target.style.borderColor="#3A3A3C"} onKeyDown={e=>e.key==="Enter"&&handleSubmit()}/></div>
-        {error&&<div style={{background:"rgba(224,90,78,.12)",border:"1px solid rgba(224,90,78,.3)",borderRadius:10,padding:"10px 14px",fontSize:13,color:"#E05A4E",marginBottom:14}}>{error}</div>}
-        {success&&<div style={{background:"rgba(201,169,110,.12)",border:"1px solid rgba(201,169,110,.3)",borderRadius:10,padding:"10px 14px",fontSize:13,color:P.gold,marginBottom:14}}>{success}</div>}
-        <button onClick={handleSubmit} disabled={loading||!email||!password} style={{width:"100%",padding:"15px",background:loading?"#333":GOLD_GRAD,color:loading?"#888":"#0D0D0D",border:"none",borderRadius:14,fontSize:16,fontWeight:800,cursor:"pointer",fontFamily:"-apple-system,sans-serif",marginBottom:14,opacity:(!email||!password)?0.5:1}}>
-          {loading?"...":(mode==="login"?"Iniciar sesion":"Crear cuenta")}
-        </button>
-        <button onClick={()=>{setMode(mode==="login"?"register":"login");setError(null);setSuccess(null);}} style={{width:"100%",background:"none",border:"none",color:"#6B6B6B",fontSize:14,cursor:"pointer",fontFamily:"-apple-system,sans-serif"}}>
-          {mode==="login"?"No tienes cuenta? Registrate":"Ya tienes cuenta? Inicia sesion"}
-        </button>
+      <div style={{background:"#1C1C1E",borderRadius:"26px 26px 0 0",width:"100%",maxWidth:460,padding:"22px 26px 44px",boxShadow:"0 -8px 60px rgba(0,0,0,.6)"}}>
+        <div style={{width:38,height:5,background:"#3A3A3C",borderRadius:3,margin:"0 auto 22px"}}/>
+        <div style={{fontSize:22,fontWeight:900,color:"#fff",marginBottom:5}}>{mode==="login"?"Bienvenido de nuevo":"Crea tu cuenta"}</div>
+        <p style={{fontSize:13,color:"#6B6B6B",marginBottom:22}}>{mode==="login"?"Accede para guardar tus viajes":"Guarda y comparte tus viajes"}</p>
+        <button onClick={()=>supabase.auth.signInWithOAuth({provider:"google",options:{redirectTo:window.location.origin}})} style={{width:"100%",background:"#2C2C2E",border:"1.5px solid #3A3A3C",borderRadius:12,padding:"12px",color:"#fff",fontSize:14,fontWeight:600,cursor:"pointer",fontFamily:"-apple-system,sans-serif",display:"flex",alignItems:"center",justifyContent:"center",gap:9,marginBottom:14}}>🔍 Continuar con Google</button>
+        <div style={{display:"flex",alignItems:"center",gap:10,margin:"14px 0"}}><div style={{flex:1,height:"0.5px",background:"#3A3A3C"}}/><span style={{fontSize:11,color:"#6B6B6B"}}>o con email</span><div style={{flex:1,height:"0.5px",background:"#3A3A3C"}}/></div>
+        <div style={{marginBottom:10}}><input value={email} onChange={e=>setEmail(e.target.value)} placeholder="tu@email.com" type="email" style={inp} onFocus={e=>e.target.style.borderColor=P.gold} onBlur={e=>e.target.style.borderColor="#3A3A3C"}/></div>
+        <div style={{marginBottom:18}}><input value={pw} onChange={e=>setPw(e.target.value)} placeholder="Contrasena" type="password" style={inp} onFocus={e=>e.target.style.borderColor=P.gold} onBlur={e=>e.target.style.borderColor="#3A3A3C"} onKeyDown={e=>e.key==="Enter"&&submit()}/></div>
+        {err&&<div style={{background:"rgba(224,90,78,.12)",border:"1px solid rgba(224,90,78,.3)",borderRadius:9,padding:"9px 13px",fontSize:12,color:"#E05A4E",marginBottom:12}}>{err}</div>}
+        {ok&&<div style={{background:"rgba(201,169,110,.12)",border:"1px solid rgba(201,169,110,.3)",borderRadius:9,padding:"9px 13px",fontSize:12,color:P.gold,marginBottom:12}}>{ok}</div>}
+        <button onClick={submit} disabled={load||!email||!pw} style={{width:"100%",padding:"14px",background:load?"#333":GOLD_GRAD,color:load?"#888":"#0D0D0D",border:"none",borderRadius:12,fontSize:15,fontWeight:800,cursor:"pointer",fontFamily:"-apple-system,sans-serif",marginBottom:12,opacity:(!email||!pw)?.5:1}}>{load?"...":(mode==="login"?"Iniciar sesion":"Crear cuenta")}</button>
+        <button onClick={()=>{setMode(mode==="login"?"reg":"login");setErr(null);setOk(null);}} style={{width:"100%",background:"none",border:"none",color:"#6B6B6B",fontSize:13,cursor:"pointer",fontFamily:"-apple-system,sans-serif"}}>{mode==="login"?"No tienes cuenta? Registrate":"Ya tienes cuenta? Inicia sesion"}</button>
       </div>
     </div>
   );
@@ -481,17 +370,17 @@ function AuthModal({onClose,onAuth}){
 
 function TripTypeStep({t,value,onChange}){
   return(
-    <div className="fade">
-      <div style={{fontSize:22,fontWeight:800,color:P.white,marginBottom:4}}>{t.stepTripType}</div>
-      <p style={{fontSize:13,color:P.muted,marginBottom:20}}>{t.stepTripTypeSub}</p>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10}}>
+    <div>
+      <div style={{fontSize:21,fontWeight:800,color:P.white,marginBottom:4}}>{t.stepTripType}</div>
+      <p style={{fontSize:13,color:P.muted,marginBottom:18}}>{t.stepSub}</p>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:9}}>
         {Object.entries(TRIP_TYPES).map(([k,tt])=>{
           const sel=value.includes(k);
           return(
-            <button key={k} onClick={()=>onChange(k)} style={{background:sel?P.goldDim:P.card,border:`1.5px solid ${sel?P.goldBorder:P.border}`,borderRadius:16,padding:"16px 10px",cursor:"pointer",textAlign:"center",transition:"all .22s",transform:sel?"translateY(-2px)":"none",position:"relative"}}>
-              {sel&&<div style={{position:"absolute",top:8,right:8,width:18,height:18,background:P.gold,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,color:P.black,fontWeight:900}}>✓</div>}
-              <div style={{fontSize:24,marginBottom:6}}>{tt.icon}</div>
-              <div style={{fontSize:11,fontWeight:700,color:sel?P.gold:P.white}}>{t.tripTypes[k]}</div>
+            <button key={k} onClick={()=>onChange(k)} style={{background:sel?P.goldDim:P.card,border:`1.5px solid ${sel?P.goldBorder:P.border}`,borderRadius:14,padding:"14px 8px",cursor:"pointer",textAlign:"center",transition:"all .2s",transform:sel?"translateY(-2px)":"none",position:"relative"}}>
+              {sel&&<div style={{position:"absolute",top:7,right:7,width:16,height:16,background:P.gold,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,color:"#0D0D0D",fontWeight:900}}>✓</div>}
+              <div style={{fontSize:22,marginBottom:5}}>{tt.icon}</div>
+              <div style={{fontSize:10,fontWeight:700,color:sel?P.gold:P.white}}>{t.tripNames[k]}</div>
             </button>
           );
         })}
@@ -500,289 +389,38 @@ function TripTypeStep({t,value,onChange}){
   );
 }
 
-function TravelerStyleStep({t,value,onChange}){
+function StyleStep({t,value,onChange}){
   return(
-    <div className="fade">
-      <div style={{fontSize:22,fontWeight:900,color:"#fff",marginBottom:6}}>{t.stepTravelerStyle}</div>
-      <p style={{fontSize:14,color:P.muted,marginBottom:20}}>{t.stepDetails}</p>
-      <div style={{display:"flex",flexDirection:"column",gap:12}}>
+    <div>
+      <div style={{fontSize:21,fontWeight:900,color:"#fff",marginBottom:5}}>{t.stepStyle}</div>
+      <p style={{fontSize:13,color:P.muted,marginBottom:18}}>{t.stepDetails}</p>
+      <div style={{display:"flex",flexDirection:"column",gap:10}}>
         {Object.entries(TRAVELER_STYLES).map(([k,ts])=>{
           const sel=value===k;
           return(
-            <button key={k} onClick={()=>onChange(k)} style={{background:sel?P.goldDim:P.card,border:`1px solid ${sel?P.goldBorder:P.border}`,borderRadius:18,padding:"16px 18px",cursor:"pointer",textAlign:"left",transition:"all .25s",display:"flex",alignItems:"center",gap:14}}>
-              <div style={{width:44,height:44,background:sel?P.goldDim:P.card3,border:`1px solid ${sel?P.goldBorder:P.border}`,borderRadius:12,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flexShrink:0}}>{ts.icon}</div>
+            <button key={k} onClick={()=>onChange(k)} style={{background:sel?P.goldDim:P.card,border:`1px solid ${sel?P.goldBorder:P.border}`,borderRadius:16,padding:"15px 17px",cursor:"pointer",textAlign:"left",transition:"all .2s",display:"flex",alignItems:"center",gap:13}}>
+              <div style={{width:42,height:42,background:sel?P.goldDim:P.card3,border:`1px solid ${sel?P.goldBorder:P.border}`,borderRadius:11,display:"flex",alignItems:"center",justifyContent:"center",fontSize:19,flexShrink:0}}>{ts.icon}</div>
               <div style={{flex:1}}>
-                <div style={{fontSize:15,fontWeight:700,color:sel?P.gold:P.white,marginBottom:3}}>{t.travelerStyles[k]}</div>
-                <div style={{fontSize:12,color:P.muted}}>{t.travelerDescs[k]}</div>
+                <div style={{fontSize:14,fontWeight:700,color:sel?P.gold:P.white,marginBottom:2}}>{t.styleNames[k]}</div>
+                <div style={{fontSize:12,color:P.muted}}>{t.styleDesc[k]}</div>
               </div>
-              {sel&&<span style={{color:P.gold,fontSize:22,fontWeight:900}}>✓</span>}
+              {sel&&<span style={{color:P.gold,fontSize:20,fontWeight:900}}>✓</span>}
             </button>
           );
         })}
       </div>
-    </div>
-  );
-}
-
-function FlightCard({flight,selected,onSelect,t,onBook}){
-  return(
-    <div onClick={onSelect} className="hov" style={{background:selected?P.goldDim:"#1C1C1E",border:`1px solid ${selected?P.goldBorder:P.border}`,borderRadius:22,padding:"20px 22px",marginBottom:12,cursor:"pointer",transition:"all .2s"}}>
-      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:12}}>
-        <div style={{display:"flex",alignItems:"center",gap:14}}>
-          <div style={{width:46,height:46,background:selected?P.goldDim:P.card3,border:`1px solid ${selected?P.goldBorder:P.border}`,borderRadius:12,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22}}>✈️</div>
-          <div>
-            <div style={{fontSize:16,fontWeight:700,color:"#fff",marginBottom:3}}>{flight.airline}</div>
-            <div style={{fontSize:13,color:P.muted,marginBottom:4}}>{flight.departure} → {flight.arrival} · {flight.duration}</div>
-            <span style={{background:flight.stops===0?"rgba(201,169,110,.2)":"rgba(201,169,110,.1)",color:P.gold,borderRadius:8,padding:"3px 10px",fontSize:11,fontWeight:700}}>
-              {flight.stops===0?(t.direct||"✈ Direct"):(t.stops(flight.stops))}
-            </span>
-          </div>
-        </div>
-        <div style={{textAlign:"right"}}>
-          <div style={{fontSize:26,fontWeight:700,color:selected?P.gold:P.white}}>{flight.price}€</div>
-          <div style={{fontSize:11,color:P.muted,marginBottom:6}}>{t.perPerson}</div>
-          <button onClick={e=>{e.stopPropagation();onBook(flight);}} style={{background:GOLD_GRAD,color:"#0D0D0D",border:"none",borderRadius:8,padding:"6px 14px",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"-apple-system,sans-serif"}}>
-            {t.bookFlightBtn}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function HotelCard({hotel,selected,onSelect,nights,onMap,t,travelerStyle,onBook}){
-  const[hov,setHov]=useState(false);
-  return(
-    <div onClick={onSelect} onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)} className="hov"
-      style={{background:selected?P.goldDim:"#1C1C1E",border:`1px solid ${selected?P.goldBorder:hov?P.border2:P.border}`,borderRadius:22,overflow:"hidden",marginBottom:12,cursor:"pointer",transition:"all .2s"}}>
-      <div style={{display:"flex",height:130}}>
-        <div style={{width:130,flexShrink:0,position:"relative",overflow:"hidden"}}>
-          <img src={HOTEL_IMGS[(hotel._imgIdx||0)%HOTEL_IMGS.length]} alt={hotel.name} style={{width:"100%",height:"100%",objectFit:"cover",transition:"transform .3s",transform:hov?"scale(1.06)":"scale(1)"}} onError={e=>e.target.style.display="none"}/>
-          {selected&&<div style={{position:"absolute",top:8,right:8,width:22,height:22,background:P.goldDim,border:`1px solid ${P.goldBorder}`,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:P.gold,fontWeight:700}}>✓</div>}
-        </div>
-        <div style={{flex:1,padding:"14px 16px",display:"flex",flexDirection:"column",justifyContent:"space-between"}}>
-          <div>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:8,marginBottom:4}}>
-              <div style={{fontSize:15,fontWeight:700,color:"#fff",lineHeight:1.2}}>{hotel.name}</div>
-              <div style={{textAlign:"right",flexShrink:0}}>
-                <div style={{fontSize:20,fontWeight:700,color:selected?P.gold:P.white}}>{hotel.price_per_night}€</div>
-                <div style={{fontSize:10,color:P.muted}}>{t.perNight}</div>
-              </div>
-            </div>
-            <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:5}}>
-              <Stars n={hotel.stars||4} sz={10}/><span style={{fontSize:11,color:P.muted}}>📍 {hotel.neighborhood}</span>
-            </div>
-            <p style={{fontSize:12,color:P.muted,margin:0,lineHeight:1.45,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{hotel.description}</p>
-          </div>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:6}}>
-            <div style={{display:"flex",gap:8,alignItems:"center"}}>
-              {onMap&&<button onClick={e=>{e.stopPropagation();onMap();}} style={{background:"none",border:`1px solid ${P.border2}`,color:P.muted,borderRadius:8,padding:"3px 9px",fontSize:10,cursor:"pointer"}}>{t.mapBtn}</button>}
-              {nights&&<span style={{fontSize:12,color:selected?P.gold:P.muted,fontWeight:600}}>{hotel.price_per_night*nights}€</span>}
-            </div>
-            <button onClick={e=>{e.stopPropagation();onBook(hotel);}} style={{background:GOLD_GRAD,color:"#0D0D0D",border:"none",borderRadius:8,padding:"5px 12px",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"-apple-system,sans-serif"}}>
-              {t.bookHotelBtn}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function RestCard({rest,idx,vegMode,t,onBook}){
-  const[hov,setHov]=useState(false);
-  const imgs=vegMode?VEG_IMGS:REST_IMGS;
-  return(
-    <div onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)} className="hov"
-      style={{background:"#1C1C1E",border:`1.5px solid ${hov?P.goldBorder:P.border}`,borderRadius:20,overflow:"hidden",flex:"1 1 190px",minWidth:0,transition:"all .25s"}}>
-      <div style={{height:120,overflow:"hidden",position:"relative"}}>
-        <img src={imgs[idx%imgs.length]} alt={rest.name} style={{width:"100%",height:"100%",objectFit:"cover",transition:"transform .35s",transform:hov?"scale(1.08)":"scale(1)"}} onError={e=>e.target.style.display="none"}/>
-        <div style={{position:"absolute",inset:0,background:"linear-gradient(to top,rgba(0,0,0,.7),transparent)"}}/>
-        {rest.price_range&&<div style={{position:"absolute",top:8,right:8,background:"rgba(0,0,0,.65)",color:"#fff",borderRadius:8,padding:"2px 8px",fontSize:10,fontWeight:700}}>{rest.price_range}</div>}
-      </div>
-      <div style={{padding:"13px 14px"}}>
-        <div style={{fontSize:13,fontWeight:700,color:"#fff",marginBottom:3}}>{rest.name}</div>
-        <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:8}}>
-          <Stars n={rest.rating||4}/><span style={{fontSize:10,color:P.muted}}>{rest.cuisine}</span>
-        </div>
-        <button onClick={()=>onBook(rest)} style={{background:GOLD_GRAD,color:"#0D0D0D",border:"none",borderRadius:8,padding:"5px 12px",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"-apple-system,sans-serif",width:"100%"}}>
-          {t.bookRestBtn}
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function WeatherSection({weather,startDate,t,locale}){
-  if(!weather?.temperature_2m_max?.length)return null;
-  return(
-    <div style={{marginBottom:32}} className="pop4">
-      <SectionHdr icon="🌤" title={t.weatherT} sub={t.weatherSub}/>
-      <div style={{display:"flex",gap:8,overflowX:"auto",paddingBottom:4}}>
-        {weather.temperature_2m_max.slice(0,7).map((maxT,i)=>{
-          const d=new Date(startDate+"T12:00:00");d.setDate(d.getDate()+i);
-          const rain=weather.precipitation_probability_max[i];
-          return(
-            <div key={i} style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:12,padding:"14px 12px",minWidth:80,textAlign:"center",flexShrink:0}}>
-              <div style={{fontSize:10,color:P.muted,marginBottom:6,fontWeight:600}}>{d.toLocaleDateString(locale||"es-ES",{weekday:"short"})}</div>
-              <div style={{fontSize:28,marginBottom:6}}>{wxIcon(weather.weathercode[i])}</div>
-              <div style={{fontSize:14,fontWeight:700,color:P.white}}>{Math.round(maxT)}°</div>
-              <div style={{fontSize:11,color:P.muted,marginBottom:6}}>{Math.round(weather.temperature_2m_min[i])}°</div>
-              <div style={{fontSize:10,color:rain>50?P.gold:P.muted}}>💧{rain}%</div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-function TransportSection({dest,lat,lon,t}){
-  const links=getTransportLinks(dest,lat,lon);
-  return(
-    <div style={{marginBottom:32}} className="pop5">
-      <SectionHdr icon="🚗" title={t.transportT} sub={t.transportSub}/>
-      <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
-        {links.map(lk=>(
-          <a key={lk.id} href={lk.url} target="_blank" rel="noopener noreferrer"
-            style={{background:"#1C1C1E",border:`1.5px solid ${P.border}`,borderRadius:16,padding:"14px 16px",textDecoration:"none",display:"flex",alignItems:"center",gap:12,flex:"1 1 140px",opacity:lk.available?1:.4,transition:"all .2s"}}
-            onMouseEnter={e=>{if(lk.available){e.currentTarget.style.borderColor=P.goldBorder;e.currentTarget.style.transform="translateY(-3px)";}}}
-            onMouseLeave={e=>{e.currentTarget.style.borderColor=P.border;e.currentTarget.style.transform="none";}}>
-            <div style={{width:34,height:34,background:P.card3,borderRadius:9,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0}}>{lk.icon}</div>
-            <div><div style={{fontSize:14,fontWeight:700,color:"#fff"}}>{lk.name}</div><div style={{fontSize:11,color:P.muted}}>{lk.desc}</div></div>
-            <span style={{marginLeft:"auto",color:P.muted,fontSize:14}}>↗</span>
-          </a>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function PromoSection({promos,t}){
-  if(!promos?.length)return null;
-  return(
-    <div style={{marginBottom:32}} className="pop">
-      <SectionHdr icon="🎟️" title={t.promoT} sub={t.promoSub}/>
-      <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
-        {promos.map((p,i)=>(
-          <div key={i} style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:18,padding:"16px 18px",flex:"1 1 200px",minWidth:0}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}}>
-              <div style={{fontSize:22}}>{p.icon||"🎫"}</div>
-              <div style={{background:P.goldDim,color:P.gold,border:`1px solid ${P.goldBorder}`,borderRadius:5,padding:"3px 10px",fontSize:11,fontWeight:700}}>-{p.discount}%</div>
-            </div>
-            <div style={{fontSize:13,fontWeight:600,color:P.white,marginBottom:4}}>{p.title}</div>
-            <div style={{fontSize:12,color:P.muted,marginBottom:8}}>{p.description}</div>
-            {p.code&&<div style={{background:"#2C2C2E",borderRadius:8,padding:"5px 10px",display:"inline-flex",gap:6}}>
-              <span style={{fontSize:10,color:P.muted}}>{t.promoCode}:</span>
-              <span style={{fontSize:12,fontWeight:700,color:P.gold,fontFamily:"monospace"}}>{p.code}</span>
-            </div>}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function AffiliatePanel({t}){
-  const[open,setOpen]=useState(false);
-  return(
-    <div style={{background:P.card,borderRadius:14,padding:"18px",marginTop:14,border:`1px solid ${P.border}`}}>
-      <button onClick={()=>setOpen(!open)} style={{width:"100%",background:"none",border:"none",cursor:"pointer",display:"flex",alignItems:"center",gap:10,color:"#fff",fontFamily:"-apple-system,sans-serif"}}>
-        <div style={{width:28,height:28,background:P.goldDim,border:`1px solid ${P.goldBorder}`,borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14}}>💰</div>
-        <div style={{flex:1,textAlign:"left"}}>
-          <div style={{fontSize:13,fontWeight:600,color:P.white}}>{t.affiliateT}</div>
-          <div style={{fontSize:11,color:P.muted}}>{t.affiliateSub}</div>
-        </div>
-        <span style={{color:P.muted,fontSize:16,transform:open?"rotate(180deg)":"none",transition:".2s"}}>▾</span>
-      </button>
-      {open&&(
-        <div style={{marginTop:14,display:"flex",flexDirection:"column",gap:10}}>
-          {AFFILIATE_LINKS.map((al,i)=>(
-            <a key={i} href={al.url} target="_blank" rel="noopener noreferrer"
-              style={{background:"#2C2C2E",borderRadius:12,padding:"12px 14px",textDecoration:"none",display:"flex",alignItems:"center",gap:12,transition:"all .2s"}}
-              onMouseEnter={e=>{e.currentTarget.style.background="#38383A";e.currentTarget.style.transform="translateX(3px)";}}
-              onMouseLeave={e=>{e.currentTarget.style.background="#2C2C2E";e.currentTarget.style.transform="none";}}>
-              <div style={{width:32,height:32,background:al.grad,borderRadius:9,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0}}>{al.icon}</div>
-              <div style={{flex:1}}>
-                <div style={{fontSize:13,fontWeight:700,color:"#fff"}}>{al.name}</div>
-                <div style={{fontSize:11,color:P.muted}}>{al.desc}</div>
-              </div>
-              <span style={{fontSize:10,fontWeight:600,color:P.gold,background:P.goldDim,border:`1px solid ${P.goldBorder}`,borderRadius:5,padding:"3px 8px"}}>{al.cta}</span>
-            </a>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function PkgSummary({flight,hotel,nights,travelers,t}){
-  if(!flight&&!hotel)return null;
-  const fT=flight?flight.price*(travelers||1):0;
-  const hT=hotel?hotel.price_per_night*(nights||5):0;
-  const tax=Math.round((fT+hT)*.10);
-  const total=fT+hT+tax;
-  return(
-    <div style={{background:"linear-gradient(145deg,#1E1E20,#181818)",borderRadius:24,padding:22,boxShadow:"0 12px 40px rgba(0,0,0,.5)",border:"0.5px solid rgba(255,255,255,.07)"}}>
-      <div style={{fontSize:15,fontWeight:900,marginBottom:16,color:"#fff"}}>{t.pkgT}</div>
-      {flight&&<div style={{display:"flex",justifyContent:"space-between",marginBottom:10,fontSize:13}}><span style={{color:P.sub}}>✈️ {flight.airline} × {travelers||1}</span><span style={{fontWeight:700,color:"#fff"}}>{fT}€</span></div>}
-      {hotel&&nights&&<div style={{display:"flex",justifyContent:"space-between",marginBottom:10,fontSize:13}}><span style={{color:P.sub}}>🏨 {hotel.name} × {nights}n</span><span style={{fontWeight:700,color:"#fff"}}>{hT}€</span></div>}
-      <div style={{height:"0.5px",background:"rgba(255,255,255,.07)",margin:"12px 0"}}/>
-      <div style={{display:"flex",justifyContent:"space-between",marginBottom:10,fontSize:13}}><span style={{color:P.muted}}>🧾 {t.taxes}</span><span style={{fontWeight:700,color:P.muted}}>{tax}€</span></div>
-      <div style={{background:P.goldDim,borderRadius:12,padding:"14px 16px",margin:"14px 0 16px",border:`1px solid ${P.goldBorder}`}}>
-        <div style={{fontSize:10,fontWeight:600,color:P.gold,textTransform:"uppercase",letterSpacing:".1em",marginBottom:4}}>{t.totalL}</div>
-        <span style={{fontSize:30,fontWeight:700,color:P.gold}}>{total}€</span>
-      </div>
-      <div style={{fontSize:10,color:"#48484A",textAlign:"center"}}>{t.demoSmall}</div>
-    </div>
-  );
-}
-
-function BookModal({item,type,dest,lang,onClose}){
-  const t=T[lang||"es"];
-  const url=type==="flight"?`https://www.skyscanner.es/transporte/vuelos/${encodeURIComponent(dest||"")}/`:
-    type==="hotel"?`https://www.booking.com/search.html?ss=${encodeURIComponent(item?.name||dest||"")}`:
-    type==="restaurant"?`https://www.google.com/search?q=${encodeURIComponent((item?.name||"")+" "+dest+" reservar")}`:
-    `https://www.getyourguide.es/s/?q=${encodeURIComponent(dest||"")}`;
-
-  useEffect(()=>{window.open(url,"_blank");onClose();},[]);
-  return null;
-}
-
-function DayCard({day,i,t}){
-  const[open,setOpen]=useState(i===0);
-  return(
-    <div style={{background:"linear-gradient(145deg,#1C1C1E,#181818)",border:`1.5px solid ${open?P.goldBorder:"#2C2C2E"}`,borderRadius:20,marginBottom:10,overflow:"hidden",transition:"all .3s"}}>
-      <button onClick={()=>setOpen(!open)} style={{width:"100%",background:"none",border:"none",padding:"17px 20px",cursor:"pointer",display:"flex",alignItems:"center",gap:14}}>
-        <div style={{width:36,height:36,background:open?P.goldDim:P.card3,border:`1px solid ${open?P.goldBorder:P.border}`,borderRadius:12,display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,fontWeight:900,color:open?P.gold:P.muted,flexShrink:0}}>{i+1}</div>
-        <div style={{flex:1,textAlign:"left"}}>
-          <div style={{fontSize:15,fontWeight:700,color:"#fff"}}>{day.day.replace(/^(Día|Day|Jour) \d+ [-–] /,"")}</div>
-          {day.theme&&<div style={{fontSize:12,color:P.muted,marginTop:2}}>{day.theme}</div>}
-        </div>
-        <span style={{color:P.muted,fontSize:20,transform:open?"rotate(90deg)":"none",transition:".2s"}}>›</span>
-      </button>
-      {open&&(
-        <div style={{padding:"2px 18px 18px",borderTop:"0.5px solid rgba(255,255,255,.06)"}}>
-          {[{k:"morning",l:t.morning},{k:"afternoon",l:t.afternoon},{k:"evening",l:t.evening},{k:"transport",l:t.transport}].map(({k,l})=>day[k]&&(
-            <div key={k} style={{marginTop:14}}>
-              <div style={{fontSize:11,fontWeight:700,color:P.gold,textTransform:"uppercase",letterSpacing:".06em",marginBottom:5}}>{l}</div>
-              <p style={{margin:0,fontSize:13,color:"rgba(255,255,255,.75)",lineHeight:1.7}}>{day[k]}</p>
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   );
 }
 
 function DateInput({start,end,onChange,t}){
   const today=new Date().toISOString().split("T")[0];
-  const base={background:"#2C2C2E",border:"1.5px solid #3A3A3C",borderRadius:14,color:"#fff",padding:"12px 14px",fontSize:14,fontFamily:"-apple-system,sans-serif",colorScheme:"dark",outline:"none",width:"100%",boxSizing:"border-box",cursor:"pointer"};
+  const base={background:"#2C2C2E",border:"1.5px solid #3A3A3C",borderRadius:12,color:"#fff",padding:"11px 13px",fontSize:13,fontFamily:"-apple-system,sans-serif",colorScheme:"dark",outline:"none",width:"100%",boxSizing:"border-box",cursor:"pointer"};
   return(
-    <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
+    <div style={{display:"flex",gap:11,flexWrap:"wrap"}}>
       {[{label:t.arrival,field:"start",min:today,val:start},{label:t.departure,field:"end",min:start||today,val:end}].map(({label,field,min,val})=>(
-        <div key={field} style={{flex:1,minWidth:130}}>
-          <div style={{fontSize:11,fontWeight:600,color:P.muted,letterSpacing:".05em",textTransform:"uppercase",marginBottom:6}}>{label}</div>
+        <div key={field} style={{flex:1,minWidth:120}}>
+          <div style={{fontSize:10,fontWeight:600,color:P.muted,letterSpacing:".05em",textTransform:"uppercase",marginBottom:5}}>{label}</div>
           <input type="date" min={min} value={val} onChange={e=>onChange(field,e.target.value)} style={base} onFocus={e=>e.target.style.borderColor=P.gold} onBlur={e=>e.target.style.borderColor="#3A3A3C"}/>
         </div>
       ))}
@@ -790,9 +428,7 @@ function DateInput({start,end,onChange,t}){
   );
 }
 
-const Sk=({w="100%",h=14,r=8,mb=0})=>(
-  <div style={{width:w,height:h,borderRadius:r,background:`linear-gradient(90deg,${P.card2} 25%,${P.card3} 50%,${P.card2} 75%)`,backgroundSize:"200% 100%",animation:"shimmer 1.4s infinite",marginBottom:mb,flexShrink:0}}/>
-);
+const Sk=({w="100%",h=14,r=8,mb=0})=><div style={{width:w,height:h,borderRadius:r,background:`linear-gradient(90deg,${P.card2} 25%,${P.card3} 50%,${P.card2} 75%)`,backgroundSize:"200% 100%",animation:"shimmer 1.4s infinite",marginBottom:mb,flexShrink:0}}/>;
 
 export default function ViajeIA(){
   const[lang,setLang]=useState("es");
@@ -803,16 +439,16 @@ export default function ViajeIA(){
   const[authOpen,setAuthOpen]=useState(false);
   const[guideOpen,setGuideOpen]=useState(false);
   const[guideMood,setGuideMood]=useState("happy");
-  const[guideSpeaking,setGuideSpeaking]=useState(false);
+  const[guideSpeak,setGuideSpeak]=useState(false);
   const[userPos,setUserPos]=useState(null);
 
-  const[onboardStep,setOnboardStep]=useState(0);
+  const[step,setStep]=useState(0);
   const[tripTypes,setTripTypes]=useState([]);
-  const[travelerStyle,setTravelerStyle]=useState(null);
-  const toggleTripType=k=>setTripTypes(prev=>prev.includes(k)?prev.filter(x=>x!==k):[...prev,k]);
+  const[tStyle,setTStyle]=useState(null);
+  const toggle=k=>setTripTypes(prev=>prev.includes(k)?prev.filter(x=>x!==k):[...prev,k]);
 
   const[origin,setOrigin]=useState("Madrid, España");
-  const[destination,setDestination]=useState("");
+  const[dest,setDest]=useState("");
   const[budget,setBudget]=useState("");
   const[start,setStart]=useState("");
   const[end,setEnd]=useState("");
@@ -820,167 +456,142 @@ export default function ViajeIA(){
 
   const[loading,setLoading]=useState(false);
   const[loadStep,setLoadStep]=useState(-1);
-  const[apiError,setApiError]=useState(null);
+  const[apiErr,setApiErr]=useState(null);
   const[plan,setPlan]=useState(null);
   const[flights,setFlights]=useState([]);
   const[hotels,setHotels]=useState([]);
   const[rests,setRests]=useState([]);
-  const[vegRests,setVegRests]=useState([]);
-  const[promos,setPromos]=useState([]);
   const[weather,setWeather]=useState(null);
   const[selF,setSelF]=useState(null);
   const[selH,setSelH]=useState(null);
-  const[mapPlaces,setMapPlaces]=useState([]);
+  const[places,setPlaces]=useState([]);
   const[activeMap,setActiveMap]=useState(null);
-  const[shareToast,setShareToast]=useState(false);
-  const[bookItem,setBookItem]=useState(null);
+  const[toast,setToast]=useState(false);
   const leafReady=useLeaflet();
   const days=diffDays(start,end);
   const nights=days?days-1:plan?.days||5;
 
   useEffect(()=>{
     supabase.auth.getSession().then(({data:{session}})=>setUser(session?.user||null));
-    const{data:{subscription}}=supabase.auth.onAuthStateChange((_,session)=>setUser(session?.user||null));
+    const{data:{subscription}}=supabase.auth.onAuthStateChange((_,s)=>setUser(s?.user||null));
     return()=>subscription.unsubscribe();
   },[]);
 
   useEffect(()=>{
     if(!navigator.geolocation||!plan)return;
     const id=navigator.geolocation.watchPosition(
-      pos=>{setUserPos({lat:pos.coords.latitude,lng:pos.coords.longitude});},
+      p=>{setUserPos({lat:p.coords.latitude,lng:p.coords.longitude});},
       ()=>{},{enableHighAccuracy:true,maximumAge:5000}
     );
     return()=>navigator.geolocation.clearWatch(id);
   },[plan]);
 
-  function shareTrip(){
-    if(!plan)return;
-    const text=`✈️ ${plan.destination} · ${plan.days} dias · ${plan.budget}\n🌐 Planificado con Trippio AI`;
-    if(navigator.share){navigator.share({title:`Trippio - ${plan.destination}`,text,url:window.location.href}).catch(()=>{});}
-    else{navigator.clipboard?.writeText(text+"\n"+window.location.href);setShareToast(true);setTimeout(()=>setShareToast(false),2500);}
-  }
-
-  function buildPlaces(p,hs,rs,vrs){
+  function buildPlaces(p,hs,rs){
     const out=[];
     p.map_places?.forEach(x=>{if(x.lat&&x.lng)out.push({name:x.name,lat:+x.lat,lng:+x.lng,desc:x.description,type:"place"});});
     hs.forEach(h=>{if(h.lat&&h.lng)out.push({name:h.name,lat:+h.lat,lng:+h.lng,desc:h.description,type:"hotel"});});
     rs.forEach(r=>{if(r.lat&&r.lng)out.push({name:r.name,lat:+r.lat,lng:+r.lng,desc:r.description,type:"restaurant"});});
-    vrs.forEach(r=>{if(r.lat&&r.lng)out.push({name:r.name,lat:+r.lat,lng:+r.lng,desc:r.description,type:"veg"});});
     return out;
   }
 
-  function flyToHotel(h){
-    const i=mapPlaces.findIndex(p=>p.name===h.name&&p.type==="hotel");
+  function flyTo(h){
+    const i=places.findIndex(p=>p.name===h.name&&p.type==="hotel");
     if(i>=0){setActiveMap(i);document.getElementById("mapsec")?.scrollIntoView({behavior:"smooth",block:"center"});}
   }
 
-  const parseJ=async r=>{
-    try{const d=await r.json();return JSON.parse((d.content||[]).map(b=>b.text||"").join("").replace(/```json|```/g,"").trim());}
-    catch{return[];}
-  };
+  const pJ=async r=>{try{const d=await r.json();return JSON.parse((d.content||[]).map(b=>b.text||"").join("").replace(/```json|```/g,"").trim());}catch{return[];}};
 
   async function generate(){
-    if(!destination.trim())return;
-    setApiError(null);
-    setLoading(true);setPlan(null);setFlights([]);setHotels([]);setRests([]);setVegRests([]);setPromos([]);setWeather(null);setSelF(null);setSelH(null);setMapPlaces([]);
+    if(!dest.trim())return;
+    setApiErr(null);setLoading(true);setPlan(null);setFlights([]);setHotels([]);setRests([]);setWeather(null);setSelF(null);setSelH(null);setPlaces([]);
     const dctx=start&&end?`Dates: ${start} to ${end} (${days} days). Travelers: ${travelers}.`:"";
-    const lp=t.langPrompt;
-    const tsCfg=TRAVELER_STYLES[travelerStyle||"comfort"];
-    const tripTypesStr=tripTypes.length?tripTypes.map(k=>k).join(", "):"culture";
-    const budgetNum=budget?parseInt(budget):800;
+    const lp=t.lp;
+    const ts=TRAVELER_STYLES[tStyle||"comfort"];
+    const types=tripTypes.length?tripTypes.join(", "):"culture";
+    const bNum=budget?parseInt(budget):800;
 
     setLoadStep(0);
-    const sys1=`Expert travel planner. ${lp} Reply ONLY valid raw JSON, no backticks, no markdown. ${dctx}
-Return: {"destination":"city, country","days":N,"budget":"X€","summary":"2 sentences","map_places":[{"name":"...","lat":0.0,"lng":0.0,"description":"..."}],"itinerary":[{"day":"Day N - Name","theme":"...","morning":"...","afternoon":"...","evening":"...","transport":"...","budget":"~X€"}],"tips":["..."],"lat":0.0,"lng":0.0}
-Include 6-8 map_places with real GPS coords. Include destination lat/lng at root.`;
+    const sys=`Expert travel planner. ${lp} Reply ONLY valid raw JSON, no backticks, no markdown. ${dctx}
+Return exactly: {"destination":"city, country","days":N,"budget":"X€","summary":"2 sentences","map_places":[{"name":"...","lat":0.0,"lng":0.0,"description":"..."}],"itinerary":[{"day":"Day N - Name","theme":"...","morning":"...","afternoon":"...","evening":"...","transport":"...","budget":"~X€"}],"tips":["..."],"lat":0.0,"lng":0.0}`;
 
     let planData=null;
     try{
-      const r=await fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:3000,system:sys1,messages:[{role:"user",content:`${destination}${budget?" · "+budget+"€":""}${dctx?" · "+dctx:""}`}]})});
+      const r=await fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:3000,system:sys,messages:[{role:"user",content:`${dest}${budget?" · "+budget+"€":""}${dctx?" · "+dctx:""}`}]})});
       const d=await r.json();
+      if(d.error){throw new Error(d.error.message||"API error");}
       planData=JSON.parse((d.content||[]).map(b=>b.text||"").join("").replace(/```json|```/g,"").trim());
-      setPlan(planData);
-      setLoading(false);
-      setGuideMood("excited");setGuideSpeaking(true);setTimeout(()=>{setGuideMood("happy");setGuideSpeaking(false);},3000);
+      setPlan(planData);setLoading(false);
+      setGuideMood("excited");setGuideSpeak(true);setTimeout(()=>{setGuideMood("happy");setGuideSpeak(false);},3000);
     }catch(e){
-      setLoading(false);setLoadStep(-1);
-      setApiError(t.errorMsg);return;
+      setLoading(false);setLoadStep(-1);setApiErr(t.errorMsg+" ("+e.message+")");return;
     }
 
-    const dest=planData.destination;
-    const hotelBudget=Math.round(budgetNum*tsCfg.hotelBudgetPct/(nights||5));
+    const destination=planData.destination;
+    const hBudget=Math.round(bNum*ts.pct/(nights||5));
 
     setLoadStep(1);
-    const[r1,r2,r3,r4,r5]=await Promise.all([
-      fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:1000,system:`Generate 3 flights ${origin||"Madrid"}→${dest}. ${lp} Reply ONLY raw JSON array.\n[{"airline":"...","departure":"HH:MM","arrival":"HH:MM","duration":"XhYm","stops":0,"price":XXX}]`,messages:[{role:"user",content:`Flights to ${dest}`}]})}),
-      fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:1500,system:`Hotel expert. ${lp} Reply ONLY raw JSON array.\n[{"name":"...","stars":${tsCfg.hotelStars.split("-")[0]},"neighborhood":"...","description":"...","highlights":["..."],"price_per_night":XX,"lat":0.0,"lng":0.0}]\n3 ${tsCfg.hotelStars}-star hotels in ${dest}. ~${hotelBudget}€/night.`,messages:[{role:"user",content:`Hotels in ${dest}`}]})}),
-      fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:1200,system:`Restaurant expert. ${lp} Reply ONLY raw JSON array.\n[{"name":"...","cuisine":"...","rating":4.2,"price_range":"€€","description":"...","neighborhood":"...","lat":0.0,"lng":0.0}]\n5 restaurants in ${dest}. Trip style: ${tripTypesStr}.`,messages:[{role:"user",content:`Restaurants in ${dest}`}]})}),
-      fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:800,system:`Veg restaurant expert. ${lp} Reply ONLY raw JSON array.\n[{"name":"...","cuisine":"...","diet":"vegetarian|vegan","rating":4.2,"price_range":"€€","description":"...","neighborhood":"...","lat":0.0,"lng":0.0}]\n3 vegetarian restaurants in ${dest}.`,messages:[{role:"user",content:`Veg restaurants in ${dest}`}]})}),
-      fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:600,system:`Travel promotions. ${lp} Reply ONLY raw JSON array.\n[{"title":"...","icon":"emoji","description":"...","discount":10,"code":"PROMO123"}]\n3 promotional offers for ${dest}.`,messages:[{role:"user",content:`Promotions in ${dest}`}]})}),
+    const[r1,r2,r3]=await Promise.all([
+      fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:900,system:`3 flights ${origin||"Madrid"}→${destination}. ${lp} ONLY raw JSON array:\n[{"airline":"...","departure":"HH:MM","arrival":"HH:MM","duration":"XhYm","stops":0,"price":XXX}]`,messages:[{role:"user",content:`Flights to ${destination}`}]})}),
+      fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:1400,system:`3 ${ts.stars}-star hotels in ${destination}. ~${hBudget}€/night. ${lp} ONLY raw JSON array:\n[{"name":"...","stars":3,"neighborhood":"...","description":"...","highlights":["..."],"price_per_night":XX,"lat":0.0,"lng":0.0}]`,messages:[{role:"user",content:`Hotels in ${destination}`}]})}),
+      fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:1100,system:`5 restaurants in ${destination}. Style: ${types}. ${lp} ONLY raw JSON array:\n[{"name":"...","cuisine":"...","rating":4.2,"price_range":"€€","description":"...","neighborhood":"...","lat":0.0,"lng":0.0}]`,messages:[{role:"user",content:`Restaurants in ${destination}`}]})}),
     ]);
 
     setLoadStep(2);
-    let hs=[],rs=[],vrs=[];
-
-    parseJ(r1).then(fl=>{
-      if(fl.length){setFlights(fl);setSelF(0);}
+    let hs=[],rs=[];
+    pJ(r1).then(fl=>{if(fl?.length){setFlights(fl);setSelF(0);}});
+    pJ(r2).then(h=>{
+      if(!h?.length)return;
+      const sorted=tStyle==="luxury"?h.sort((a,b)=>b.price_per_night-a.price_per_night):h.sort((a,b)=>a.price_per_night-b.price_per_night);
+      hs=sorted.map((x,i)=>({...x,_i:i}));setHotels(hs);setSelH(0);setPlaces(buildPlaces(planData,hs,rs));
     });
-    parseJ(r2).then(h=>{
-      const sorted=travelerStyle==="luxury"?h.sort((a,b)=>b.price_per_night-a.price_per_night):h.sort((a,b)=>a.price_per_night-b.price_per_night);
-      hs=sorted.map((x,i)=>({...x,_imgIdx:i}));
-      if(hs.length){setHotels(hs);setSelH(0);setMapPlaces(buildPlaces(planData,hs,rs,vrs));}
-    });
-    parseJ(r3).then(r=>{rs=r;if(rs.length){setRests(rs);setMapPlaces(buildPlaces(planData,hs,rs,vrs));}});
-    parseJ(r4).then(v=>{vrs=v;if(vrs.length)setVegRests(vrs);});
-    parseJ(r5).then(p=>{if(p.length)setPromos(p);});
+    pJ(r3).then(r=>{if(!r?.length)return;rs=r;setRests(rs);setPlaces(buildPlaces(planData,hs,rs));});
 
     setLoadStep(3);
-    const lat=planData.lat||planData.map_places?.[0]?.lat;
-    const lon=planData.lng||planData.map_places?.[0]?.lng;
-    if(lat&&lon&&start){
-      const wx=await fetchWeather(lat,lon,start);
-      setWeather(wx);
-    }
+    if(planData.lat&&planData.lng&&start){const wx=await fetchWeather(planData.lat,planData.lng,start);setWeather(wx);}
     setLoadStep(-1);
   }
 
   function reset(){
-    setPlan(null);setFlights([]);setHotels([]);setRests([]);setVegRests([]);setPromos([]);setWeather(null);
-    setSelF(null);setSelH(null);setMapPlaces([]);setApiError(null);
-    setDestination("");setBudget("");setStart("");setEnd("");setTravelers(1);setGuideOpen(false);setUserPos(null);
-    setOnboardStep(0);setTripTypes([]);setTravelerStyle(null);
+    setPlan(null);setFlights([]);setHotels([]);setRests([]);setWeather(null);
+    setSelF(null);setSelH(null);setPlaces([]);setApiErr(null);
+    setDest("");setBudget("");setStart("");setEnd("");setTravelers(1);
+    setStep(0);setTripTypes([]);setTStyle(null);setGuideOpen(false);setUserPos(null);
   }
 
-  const flightSel=selF!=null?flights[selF]:null;
-  const hotelSel=selH!=null?hotels[selH]:null;
-  const destLat=plan?.lat;const destLon=plan?.lng;
+  function share(){
+    if(!plan)return;
+    const txt=`✈️ ${plan.destination} · ${plan.days} dias · ${plan.budget}\nhttps://trippio.travel`;
+    if(navigator.share)navigator.share({title:`Trippio - ${plan.destination}`,text:txt,url:window.location.href}).catch(()=>{});
+    else{navigator.clipboard?.writeText(txt);setToast(true);setTimeout(()=>setToast(false),2500);}
+  }
+
+  const fSel=selF!=null?flights[selF]:null;
+  const hSel=selH!=null?hotels[selH]:null;
 
   return(
     <div style={{minHeight:"100vh",background:P.black,color:P.white,fontFamily:"-apple-system,'SF Pro Rounded',sans-serif"}}>
       <style>{`
         @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-        @keyframes up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
         @keyframes pop{0%{opacity:0;transform:scale(.9)}100%{opacity:1;transform:scale(1)}}
         @keyframes pulse{0%,100%{opacity:.4;transform:scale(.78)}50%{opacity:1;transform:scale(1)}}
         @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-        .fade{animation:up .45s cubic-bezier(.16,1,.3,1) both}
-        .fade2{animation:up .45s .08s cubic-bezier(.16,1,.3,1) both}
-        .fade3{animation:up .45s .16s cubic-bezier(.16,1,.3,1) both}
-        .fade4{animation:up .45s .24s cubic-bezier(.16,1,.3,1) both}
-        .pop{animation:pop .5s cubic-bezier(.16,1,.3,1) both}
-        .pop2{animation:pop .5s .08s cubic-bezier(.16,1,.3,1) both}
-        .pop3{animation:pop .5s .16s cubic-bezier(.16,1,.3,1) both}
-        .pop4{animation:pop .5s .24s cubic-bezier(.16,1,.3,1) both}
-        .pop5{animation:pop .5s .32s cubic-bezier(.16,1,.3,1) both}
         @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
         @keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-5deg)}75%{transform:rotate(5deg)}}
         @keyframes dot{0%,80%,100%{transform:scale(.8);opacity:.5}40%{transform:scale(1.2);opacity:1}}
-        .hov{transition:transform .2s,box-shadow .2s}
+        .fade{animation:up .4s cubic-bezier(.16,1,.3,1) both}
+        .fade2{animation:up .4s .07s cubic-bezier(.16,1,.3,1) both}
+        .fade3{animation:up .4s .14s cubic-bezier(.16,1,.3,1) both}
+        .fade4{animation:up .4s .21s cubic-bezier(.16,1,.3,1) both}
+        .pop{animation:pop .45s cubic-bezier(.16,1,.3,1) both}
+        .pop2{animation:pop .45s .07s cubic-bezier(.16,1,.3,1) both}
+        .pop3{animation:pop .45s .14s cubic-bezier(.16,1,.3,1) both}
+        .pop4{animation:pop .45s .21s cubic-bezier(.16,1,.3,1) both}
+        .hov{transition:transform .2s,border-color .2s}
         .hov:hover{transform:translateY(-3px)}
-        .results-layout{display:grid;grid-template-columns:1fr 300px;gap:28px;align-items:start}
-        @media(max-width:860px){.results-layout{grid-template-columns:1fr}}
-        @media(max-width:500px){.nav-sub{display:none}}
-        textarea:focus,input:focus{outline:none!important}
+        .rl{display:grid;grid-template-columns:1fr 290px;gap:24px;align-items:start}
+        @media(max-width:860px){.rl{grid-template-columns:1fr}}
+        input:focus,textarea:focus{outline:none!important}
         ::-webkit-scrollbar{width:4px}
         ::-webkit-scrollbar-thumb{background:#3A3A3C;border-radius:2px}
         *{-webkit-font-smoothing:antialiased}
@@ -988,135 +599,121 @@ Include 6-8 map_places with real GPS coords. Include destination lat/lng at root
       `}</style>
 
       {/* NAV */}
-      <nav style={{background:"rgba(13,13,13,.96)",backdropFilter:"blur(20px)",borderBottom:`1px solid ${P.border}`,padding:"0 22px",height:60,display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,zIndex:200}}>
+      <nav style={{background:"rgba(13,13,13,.96)",backdropFilter:"blur(20px)",borderBottom:`1px solid ${P.border}`,padding:"0 20px",height:58,display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,zIndex:200}}>
         <div style={{display:"flex",alignItems:"center",gap:10}}>
-          <TrippioLogo size={32}/>
+          <TrippioLogo size={30}/>
           <div style={{lineHeight:1}}>
-            <div style={{fontSize:17,fontWeight:700,color:P.white}}>Trippio</div>
-            <div className="nav-sub" style={{fontSize:9,color:P.gold,letterSpacing:".12em",textTransform:"uppercase",marginTop:1,opacity:.8}}>AI Travel</div>
+            <div style={{fontSize:16,fontWeight:700,color:P.white}}>Trippio</div>
+            <div style={{fontSize:8,color:P.gold,letterSpacing:".12em",textTransform:"uppercase",marginTop:1,opacity:.8}}>AI Travel</div>
           </div>
         </div>
-        <div style={{display:"flex",gap:8,alignItems:"center"}}>
-          <LangSelector lang={lang} setLang={setLang}/>
-          {plan&&<button onClick={shareTrip} style={{background:P.card2,border:`1px solid ${P.border}`,color:P.sub,borderRadius:8,padding:"6px 12px",fontSize:12,cursor:"pointer",fontWeight:600}}>↑ {t.shareBtn||"Share"}</button>}
+        <div style={{display:"flex",gap:7,alignItems:"center"}}>
+          <LangSel lang={lang} setLang={setLang}/>
+          {plan&&<button onClick={share} style={{background:P.card2,border:`1px solid ${P.border}`,color:P.sub,borderRadius:8,padding:"5px 11px",fontSize:12,cursor:"pointer",fontWeight:600}}>↑ {t.shareBtn}</button>}
           {plan&&<IBtn size="sm" outline color={P.muted} onClick={reset}>{t.newSearch}</IBtn>}
           {!user
-            ?<button onClick={()=>setAuthOpen(true)} style={{background:GOLD_GRAD,color:"#0D0D0D",border:"none",borderRadius:10,padding:"7px 14px",fontSize:12,fontWeight:700,cursor:"pointer"}}>{t.loginBtn}</button>
-            :<button onClick={()=>supabase.auth.signOut()} style={{background:P.card2,border:`1px solid ${P.border}`,color:P.muted,borderRadius:10,padding:"7px 14px",fontSize:12,fontWeight:600,cursor:"pointer"}}>👤 {t.logoutBtn}</button>
+            ?<button onClick={()=>setAuthOpen(true)} style={{background:GOLD_GRAD,color:"#0D0D0D",border:"none",borderRadius:9,padding:"7px 13px",fontSize:12,fontWeight:700,cursor:"pointer"}}>{t.loginBtn}</button>
+            :<button onClick={()=>supabase.auth.signOut()} style={{background:P.card2,border:`1px solid ${P.border}`,color:P.muted,borderRadius:9,padding:"7px 13px",fontSize:12,fontWeight:600,cursor:"pointer"}}>👤 {t.logoutBtn}</button>
           }
         </div>
       </nav>
 
       {authOpen&&<AuthModal onClose={()=>setAuthOpen(false)} onAuth={u=>setUser(u)}/>}
-      {bookItem&&<BookModal item={bookItem.item} type={bookItem.type} dest={plan?.destination} lang={lang} onClose={()=>setBookItem(null)}/>}
+      {plan&&guideOpen&&<VirtualGuide plan={plan} places={places} userPos={userPos} lang={lang} onClose={()=>setGuideOpen(false)}/>}
+      {plan&&!guideOpen&&<GuideBubble onClick={()=>setGuideOpen(true)} mood={guideMood} speak={guideSpeak}/>}
+      {toast&&<div style={{position:"fixed",bottom:30,left:"50%",transform:"translateX(-50%)",background:P.card2,border:`1px solid ${P.goldBorder}`,color:P.gold,borderRadius:11,padding:"11px 20px",fontSize:13,fontWeight:600,zIndex:999}}>✓ {t.shareCopied}</div>}
 
-      {shareToast&&(
-        <div style={{position:"fixed",bottom:32,left:"50%",transform:"translateX(-50%)",background:P.card2,border:`1px solid ${P.goldBorder}`,color:P.gold,borderRadius:12,padding:"12px 22px",fontSize:13,fontWeight:600,zIndex:999}}>
-          ✓ {t.shareCopied}
-        </div>
-      )}
+      <main style={{maxWidth:1080,margin:"0 auto",padding:"0 18px 100px"}}>
 
-      <main style={{maxWidth:1100,margin:"0 auto",padding:"0 20px 100px"}}>
-
-        {apiError&&(
-          <div style={{background:"rgba(224,90,78,.12)",border:"1px solid rgba(224,90,78,.3)",borderRadius:14,padding:"16px 20px",margin:"24px 0",display:"flex",alignItems:"center",gap:14}}>
-            <span style={{fontSize:22}}>⚠️</span>
-            <div style={{flex:1}}>
-              <div style={{fontSize:14,fontWeight:700,color:"#E05A4E",marginBottom:3}}>{t.errorTitle}</div>
-              <div style={{fontSize:12,color:P.sub}}>{apiError}</div>
-            </div>
-            <button onClick={()=>setApiError(null)} style={{background:"none",border:"none",color:P.muted,cursor:"pointer",fontSize:18}}>✕</button>
+        {apiErr&&(
+          <div style={{background:"rgba(224,90,78,.12)",border:"1px solid rgba(224,90,78,.3)",borderRadius:12,padding:"15px 18px",margin:"20px 0",display:"flex",gap:12,alignItems:"center"}}>
+            <span style={{fontSize:20}}>⚠️</span>
+            <div style={{flex:1}}><div style={{fontSize:13,fontWeight:700,color:"#E05A4E",marginBottom:2}}>{t.errorTitle}</div><div style={{fontSize:12,color:P.sub}}>{apiErr}</div></div>
+            <button onClick={()=>setApiErr(null)} style={{background:"none",border:"none",color:P.muted,cursor:"pointer",fontSize:17}}>✕</button>
           </div>
         )}
 
         {/* ONBOARDING */}
         {!plan&&!loading&&(
-          <div style={{maxWidth:600,margin:"0 auto",padding:"60px 0 40px"}}>
-            <div style={{display:"flex",justifyContent:"center",gap:8,marginBottom:32}} className="fade">
-              {[0,1,2].map(s=>(
-                <div key={s} style={{height:4,borderRadius:2,background:s<=onboardStep?P.gold:P.border,width:s===onboardStep?40:20,transition:"all .4s"}}/>
-              ))}
+          <div style={{maxWidth:580,margin:"0 auto",padding:"55px 0 40px"}}>
+            <div style={{display:"flex",justifyContent:"center",gap:7,marginBottom:30}} className="fade">
+              {[0,1,2].map(s=><div key={s} style={{height:4,borderRadius:2,background:s<=step?P.gold:P.border,width:s===step?38:18,transition:"all .4s"}}/>)}
             </div>
 
-            {onboardStep===0&&(
+            {step===0&&(
               <>
-                <div style={{textAlign:"center",marginBottom:28}} className="fade">
-                  <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:14,marginBottom:22}}>
-                    <TrippioLogo size={56}/>
+                <div style={{textAlign:"center",marginBottom:26}} className="fade">
+                  <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:13,marginBottom:20}}>
+                    <TrippioLogo size={52}/>
                     <div style={{textAlign:"left"}}>
-                      <div style={{fontSize:36,fontWeight:700,color:P.white,lineHeight:1}}>Trippio</div>
-                      <div style={{fontSize:11,color:P.gold,letterSpacing:".15em",textTransform:"uppercase",marginTop:4}}>Your trip. One click.</div>
+                      <div style={{fontSize:34,fontWeight:700,color:P.white,lineHeight:1}}>Trippio</div>
+                      <div style={{fontSize:10,color:P.gold,letterSpacing:".15em",textTransform:"uppercase",marginTop:3}}>Your trip. One click.</div>
                     </div>
                   </div>
-                  <h1 style={{fontSize:"clamp(28px,5vw,46px)",fontWeight:700,lineHeight:1.1,margin:"0 0 2px",color:P.white}} className="fade2">{t.h1a}</h1>
-                  <h1 style={{fontSize:"clamp(28px,5vw,46px)",fontWeight:700,lineHeight:1.1,margin:"0 0 16px",color:P.gold}} className="fade3">{t.h1b}</h1>
-                  <p style={{fontSize:15,color:"rgba(235,235,245,.5)",margin:"0 0 28px",lineHeight:1.75}} className="fade4">{t.sub}</p>
+                  <h1 style={{fontSize:"clamp(26px,5vw,44px)",fontWeight:700,lineHeight:1.1,margin:"0 0 2px",color:P.white}} className="fade2">{t.h1a}</h1>
+                  <h1 style={{fontSize:"clamp(26px,5vw,44px)",fontWeight:700,lineHeight:1.1,margin:"0 0 14px",color:P.gold}} className="fade3">{t.h1b}</h1>
+                  <p style={{fontSize:14,color:"rgba(235,235,245,.5)",margin:"0 0 24px",lineHeight:1.7}} className="fade4">{t.sub}</p>
                 </div>
-                <TripTypeStep t={t} value={tripTypes} onChange={toggleTripType}/>
-                <div style={{marginTop:20,display:"flex",justifyContent:"flex-end"}}>
-                  <IBtn style={{background:GOLD_GRAD,color:P.black,fontWeight:700}} onClick={()=>setOnboardStep(1)} disabled={tripTypes.length===0}>{t.nextBtn}</IBtn>
+                <TripTypeStep t={t} value={tripTypes} onChange={toggle}/>
+                <div style={{marginTop:18,display:"flex",justifyContent:"flex-end"}}>
+                  <IBtn onClick={()=>setStep(1)} disabled={tripTypes.length===0}>{t.nextBtn}</IBtn>
                 </div>
               </>
             )}
 
-            {onboardStep===1&&(
+            {step===1&&(
               <>
-                <TravelerStyleStep t={t} value={travelerStyle} onChange={setTravelerStyle}/>
-                <div style={{marginTop:20,display:"flex",gap:10,justifyContent:"space-between"}}>
-                  <IBtn outline color={P.muted} onClick={()=>setOnboardStep(0)}>{t.backBtn2}</IBtn>
-                  <IBtn style={{background:GOLD_GRAD,color:P.black,fontWeight:700}} onClick={()=>setOnboardStep(2)} disabled={!travelerStyle}>{t.nextBtn}</IBtn>
+                <StyleStep t={t} value={tStyle} onChange={setTStyle}/>
+                <div style={{marginTop:18,display:"flex",gap:9,justifyContent:"space-between"}}>
+                  <IBtn outline color={P.muted} onClick={()=>setStep(0)}>{t.backBtn}</IBtn>
+                  <IBtn onClick={()=>setStep(2)} disabled={!tStyle}>{t.nextBtn}</IBtn>
                 </div>
               </>
             )}
 
-            {onboardStep===2&&(
+            {step===2&&(
               <div className="fade">
-                <div style={{display:"flex",gap:8,marginBottom:20,flexWrap:"wrap"}}>
-                  {tripTypes.map(k=><span key={k} style={{background:P.goldDim,color:P.gold,border:`1px solid ${P.goldBorder}`,borderRadius:8,padding:"5px 12px",fontSize:12,fontWeight:600}}>{TRIP_TYPES[k].icon} {t.tripTypes[k]}</span>)}
-                  {travelerStyle&&<span style={{background:GOLD_GRAD,color:"#fff",borderRadius:10,padding:"6px 14px",fontSize:13,fontWeight:800}}>{TRAVELER_STYLES[travelerStyle].icon} {t.travelerStyles[travelerStyle]}</span>}
+                <div style={{display:"flex",gap:7,marginBottom:18,flexWrap:"wrap"}}>
+                  {tripTypes.map(k=><span key={k} style={{background:P.goldDim,color:P.gold,border:`1px solid ${P.goldBorder}`,borderRadius:7,padding:"4px 11px",fontSize:11,fontWeight:600}}>{TRIP_TYPES[k].icon} {t.tripNames[k]}</span>)}
+                  {tStyle&&<span style={{background:GOLD_GRAD,color:"#fff",borderRadius:9,padding:"5px 13px",fontSize:12,fontWeight:800}}>{TRAVELER_STYLES[tStyle].icon} {t.styleNames[tStyle]}</span>}
                 </div>
-                <div style={{background:P.card,borderRadius:20,padding:"24px 26px",boxShadow:"0 20px 60px rgba(0,0,0,.7)",border:`1px solid ${P.border}`}}>
-                  {/* Form fields */}
-                  <div style={{display:"flex",flexDirection:"column",gap:14,marginBottom:16}}>
+                <div style={{background:P.card,borderRadius:18,padding:"22px 24px",boxShadow:"0 20px 60px rgba(0,0,0,.7)",border:`1px solid ${P.border}`}}>
+                  {/* 3 CAMPOS SEPARADOS */}
+                  <div style={{display:"flex",flexDirection:"column",gap:13,marginBottom:15}}>
                     <div>
-                      <div style={{fontSize:11,fontWeight:700,color:"rgba(235,235,245,.4)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>✈️ {t.originL}</div>
-                      <input value={origin} onChange={e=>setOrigin(e.target.value)} placeholder={t.originPh}
-                        style={{width:"100%",background:"#2C2C2E",border:"1.5px solid #3A3A3C",borderRadius:12,color:"#fff",fontSize:15,padding:"12px 14px",boxSizing:"border-box",outline:"none"}}
-                        onFocus={e=>e.target.style.borderColor=P.gold} onBlur={e=>e.target.style.borderColor="#3A3A3C"}/>
+                      <div style={{fontSize:10,fontWeight:700,color:"rgba(235,235,245,.4)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:5}}>✈️ {t.originL}</div>
+                      <input value={origin} onChange={e=>setOrigin(e.target.value)} placeholder={t.originPh} style={{width:"100%",background:"#2C2C2E",border:"1.5px solid #3A3A3C",borderRadius:11,color:"#fff",fontSize:14,padding:"11px 13px",boxSizing:"border-box",outline:"none"}} onFocus={e=>e.target.style.borderColor=P.gold} onBlur={e=>e.target.style.borderColor="#3A3A3C"}/>
                     </div>
                     <div>
-                      <div style={{fontSize:11,fontWeight:700,color:"rgba(235,235,245,.4)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>🌍 {t.destinationL}</div>
-                      <input value={destination} onChange={e=>setDestination(e.target.value)} placeholder={t.destinationPh}
-                        style={{width:"100%",background:"#2C2C2E",border:"1.5px solid #3A3A3C",borderRadius:12,color:"#fff",fontSize:15,padding:"12px 14px",boxSizing:"border-box",outline:"none"}}
-                        onFocus={e=>e.target.style.borderColor=P.gold} onBlur={e=>e.target.style.borderColor="#3A3A3C"}/>
+                      <div style={{fontSize:10,fontWeight:700,color:"rgba(235,235,245,.4)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:5}}>🌍 {t.destL}</div>
+                      <input value={dest} onChange={e=>setDest(e.target.value)} placeholder={t.destPh} style={{width:"100%",background:"#2C2C2E",border:"1.5px solid #3A3A3C",borderRadius:11,color:"#fff",fontSize:14,padding:"11px 13px",boxSizing:"border-box",outline:"none"}} onFocus={e=>e.target.style.borderColor=P.gold} onBlur={e=>e.target.style.borderColor="#3A3A3C"}/>
                     </div>
                     <div>
-                      <div style={{fontSize:11,fontWeight:700,color:"rgba(235,235,245,.4)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>💰 {t.budgetL}</div>
-                      <input value={budget} onChange={e=>setBudget(e.target.value)} placeholder={t.budgetPh} type="number" min="100"
-                        style={{width:"100%",background:"#2C2C2E",border:"1.5px solid #3A3A3C",borderRadius:12,color:"#fff",fontSize:15,padding:"12px 14px",boxSizing:"border-box",outline:"none"}}
-                        onFocus={e=>e.target.style.borderColor=P.gold} onBlur={e=>e.target.style.borderColor="#3A3A3C"}/>
+                      <div style={{fontSize:10,fontWeight:700,color:"rgba(235,235,245,.4)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:5}}>💰 {t.budgetL}</div>
+                      <input value={budget} onChange={e=>setBudget(e.target.value)} placeholder={t.budgetPh} type="number" min="100" style={{width:"100%",background:"#2C2C2E",border:"1.5px solid #3A3A3C",borderRadius:11,color:"#fff",fontSize:14,padding:"11px 13px",boxSizing:"border-box",outline:"none"}} onFocus={e=>e.target.style.borderColor=P.gold} onBlur={e=>e.target.style.borderColor="#3A3A3C"}/>
                     </div>
                   </div>
-                  <div style={{height:"0.5px",background:"rgba(255,255,255,.07)",margin:"16px 0"}}/>
-                  <div style={{marginBottom:16}}><DateInput start={start} end={end} onChange={(f,v)=>{if(f==="start"){setStart(v);if(end&&v>end)setEnd("");}else setEnd(v);}} t={t}/></div>
-                  <div style={{marginBottom:16}}>
-                    <div style={{fontSize:11,fontWeight:700,color:"rgba(235,235,245,.4)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>{t.travelersL}</div>
-                    <div style={{display:"flex",alignItems:"center",gap:14}}>
-                      <button onClick={()=>setTravelers(Math.max(1,travelers-1))} style={{width:34,height:34,background:"#2C2C2E",border:"1.5px solid #3A3A3C",borderRadius:"50%",cursor:"pointer",fontSize:20,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700}}>−</button>
-                      <span style={{fontSize:17,fontWeight:800,minWidth:22,textAlign:"center"}}>{travelers}</span>
-                      <button onClick={()=>setTravelers(Math.min(8,travelers+1))} style={{width:34,height:34,background:"#2C2C2E",border:"1.5px solid #3A3A3C",borderRadius:"50%",cursor:"pointer",fontSize:20,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700}}>+</button>
-                      <span style={{fontSize:13,color:P.muted}}>{travelers===1?t.traveler1:t.travelersN(travelers)}</span>
+                  <div style={{height:"0.5px",background:"rgba(255,255,255,.07)",margin:"14px 0"}}/>
+                  <div style={{marginBottom:14}}><DateInput start={start} end={end} onChange={(f,v)=>{if(f==="start"){setStart(v);if(end&&v>end)setEnd("");}else setEnd(v);}} t={t}/></div>
+                  <div style={{marginBottom:14}}>
+                    <div style={{fontSize:10,fontWeight:700,color:"rgba(235,235,245,.4)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:7}}>{t.travelersL}</div>
+                    <div style={{display:"flex",alignItems:"center",gap:13}}>
+                      <button onClick={()=>setTravelers(Math.max(1,travelers-1))} style={{width:32,height:32,background:"#2C2C2E",border:"1.5px solid #3A3A3C",borderRadius:"50%",cursor:"pointer",fontSize:19,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700}}>−</button>
+                      <span style={{fontSize:16,fontWeight:800,minWidth:20,textAlign:"center"}}>{travelers}</span>
+                      <button onClick={()=>setTravelers(Math.min(8,travelers+1))} style={{width:32,height:32,background:"#2C2C2E",border:"1.5px solid #3A3A3C",borderRadius:"50%",cursor:"pointer",fontSize:19,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700}}>+</button>
+                      <span style={{fontSize:12,color:P.muted}}>{travelers===1?t.t1:t.tN(travelers)}</span>
                     </div>
                   </div>
                   {days&&days>0&&(
-                    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14,padding:"10px 14px",background:P.goldDim,borderRadius:10,border:`1px solid ${P.goldBorder}`}}>
-                      <Dot/><span style={{fontSize:12,color:P.gold,fontWeight:600}}>{days} dias · {fmtDate(start,{day:"numeric",month:"long"},locale)} - {fmtDate(end,{day:"numeric",month:"long",year:"numeric"},locale)}</span>
+                    <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:13,padding:"9px 13px",background:P.goldDim,borderRadius:9,border:`1px solid ${P.goldBorder}`}}>
+                      <span style={{width:6,height:6,background:P.gold,borderRadius:"50%",animation:"pulse 1.6s ease infinite",display:"inline-block"}}/>
+                      <span style={{fontSize:11,color:P.gold,fontWeight:600}}>{days} dias · {fmtDate(start,{day:"numeric",month:"long"},locale)} - {fmtDate(end,{day:"numeric",month:"long",year:"numeric"},locale)}</span>
                     </div>
                   )}
-                  <IBtn full size="lg" style={{background:GOLD_GRAD,color:P.black,fontWeight:800}} onClick={generate} disabled={!destination.trim()}>{t.searchBtn}</IBtn>
+                  <IBtn full size="lg" onClick={generate} disabled={!dest.trim()}>{t.searchBtn}</IBtn>
                 </div>
-                <div style={{marginTop:12,display:"flex",justifyContent:"flex-start"}}>
-                  <IBtn outline color={P.muted} size="sm" onClick={()=>setOnboardStep(1)}>{t.backBtn2}</IBtn>
+                <div style={{marginTop:11}}>
+                  <IBtn outline color={P.muted} size="sm" onClick={()=>setStep(1)}>{t.backBtn}</IBtn>
                 </div>
               </div>
             )}
@@ -1125,134 +722,296 @@ Include 6-8 map_places with real GPS coords. Include destination lat/lng at root
 
         {/* LOADING */}
         {loading&&!plan&&(
-          <div style={{maxWidth:480,margin:"60px auto 0",padding:"0 20px"}} className="fade">
-            <div style={{textAlign:"center",marginBottom:28}}>
-              <div style={{margin:"0 auto 20px",width:72,display:"flex",justifyContent:"center"}}>
-                <TrippioLogo size={72}/>
-              </div>
-              <h2 style={{fontSize:22,fontWeight:800,margin:"0 0 6px"}}>{t.loadTitle}</h2>
-              <p style={{fontSize:13,color:P.muted}}>{t.loadSub}</p>
+          <div style={{maxWidth:460,margin:"55px auto 0",padding:"0 18px"}} className="fade">
+            <div style={{textAlign:"center",marginBottom:26}}>
+              <div style={{margin:"0 auto 18px",width:68,display:"flex",justifyContent:"center",animation:"float 3s ease-in-out infinite"}}><TrippioLogo size={68}/></div>
+              <h2 style={{fontSize:21,fontWeight:800,margin:"0 0 5px"}}>{t.loadTitle}</h2>
+              <p style={{fontSize:12,color:P.muted}}>{t.loadSub}</p>
             </div>
-            <div style={{background:P.card,borderRadius:18,padding:"8px 18px 10px",border:`1px solid ${P.border}`,marginBottom:24}}>
+            <div style={{background:P.card,borderRadius:16,padding:"7px 16px 9px",border:`1px solid ${P.border}`,marginBottom:20}}>
               {t.steps.map((label,i)=>(
-                <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"9px 0",opacity:loadStep>=i?1:.3,transition:"opacity .3s",borderBottom:i<t.steps.length-1?`1px solid ${P.border}`:"none"}}>
-                  <div style={{width:30,height:30,borderRadius:"50%",background:loadStep>i?P.goldDim:loadStep===i?P.goldDim:P.card3,border:`1px solid ${loadStep>=i?P.goldBorder:P.border}`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                    {loadStep>i?<span style={{color:P.gold,fontSize:13,fontWeight:700}}>✓</span>:loadStep===i?<Spin size={14} color={P.gold}/>:<span style={{fontSize:12}}>{["🗺️","✈️","🏨","🍽️","🌤","✅"][i]}</span>}
+                <div key={i} style={{display:"flex",alignItems:"center",gap:11,padding:"8px 0",opacity:loadStep>=i?1:.3,transition:"opacity .3s",borderBottom:i<t.steps.length-1?`1px solid ${P.border}`:"none"}}>
+                  <div style={{width:28,height:28,borderRadius:"50%",background:loadStep>i?P.goldDim:loadStep===i?P.goldDim:P.card3,border:`1px solid ${loadStep>=i?P.goldBorder:P.border}`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                    {loadStep>i?<span style={{color:P.gold,fontSize:12,fontWeight:700}}>✓</span>:loadStep===i?<Spin size={13} color={P.gold}/>:<span style={{fontSize:11}}>{["🗺️","✈️","🏨","🍽️","🌤","✅"][i]}</span>}
                   </div>
-                  <span style={{fontSize:13,fontWeight:loadStep>=i?600:400,color:loadStep>=i?P.white:P.muted}}>{label}</span>
+                  <span style={{fontSize:12,fontWeight:loadStep>=i?600:400,color:loadStep>=i?P.white:P.muted}}>{label}</span>
                 </div>
               ))}
             </div>
-            <div style={{opacity:.6}}><Sk w="100%" h={80} r={16} mb={12}/><Sk w="100%" h={80} r={16}/></div>
+            <Sk w="100%" h={70} r={14} mb={10}/><Sk w="100%" h={70} r={14}/>
           </div>
         )}
 
         {/* RESULTS */}
         {plan&&(
           <div className="fade">
-            <div style={{position:"relative",height:320,borderRadius:"0 0 32px 32px",overflow:"hidden",marginBottom:28,boxShadow:"0 16px 48px rgba(0,0,0,.7)"}}>
+            {/* Hero */}
+            <div style={{position:"relative",height:300,borderRadius:"0 0 28px 28px",overflow:"hidden",marginBottom:24,boxShadow:"0 16px 48px rgba(0,0,0,.7)"}}>
               <img src={getImg(plan.destination)} alt={plan.destination} style={{width:"100%",height:"100%",objectFit:"cover"}}/>
               <div style={{position:"absolute",inset:0,background:"linear-gradient(to top,rgba(0,0,0,.85) 0%,rgba(0,0,0,.3) 50%,transparent 75%)"}}/>
-              <div style={{position:"absolute",top:16,right:16,background:"rgba(0,0,0,.7)",backdropFilter:"blur(12px)",border:"1px solid rgba(201,169,110,.25)",borderRadius:16,padding:"10px 14px",display:"flex",alignItems:"center",gap:10,cursor:"pointer"}} onClick={()=>setGuideOpen(true)}><GuideCharacter mood="happy" size={36}/><div><div style={{fontSize:12,fontWeight:700,color:"#C9A96E"}}>Marco</div><div style={{fontSize:11,color:"#A0A0A0"}}>Tu guia IA</div></div></div>
-              <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"24px 26px"}}>
-                <div style={{fontSize:"clamp(30px,5vw,52px)",fontWeight:900,color:"#fff",letterSpacing:"-.04em",lineHeight:1.0,marginBottom:12}}>{plan.destination}</div>
-                <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-                  {[t.days(plan.days),plan.budget,start&&end?`${fmtDate(start,null,locale)} → ${fmtDate(end,null,locale)}`:null,travelers===1?t.traveler1:t.travelersN(travelers)].filter(Boolean).map((v,i)=>(
-                    <span key={i} style={{background:i===0?P.goldDim:"rgba(255,255,255,.06)",color:i===0?P.gold:P.sub,border:`1px solid ${i===0?P.goldBorder:"rgba(255,255,255,.1)"}`,borderRadius:20,padding:"4px 14px",fontSize:11,fontWeight:i===0?600:400}}>{v}</span>
+              {/* Guide banner */}
+              <div style={{position:"absolute",top:14,right:14,background:"rgba(0,0,0,.7)",backdropFilter:"blur(12px)",border:`1px solid ${P.goldBorder}`,borderRadius:14,padding:"9px 13px",display:"flex",alignItems:"center",gap:9,cursor:"pointer"}} onClick={()=>setGuideOpen(true)}>
+                <GuideChar mood="happy" size={34}/>
+                <div><div style={{fontSize:11,fontWeight:700,color:P.gold}}>Marco</div><div style={{fontSize:10,color:P.sub}}>Tu guia IA</div></div>
+              </div>
+              {userPos&&<div style={{position:"absolute",top:14,left:14,background:"rgba(59,130,246,.2)",border:"1px solid rgba(59,130,246,.3)",borderRadius:10,padding:"5px 11px",fontSize:11,fontWeight:600,color:"#60A5FA"}}>📍 GPS activo</div>}
+              <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"20px 22px"}}>
+                <div style={{fontSize:"clamp(28px,5vw,48px)",fontWeight:900,color:"#fff",letterSpacing:"-.04em",lineHeight:1.0,marginBottom:10}}>{plan.destination}</div>
+                <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
+                  {[t.days(plan.days),plan.budget,start&&end?`${fmtDate(start,null,locale)} → ${fmtDate(end,null,locale)}`:null,travelers===1?t.t1:t.tN(travelers)].filter(Boolean).map((v,i)=>(
+                    <span key={i} style={{background:i===0?P.goldDim:"rgba(255,255,255,.06)",color:i===0?P.gold:P.sub,border:`1px solid ${i===0?P.goldBorder:"rgba(255,255,255,.1)"}`,borderRadius:18,padding:"3px 12px",fontSize:10,fontWeight:i===0?600:400}}>{v}</span>
                   ))}
                 </div>
               </div>
             </div>
 
-            <div className="results-layout" style={{gap:22,alignItems:"start"}}>
+            <div className="rl" style={{gap:20,alignItems:"start"}}>
               <div>
-                {weather&&start&&<WeatherSection weather={weather} startDate={start} t={t} locale={locale}/>}
-
-                {flights.length>0&&(
-                  <div style={{marginBottom:32}} className="pop">
-                    <SectionHdr icon="✈️" title={t.flightsT} sub={t.flightsSub(plan.destination,travelers,origin)}/>
-                    {flights.map((fl,i)=><FlightCard key={i} flight={fl} selected={selF===i} onSelect={()=>setSelF(i)} t={t} onBook={item=>setBookItem({item,type:"flight"})}/>)}
-                  </div>
-                )}
-
-                {hotels.length>0&&(
-                  <div style={{marginBottom:32}} className="pop2">
-                    <SectionHdr icon="🏨" title={t.hotelsT} sub={t.hotelsSub(nights)}/>
-                    {hotels.map((h,i)=><HotelCard key={i} hotel={h} selected={selH===i} onSelect={()=>setSelH(i)} nights={nights} onMap={h.lat&&h.lng?()=>flyToHotel(h):null} t={t} travelerStyle={travelerStyle} onBook={item=>setBookItem({item,type:"hotel"})}/>)}
-                  </div>
-                )}
-
-                {leafReady&&mapPlaces.length>0&&(
-                  <div id="mapsec" style={{marginBottom:32}} className="pop3">
-                    <SectionHdr icon="🗺️" title={t.mapT} sub={t.mapSub}/>
-                    <TravelMap places={mapPlaces} active={activeMap} onSelect={setActiveMap} userPos={userPos}/>
-                  </div>
-                )}
-
-                {rests.length>0&&(
-                  <div style={{marginBottom:32}} className="pop4">
-                    <SectionHdr icon="🍽️" title={t.restsT} sub={t.restsSub}/>
-                    <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>{rests.map((r,i)=><RestCard key={i} rest={r} idx={i} t={t} onBook={item=>setBookItem({item,type:"restaurant"})}/>)}</div>
-                  </div>
-                )}
-
-                {vegRests.length>0&&(
-                  <div style={{marginBottom:32}} className="pop5">
-                    <SectionHdr icon="🌿" title={t.vegT} sub={t.vegSub}/>
-                    <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>{vegRests.map((r,i)=><RestCard key={i} rest={r} idx={i} vegMode t={t} onBook={item=>setBookItem({item,type:"restaurant"})}/>)}</div>
-                  </div>
-                )}
-
-                {promos.length>0&&<PromoSection promos={promos} t={t}/>}
-
-                <TransportSection dest={plan.destination} lat={destLat} lon={destLon} t={t}/>
-
-                <div style={{marginBottom:32}} className="pop">
-                  <SectionHdr icon="🎟️" title="Tours & Actividades" sub="Experiencias unicas en destino"/>
-                  <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
-                    {["Visita guiada","Tour gastronomico","Excursion de dia","Experiencia local","Aventura"].map((tour,i)=>(
-                      <button key={i} onClick={()=>window.open(`https://www.getyourguide.es/s/?q=${encodeURIComponent((plan?.destination||"")+" "+tour)}`, "_blank")}
-                        style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:14,padding:"14px 16px",cursor:"pointer",textAlign:"left",flex:"1 1 160px",transition:"all .2s"}}
-                        onMouseEnter={e=>{e.currentTarget.style.borderColor=P.gold;e.currentTarget.style.transform="translateY(-2px)";}}
-                        onMouseLeave={e=>{e.currentTarget.style.borderColor=P.border;e.currentTarget.style.transform="none";}}>
-                        <div style={{fontSize:20,marginBottom:6}}>{"🗺️🍽️🚌🤝🏔️"[i]}</div>
-                        <div style={{fontSize:13,fontWeight:600,color:"#fff",marginBottom:4}}>{tour}</div>
-                        <div style={{fontSize:11,color:P.gold,fontWeight:600}}>Ver tours ↗</div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                {plan.itinerary?.length>0&&(
-                  <div style={{marginBottom:32}} className="pop">
-                    <SectionHdr icon="📅" title={t.itinT} sub={t.itinSub}/>
-                    {plan.itinerary.map((day,i)=><DayCard key={i} day={day} i={i} t={t}/>)}
-                  </div>
-                )}
-              </div>
-
-              <div style={{position:"sticky",top:72}}>
-                <PkgSummary flight={flightSel} hotel={hotelSel} nights={nights} travelers={travelers} t={t}/>
-                {flightSel&&hotelSel&&(
-                  <div style={{marginTop:16}}>
-                    <IBtn full size="lg" style={{background:GOLD_GRAD,color:P.black,fontWeight:700}} onClick={()=>setBookItem({item:{flightSel,hotelSel},type:"package"})}>{t.bookBtn}</IBtn>
-                    <div style={{fontSize:11,color:"#48484A",textAlign:"center",marginTop:10}}>{t.demoNote}</div>
-                  </div>
-                )}
-                {plan.tips?.length>0&&(
-                  <div style={{background:P.card,borderRadius:14,padding:"18px",marginTop:14,border:`1px solid ${P.border}`}}>
-                    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
-                      <div style={{width:28,height:28,background:P.goldDim,border:`1px solid ${P.goldBorder}`,borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14}}>💡</div>
-                      <span style={{fontSize:14,fontWeight:800}}>{t.tipsT}</span>
+                {/* Weather */}
+                {weather&&start&&(
+                  <div style={{marginBottom:28}} className="pop4">
+                    <SHdr icon="🌤" title={t.weatherT} sub={t.weatherSub}/>
+                    <div style={{display:"flex",gap:7,overflowX:"auto",paddingBottom:3}}>
+                      {weather.temperature_2m_max.slice(0,7).map((maxT,i)=>{
+                        const d=new Date(start+"T12:00:00");d.setDate(d.getDate()+i);
+                        const rain=weather.precipitation_probability_max[i];
+                        return(
+                          <div key={i} style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:11,padding:"12px 10px",minWidth:74,textAlign:"center",flexShrink:0}}>
+                            <div style={{fontSize:9,color:P.muted,marginBottom:5,fontWeight:600}}>{d.toLocaleDateString(locale||"es-ES",{weekday:"short"})}</div>
+                            <div style={{fontSize:26,marginBottom:5}}>{wxI(weather.weathercode[i])}</div>
+                            <div style={{fontSize:13,fontWeight:700,color:P.white}}>{Math.round(maxT)}°</div>
+                            <div style={{fontSize:10,color:P.muted,marginBottom:5}}>{Math.round(weather.temperature_2m_min[i])}°</div>
+                            <div style={{fontSize:9,color:rain>50?P.gold:P.muted}}>💧{rain}%</div>
+                          </div>
+                        );
+                      })}
                     </div>
-                    {plan.tips.slice(0,4).map((tip,i)=>(
-                      <div key={i} style={{display:"flex",gap:8,marginBottom:10}}>
-                        <span style={{width:6,height:6,background:P.gold,borderRadius:"50%",flexShrink:0,marginTop:5}}/>
-                        <p style={{margin:0,fontSize:12,color:P.muted,lineHeight:1.65}}>{tip}</p>
+                  </div>
+                )}
+
+                {/* Flights */}
+                {flights.length>0&&(
+                  <div style={{marginBottom:28}} className="pop">
+                    <SHdr icon="✈️" title={t.flightsT} sub={t.flightsSub(plan.destination,travelers,origin)}/>
+                    {flights.map((fl,i)=>(
+                      <div key={i} onClick={()=>setSelF(i)} className="hov" style={{background:selF===i?P.goldDim:"#1C1C1E",border:`1px solid ${selF===i?P.goldBorder:P.border}`,borderRadius:20,padding:"18px 20px",marginBottom:10,cursor:"pointer",transition:"all .2s"}}>
+                        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:10}}>
+                          <div style={{display:"flex",alignItems:"center",gap:13}}>
+                            <div style={{width:44,height:44,background:selF===i?P.goldDim:P.card3,border:`1px solid ${selF===i?P.goldBorder:P.border}`,borderRadius:11,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20}}>✈️</div>
+                            <div>
+                              <div style={{fontSize:15,fontWeight:700,color:"#fff",marginBottom:2}}>{fl.airline}</div>
+                              <div style={{fontSize:12,color:P.muted,marginBottom:3}}>{fl.departure} → {fl.arrival} · {fl.duration}</div>
+                              <span style={{background:"rgba(201,169,110,.2)",color:P.gold,borderRadius:7,padding:"2px 9px",fontSize:10,fontWeight:700}}>{fl.stops===0?t.direct:t.stops(fl.stops)}</span>
+                            </div>
+                          </div>
+                          <div style={{textAlign:"right"}}>
+                            <div style={{fontSize:24,fontWeight:700,color:selF===i?P.gold:P.white}}>{fl.price}€</div>
+                            <div style={{fontSize:10,color:P.muted,marginBottom:7}}>{t.pp}</div>
+                            <button onClick={e=>{e.stopPropagation();window.open(`https://www.skyscanner.es/transporte/vuelos/?query=${encodeURIComponent(plan.destination)}`,"_blank");}} style={{background:GOLD_GRAD,color:"#0D0D0D",border:"none",borderRadius:7,padding:"5px 12px",fontSize:11,fontWeight:700,cursor:"pointer"}}>{t.bookFlight}</button>
+                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>
                 )}
-                <AffiliatePanel t={t}/>
+
+                {/* Hotels */}
+                {hotels.length>0&&(
+                  <div style={{marginBottom:28}} className="pop2">
+                    <SHdr icon="🏨" title={t.hotelsT} sub={t.hotelsSub(nights)}/>
+                    {hotels.map((h,i)=>{
+                      const sel=selH===i;
+                      return(
+                        <div key={i} onClick={()=>setSelH(i)} className="hov" style={{background:sel?P.goldDim:"#1C1C1E",border:`1px solid ${sel?P.goldBorder:P.border}`,borderRadius:20,overflow:"hidden",marginBottom:10,cursor:"pointer",transition:"all .2s"}}>
+                          <div style={{display:"flex",height:120}}>
+                            <div style={{width:120,flexShrink:0,overflow:"hidden"}}><img src={HOTEL_IMGS[(h._i||0)%HOTEL_IMGS.length]} alt={h.name} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/></div>
+                            <div style={{flex:1,padding:"13px 15px",display:"flex",flexDirection:"column",justifyContent:"space-between"}}>
+                              <div>
+                                <div style={{display:"flex",justifyContent:"space-between",gap:7,marginBottom:3}}>
+                                  <div style={{fontSize:14,fontWeight:700,color:"#fff",lineHeight:1.2}}>{h.name}</div>
+                                  <div style={{textAlign:"right",flexShrink:0}}><div style={{fontSize:19,fontWeight:700,color:sel?P.gold:P.white}}>{h.price_per_night}€</div><div style={{fontSize:9,color:P.muted}}>{t.pn}</div></div>
+                                </div>
+                                <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:4}}><Stars n={h.stars||3} sz={9}/><span style={{fontSize:10,color:P.muted}}>📍 {h.neighborhood}</span></div>
+                                <p style={{fontSize:11,color:P.muted,margin:0,lineHeight:1.4,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{h.description}</p>
+                              </div>
+                              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:5}}>
+                                <div style={{display:"flex",gap:7,alignItems:"center"}}>
+                                  {h.lat&&h.lng&&<button onClick={e=>{e.stopPropagation();flyTo(h);}} style={{background:"none",border:`1px solid ${P.border2}`,color:P.muted,borderRadius:7,padding:"2px 8px",fontSize:9,cursor:"pointer"}}>{t.mapBtn}</button>}
+                                  {nights&&<span style={{fontSize:11,color:sel?P.gold:P.muted,fontWeight:600}}>{h.price_per_night*nights}€</span>}
+                                </div>
+                                <button onClick={e=>{e.stopPropagation();window.open(`https://www.booking.com/search.html?ss=${encodeURIComponent(h.name+" "+plan.destination)}`,"_blank");}} style={{background:GOLD_GRAD,color:"#0D0D0D",border:"none",borderRadius:7,padding:"4px 11px",fontSize:11,fontWeight:700,cursor:"pointer"}}>{t.bookHotel}</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Map */}
+                {leafReady&&places.length>0&&(
+                  <div id="mapsec" style={{marginBottom:28}} className="pop3">
+                    <SHdr icon="🗺️" title={t.mapT} sub={t.mapSub}/>
+                    <TravelMap places={places} active={activeMap} onSelect={setActiveMap} userPos={userPos}/>
+                  </div>
+                )}
+
+                {/* Restaurants */}
+                {rests.length>0&&(
+                  <div style={{marginBottom:28}} className="pop4">
+                    <SHdr icon="🍽️" title={t.restsT} sub={t.restsSub}/>
+                    <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
+                      {rests.map((r,i)=>(
+                        <div key={i} className="hov" style={{background:"#1C1C1E",border:`1px solid ${P.border}`,borderRadius:18,overflow:"hidden",flex:"1 1 180px",minWidth:0,transition:"all .25s"}}>
+                          <div style={{height:110,overflow:"hidden",position:"relative"}}>
+                            <img src={REST_IMGS[i%REST_IMGS.length]} alt={r.name} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/>
+                            <div style={{position:"absolute",inset:0,background:"linear-gradient(to top,rgba(0,0,0,.7),transparent)"}}/>
+                            {r.price_range&&<div style={{position:"absolute",top:7,right:7,background:"rgba(0,0,0,.65)",color:"#fff",borderRadius:7,padding:"2px 7px",fontSize:9,fontWeight:700}}>{r.price_range}</div>}
+                          </div>
+                          <div style={{padding:"11px 13px"}}>
+                            <div style={{fontSize:12,fontWeight:700,color:"#fff",marginBottom:3}}>{r.name}</div>
+                            <div style={{display:"flex",alignItems:"center",gap:5,marginBottom:7}}><Stars n={r.rating||4} sz={9}/><span style={{fontSize:9,color:P.muted}}>{r.cuisine}</span></div>
+                            <button onClick={()=>window.open(`https://www.google.com/search?q=${encodeURIComponent(r.name+" "+plan.destination+" reservar")}`,"_blank")} style={{background:GOLD_GRAD,color:"#0D0D0D",border:"none",borderRadius:7,padding:"5px 10px",fontSize:10,fontWeight:700,cursor:"pointer",width:"100%"}}>{t.bookRest}</button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Tours */}
+                <div style={{marginBottom:28}} className="pop">
+                  <SHdr icon="🎟️" title="Tours & Actividades" sub="Experiencias únicas en destino"/>
+                  <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
+                    {["Visita guiada","Tour gastronómico","Excursión de día","Experiencia local","Aventura"].map((tour,i)=>(
+                      <button key={i} onClick={()=>window.open(`https://www.getyourguide.es/s/?q=${encodeURIComponent((plan.destination||"")+" "+tour)}`,"_blank")}
+                        style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:12,padding:"12px 14px",cursor:"pointer",textAlign:"left",flex:"1 1 150px",transition:"all .2s"}}
+                        onMouseEnter={e=>{e.currentTarget.style.borderColor=P.gold;e.currentTarget.style.transform="translateY(-2px)";}}
+                        onMouseLeave={e=>{e.currentTarget.style.borderColor=P.border;e.currentTarget.style.transform="none";}}>
+                        <div style={{fontSize:18,marginBottom:5}}>{"🗺️🍽️🚌🤝🏔️"[i]}</div>
+                        <div style={{fontSize:12,fontWeight:600,color:"#fff",marginBottom:3}}>{tour}</div>
+                        <div style={{fontSize:10,color:P.gold,fontWeight:600}}>Ver tours ↗</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Transport */}
+                <div style={{marginBottom:28}} className="pop">
+                  <SHdr icon="🚗" title={t.transportT} sub={t.transportSub}/>
+                  <div style={{display:"flex",gap:9,flexWrap:"wrap"}}>
+                    {[
+                      {name:"Uber",icon:"🚗",url:`https://m.uber.com/ul/?dropoff[formatted_address]=${encodeURIComponent(plan.destination)}`},
+                      {name:"Cabify",icon:"🟣",url:"https://cabify.com/"},
+                      {name:"Metro",icon:"🚇",url:`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(plan.destination)}&travelmode=transit`},
+                      {name:"Bike",icon:"🚲",url:`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(plan.destination)}&travelmode=bicycling`},
+                    ].map(lk=>(
+                      <a key={lk.name} href={lk.url} target="_blank" rel="noopener noreferrer" style={{background:"#1C1C1E",border:`1px solid ${P.border}`,borderRadius:14,padding:"12px 15px",textDecoration:"none",display:"flex",alignItems:"center",gap:10,flex:"1 1 130px",transition:"all .2s"}}
+                        onMouseEnter={e=>{e.currentTarget.style.borderColor=P.goldBorder;e.currentTarget.style.transform="translateY(-2px)";}}
+                        onMouseLeave={e=>{e.currentTarget.style.borderColor=P.border;e.currentTarget.style.transform="none";}}>
+                        <span style={{fontSize:20}}>{lk.icon}</span>
+                        <span style={{fontSize:13,fontWeight:700,color:"#fff"}}>{lk.name}</span>
+                        <span style={{marginLeft:"auto",color:P.muted,fontSize:12}}>↗</span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Itinerary */}
+                {plan.itinerary?.length>0&&(
+                  <div style={{marginBottom:28}} className="pop">
+                    <SHdr icon="📅" title={t.itinT} sub={t.itinSub}/>
+                    {plan.itinerary.map((day,i)=>{
+                      const[open,setOpen]=useState(i===0);
+                      return(
+                        <div key={i} style={{background:"#1C1C1E",border:`1px solid ${open?P.goldBorder:P.border}`,borderRadius:18,marginBottom:9,overflow:"hidden",transition:"all .3s"}}>
+                          <button onClick={()=>setOpen(!open)} style={{width:"100%",background:"none",border:"none",padding:"15px 18px",cursor:"pointer",display:"flex",alignItems:"center",gap:13}}>
+                            <div style={{width:34,height:34,background:open?P.goldDim:P.card3,border:`1px solid ${open?P.goldBorder:P.border}`,borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,fontWeight:900,color:open?P.gold:P.muted,flexShrink:0}}>{i+1}</div>
+                            <div style={{flex:1,textAlign:"left"}}>
+                              <div style={{fontSize:14,fontWeight:700,color:"#fff"}}>{day.day.replace(/^(Día|Day|Jour) \d+ [-–] /,"")}</div>
+                              {day.theme&&<div style={{fontSize:11,color:P.muted,marginTop:1}}>{day.theme}</div>}
+                            </div>
+                            <span style={{color:P.muted,fontSize:18,transform:open?"rotate(90deg)":"none",transition:".2s"}}>›</span>
+                          </button>
+                          {open&&(
+                            <div style={{padding:"2px 17px 17px",borderTop:"0.5px solid rgba(255,255,255,.06)"}}>
+                              {[{k:"morning",l:t.morning},{k:"afternoon",l:t.afternoon},{k:"evening",l:t.evening},{k:"transport",l:t.transport}].map(({k,l})=>day[k]&&(
+                                <div key={k} style={{marginTop:12}}>
+                                  <div style={{fontSize:10,fontWeight:700,color:P.gold,textTransform:"uppercase",letterSpacing:".06em",marginBottom:4}}>{l}</div>
+                                  <p style={{margin:0,fontSize:12,color:"rgba(255,255,255,.7)",lineHeight:1.65}}>{day[k]}</p>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Sidebar */}
+              <div style={{position:"sticky",top:70}}>
+                {/* Package summary */}
+                {(fSel||hSel)&&(
+                  <div style={{background:"#1E1E20",borderRadius:20,padding:20,boxShadow:"0 12px 40px rgba(0,0,0,.5)",border:"0.5px solid rgba(255,255,255,.07)",marginBottom:14}}>
+                    <div style={{fontSize:14,fontWeight:900,marginBottom:14,color:"#fff"}}>{t.pkgT}</div>
+                    {fSel&&<div style={{display:"flex",justifyContent:"space-between",marginBottom:9,fontSize:12}}><span style={{color:P.sub}}>✈️ {fSel.airline} × {travelers}</span><span style={{fontWeight:700,color:"#fff"}}>{fSel.price*travelers}€</span></div>}
+                    {hSel&&nights&&<div style={{display:"flex",justifyContent:"space-between",marginBottom:9,fontSize:12}}><span style={{color:P.sub}}>🏨 {hSel.name} × {nights}n</span><span style={{fontWeight:700,color:"#fff"}}>{hSel.price_per_night*nights}€</span></div>}
+                    <div style={{height:"0.5px",background:"rgba(255,255,255,.07)",margin:"11px 0"}}/>
+                    {(()=>{const fT=fSel?fSel.price*travelers:0;const hT=hSel?hSel.price_per_night*nights:0;const tax=Math.round((fT+hT)*.10);const total=fT+hT+tax;return(<>
+                      <div style={{display:"flex",justifyContent:"space-between",marginBottom:9,fontSize:12}}><span style={{color:P.muted}}>🧾 {t.taxes}</span><span style={{fontWeight:700,color:P.muted}}>{tax}€</span></div>
+                      <div style={{background:P.goldDim,borderRadius:11,padding:"12px 14px",margin:"12px 0 14px",border:`1px solid ${P.goldBorder}`}}>
+                        <div style={{fontSize:9,fontWeight:600,color:P.gold,textTransform:"uppercase",letterSpacing:".1em",marginBottom:3}}>{t.totalL}</div>
+                        <span style={{fontSize:28,fontWeight:700,color:P.gold}}>{total}€</span>
+                      </div>
+                      <button onClick={()=>{window.open(`https://www.skyscanner.es/transporte/vuelos/?query=${encodeURIComponent(plan.destination)}`,"_blank");setTimeout(()=>window.open(`https://www.booking.com/search.html?ss=${encodeURIComponent(plan.destination)}`,"_blank"),600);}} style={{width:"100%",padding:"13px",background:GOLD_GRAD,color:"#0D0D0D",border:"none",borderRadius:11,fontSize:13,fontWeight:800,cursor:"pointer",fontFamily:"-apple-system,sans-serif",marginBottom:7}}>{t.bookBtn}</button>
+                      <div style={{fontSize:9,color:"#48484A",textAlign:"center"}}>{t.demoSmall}</div>
+                    </>);})()}
+                  </div>
+                )}
+
+                {/* Tips */}
+                {plan.tips?.length>0&&(
+                  <div style={{background:P.card,borderRadius:14,padding:"16px",marginBottom:14,border:`1px solid ${P.border}`}}>
+                    <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:11}}>
+                      <div style={{width:26,height:26,background:P.goldDim,border:`1px solid ${P.goldBorder}`,borderRadius:7,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13}}>💡</div>
+                      <span style={{fontSize:13,fontWeight:800}}>{t.tipsT}</span>
+                    </div>
+                    {plan.tips.slice(0,4).map((tip,i)=>(
+                      <div key={i} style={{display:"flex",gap:7,marginBottom:9}}>
+                        <span style={{width:5,height:5,background:P.gold,borderRadius:"50%",flexShrink:0,marginTop:5}}/>
+                        <p style={{margin:0,fontSize:11,color:P.muted,lineHeight:1.6}}>{tip}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Affiliates */}
+                {(()=>{
+                  const[open,setOpen]=useState(false);
+                  return(
+                    <div style={{background:P.card,borderRadius:14,padding:"16px",border:`1px solid ${P.border}`}}>
+                      <button onClick={()=>setOpen(!open)} style={{width:"100%",background:"none",border:"none",cursor:"pointer",display:"flex",alignItems:"center",gap:9,color:"#fff",fontFamily:"-apple-system,sans-serif"}}>
+                        <div style={{width:26,height:26,background:P.goldDim,border:`1px solid ${P.goldBorder}`,borderRadius:7,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13}}>💰</div>
+                        <div style={{flex:1,textAlign:"left"}}><div style={{fontSize:12,fontWeight:600,color:P.white}}>{t.affiliateT}</div><div style={{fontSize:10,color:P.muted}}>{t.affiliateSub}</div></div>
+                        <span style={{color:P.muted,fontSize:14,transform:open?"rotate(180deg)":"none",transition:".2s"}}>▾</span>
+                      </button>
+                      {open&&(
+                        <div style={{marginTop:12,display:"flex",flexDirection:"column",gap:8}}>
+                          {[{name:"Booking.com",icon:"🏨",grad:"linear-gradient(135deg,#003580,#0057B8)",url:"https://www.booking.com",cta:"~€50/booking"},{name:"Skyscanner",icon:"✈️",grad:"linear-gradient(135deg,#0770E3,#0557B0)",url:"https://www.skyscanner.es",cta:"CPA/flight"},{name:"GetYourGuide",icon:"🎟️",grad:"linear-gradient(135deg,#FF5533,#CC3311)",url:"https://www.getyourguide.es",cta:"8% commission"}].map((al,i)=>(
+                            <a key={i} href={al.url} target="_blank" rel="noopener noreferrer" style={{background:"#2C2C2E",borderRadius:11,padding:"11px 13px",textDecoration:"none",display:"flex",alignItems:"center",gap:10,transition:"all .2s"}} onMouseEnter={e=>{e.currentTarget.style.background="#38383A";e.currentTarget.style.transform="translateX(2px)";}} onMouseLeave={e=>{e.currentTarget.style.background="#2C2C2E";e.currentTarget.style.transform="none";}}>
+                              <div style={{width:30,height:30,background:al.grad,borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,flexShrink:0}}>{al.icon}</div>
+                              <div style={{flex:1}}><div style={{fontSize:12,fontWeight:700,color:"#fff"}}>{al.name}</div></div>
+                              <span style={{fontSize:9,fontWeight:600,color:P.gold,background:P.goldDim,border:`1px solid ${P.goldBorder}`,borderRadius:4,padding:"2px 7px"}}>{al.cta}</span>
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           </div>
