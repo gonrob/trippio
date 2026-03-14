@@ -1257,6 +1257,7 @@ Include 8-10 map_places with real precise GPS. Also include destination lat/lng 
 
     setLoadStep(1);
     const isRetreat=tripTypes.includes("retreat");
+    const parseJ=async r=>{try{const d=await r.json();return JSON.parse((d.content||[]).map(b=>b.text||"").join("").replace(/```json|```/g,"").trim());}catch{return[];}};
     const[r1,r2,r3,r4,r5,r6]=await Promise.all([
       // Flights
       fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1200,system:`Generate 3 realistic fictional flights Madrid→${dest}. ${lp} Reply ONLY raw JSON array, no backticks.
@@ -1285,16 +1286,13 @@ ${isRetreat?"Generate 4 rich detailed":"Generate 2 brief"} spiritual retreats ne
     ]);
 
     setLoadStep(2);
-    let fl=[],hs=[],rs=[],vrs=[],prs=[],rts=[];
-
-    const parse = d => JSON.parse((d.content||[]).map(b=>b.text||"").join("").replace(/```json|```/g,"").trim());
-
-    r1.json().then(d=>{try{fl=parse(d);setFlights(fl);setSelF(0);}catch{}});
-    r2.json().then(d=>{try{hs=parse(d).map((h,i)=>({...h,_imgIdx:i}));setHotels(hs);setSelH(0);setMapPlaces(buildPlaces(planData,hs,rs,vrs));}catch{}});
-    r3.json().then(d=>{try{rs=parse(d);setRests(rs);setMapPlaces(buildPlaces(planData,hs,rs,vrs));}catch{}});
-    r4.json().then(d=>{try{vrs=parse(d);setVegRests(vrs);}catch{}});
-    r5.json().then(d=>{try{prs=parse(d);setPromos(prs);}catch{}});
-    r6.json().then(d=>{try{rts=parse(d);setRetreats(rts);}catch{}});
+    let hs=[],rs=[],vrs=[];
+    parseJ(r1).then(fl=>{if(fl.length){setFlights(fl);setSelF(0);}});
+    parseJ(r2).then(h=>{hs=h.map((x,i)=>({...x,_imgIdx:i}));if(hs.length){setHotels(hs);setSelH(0);setMapPlaces(buildPlaces(planData,hs,rs,vrs));}});
+    parseJ(r3).then(r=>{rs=r;if(rs.length){setRests(rs);setMapPlaces(buildPlaces(planData,hs,rs,vrs));}});
+    parseJ(r4).then(v=>{vrs=v;if(vrs.length)setVegRests(vrs);});
+    parseJ(r5).then(p=>{if(p.length)setPromos(p);});
+    parseJ(r6).then(r=>{if(r.length)setRetreats(r);});
 
     setLoadStep(3);await sleep(200);
 
