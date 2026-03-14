@@ -1147,12 +1147,68 @@ function DateInput({start,end,onChange,t}){
   );
 }
 
+
+function AuthModal({onClose,onAuth}){
+  const[mode,setMode]=React.useState("login");
+  const[email,setEmail]=React.useState("");
+  const[password,setPassword]=React.useState("");
+  const[loading,setLoading]=React.useState(false);
+  const[error,setError]=React.useState(null);
+  const[success,setSuccess]=React.useState(null);
+
+  async function handleSubmit(){
+    setLoading(true);setError(null);setSuccess(null);
+    try{
+      if(mode==="register"){
+        const{error:e}=await supabase.auth.signUp({email,password});
+        if(e)throw e;
+        setSuccess("Cuenta creada. Revisa tu email para confirmar.");
+      }else{
+        const{data,error:e}=await supabase.auth.signInWithPassword({email,password});
+        if(e)throw e;
+        onAuth(data.user);onClose();
+      }
+    }catch(e){setError(e.message);}
+    setLoading(false);
+  }
+
+  const inp={width:"100%",padding:"13px 16px",border:"1.5px solid #3A3A3C",borderRadius:14,fontSize:15,fontFamily:"-apple-system,sans-serif",color:"#fff",background:"#2C2C2E",boxSizing:"border-box",outline:"none"};
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.75)",zIndex:1000,display:"flex",alignItems:"flex-end",justifyContent:"center",backdropFilter:"blur(12px)"}} onClick={e=>{if(e.target===e.currentTarget)onClose();}}>
+      <div style={{background:"#1C1C1E",borderRadius:"28px 28px 0 0",width:"100%",maxWidth:480,padding:"24px 28px 48px",boxShadow:"0 -8px 60px rgba(0,0,0,.6)"}}>
+        <div style={{width:40,height:5,background:"#3A3A3C",borderRadius:3,margin:"0 auto 24px"}}/>
+        <div style={{fontSize:24,fontWeight:900,color:"#fff",marginBottom:6}}>{mode==="login"?"Bienvenido de nuevo":"Crea tu cuenta"}</div>
+        <p style={{fontSize:14,color:"#6B6B6B",marginBottom:24}}>{mode==="login"?"Accede para guardar tus viajes":"Guarda y comparte tus viajes"}</p>
+        <button onClick={async()=>{await supabase.auth.signInWithOAuth({provider:"google",options:{redirectTo:window.location.origin}});}} style={{width:"100%",background:"#2C2C2E",border:"1.5px solid #3A3A3C",borderRadius:14,padding:"13px 16px",color:"#fff",fontSize:15,fontWeight:600,cursor:"pointer",fontFamily:"-apple-system,sans-serif",display:"flex",alignItems:"center",justifyContent:"center",gap:10,marginBottom:16}}>
+          Continuar con Google
+        </button>
+        <div style={{display:"flex",alignItems:"center",gap:12,margin:"16px 0"}}>
+          <div style={{flex:1,height:"0.5px",background:"#3A3A3C"}}/><span style={{fontSize:12,color:"#6B6B6B"}}>o con email</span><div style={{flex:1,height:"0.5px",background:"#3A3A3C"}}/>
+        </div>
+        <div style={{marginBottom:12}}><input value={email} onChange={e=>setEmail(e.target.value)} placeholder="tu@email.com" type="email" style={inp} onFocus={e=>e.target.style.borderColor="#C9A96E"} onBlur={e=>e.target.style.borderColor="#3A3A3C"}/></div>
+        <div style={{marginBottom:20}}><input value={password} onChange={e=>setPassword(e.target.value)} placeholder="Contrasena" type="password" style={inp} onFocus={e=>e.target.style.borderColor="#C9A96E"} onBlur={e=>e.target.style.borderColor="#3A3A3C"} onKeyDown={e=>e.key==="Enter"&&handleSubmit()}/></div>
+        {error&&<div style={{background:"rgba(224,90,78,.12)",border:"1px solid rgba(224,90,78,.3)",borderRadius:10,padding:"10px 14px",fontSize:13,color:"#E05A4E",marginBottom:14}}>{error}</div>}
+        {success&&<div style={{background:"rgba(201,169,110,.12)",border:"1px solid rgba(201,169,110,.3)",borderRadius:10,padding:"10px 14px",fontSize:13,color:"#C9A96E",marginBottom:14}}>{success}</div>}
+        <button onClick={handleSubmit} disabled={loading} style={{width:"100%",padding:"15px",background:loading?"#333":"linear-gradient(135deg,#C9A96E,#E8C98A)",color:loading?"#888":"#0D0D0D",border:"none",borderRadius:14,fontSize:16,fontWeight:800,cursor:"pointer",fontFamily:"-apple-system,sans-serif",marginBottom:14}}>
+          {loading?"...":(mode==="login"?"Iniciar sesion":"Crear cuenta")}
+        </button>
+        <button onClick={()=>{setMode(mode==="login"?"register":"login");setError(null);setSuccess(null);}} style={{width:"100%",background:"none",border:"none",color:"#6B6B6B",fontSize:14,cursor:"pointer",fontFamily:"-apple-system,sans-serif"}}>
+          {mode==="login"?"No tienes cuenta? Registrate":"Ya tienes cuenta? Inicia sesion"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /* ══════════════════════════════════════════════════════════════════════════════
    MAIN APP
 ══════════════════════════════════════════════════════════════════════════════ */
 export default function ViajeIA(){
   /* ── Language ── */
   const[lang,setLang]=useState("es");
+  const[user,setUser]=React.useState(null);
+  const[authOpen,setAuthOpen]=React.useState(false);
+  useEffect(()=>{supabase.auth.getSession().then(({data:{session}})=>setUser(session?.user||null));supabase.auth.onAuthStateChange((_,s)=>setUser(s?.user||null));},[]);
   const t=T[lang];
   const locale=t.locale;
 
@@ -1455,9 +1511,11 @@ ${isRetreat?"Generate 4 rich detailed":"Generate 2 brief"} spiritual retreats ne
           {plan&&!loading&&<><button onClick={()=>setScanOpen(true)} style={{background:"rgba(201,169,110,.15)",color:"#C9A96E",border:"1px solid rgba(201,169,110,.3)",borderRadius:8,padding:"6px 12px",fontSize:12,cursor:"pointer",fontFamily:"-apple-system,sans-serif",fontWeight:600,display:"flex",alignItems:"center",gap:5}}>{"\uD83D\uDCF8"} Scan</button><button onClick={shareTrip} style={{background:P.card2,border:`1px solid ${P.border}`,color:P.sub,borderRadius:8,padding:"6px 12px",fontSize:12,cursor:"pointer",fontFamily:"-apple-system,sans-serif",fontWeight:600,display:"flex",alignItems:"center",gap:5}}>↑ {t.shareBtn||"Share"}</button></>}
           {plan&&!loading&&flightSel&&hotelSel&&!booked&&<IBtn size="sm" outline color={P.gold} onClick={()=>setBooking(true)}>{t.bookNav}</IBtn>}
           {plan&&!loading&&<IBtn size="sm" outline color={P.muted} onClick={reset}>{t.newSearch}</IBtn>}
+          {!user?<button onClick={()=>setAuthOpen(true)} style={{background:"linear-gradient(135deg,#C9A96E,#E8C98A)",color:"#0D0D0D",border:"none",borderRadius:10,padding:"7px 14px",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"-apple-system,sans-serif",marginLeft:4}}>Entrar</button>:<button onClick={()=>supabase.auth.signOut().then(()=>setUser(null))} style={{background:"#2C2C2E",border:"1px solid #3A3A3C",color:"#A0A0A0",borderRadius:10,padding:"7px 14px",fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:"-apple-system,sans-serif",marginLeft:4}}>Salir</button>}
         </div>
       </nav>
 
+      {authOpen&&<AuthModal onClose={()=>setAuthOpen(false)} onAuth={u=>setUser(u)}/>}
       {scanOpen&&<ScanModal lang={lang} onClose={()=>setScanOpen(false)}/>}
       {booking&&<BookModal flight={flightSel} hotel={hotelSel} nights={nights} travelers={travelers} dest={plan?.destination} lang={lang} onClose={()=>setBooking(false)} onDone={()=>{setBooking(false);setBooked(true);}}/>}
 
