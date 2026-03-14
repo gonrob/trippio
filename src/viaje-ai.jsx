@@ -935,7 +935,7 @@ function ScanModal({lang,onClose}){
     setLoading(true);setResult(null);
     const langInstr=lang==="en"?"Respond in English":lang==="fr"?"Reponds en francais":"Responde en espanol";
     try{
-      const r=await fetch("https://api.anthropic.com/v1/messages",{
+      const r=await fetch("/api/anthropic",{
         method:"POST",
         headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
         body:JSON.stringify({model:"claude-opus-4-5",max_tokens:800,messages:[{role:"user",content:[
@@ -1242,7 +1242,7 @@ export default function ViajeIA(){
 Include 8-10 map_places with real precise GPS. Also include destination lat/lng at root level.`;
     let planData=null;
     try{
-      const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":import.meta.env.VITE_ANTHROPIC_KEY,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:3500,system:sys1,messages:[{role:"user",content:input+(dctx?"\n\n"+dctx:"")}]})});
+      const r=await fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:3500,system:sys1,messages:[{role:"user",content:input+(dctx?"\n\n"+dctx:"")}]})});
       const d=await r.json();
       planData=JSON.parse((d.content||[]).map(b=>b.text||"").join("").replace(/```json|```/g,"").trim());
       setPlan(planData);
@@ -1258,27 +1258,27 @@ Include 8-10 map_places with real precise GPS. Also include destination lat/lng 
     const isRetreat=tripTypes.includes("retreat");
     const[r1,r2,r3,r4,r5,r6]=await Promise.all([
       // Flights
-      fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":import.meta.env.VITE_ANTHROPIC_KEY,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1200,system:`Generate 3 realistic fictional flights Madrid→${dest}. ${lp} Reply ONLY raw JSON array, no backticks.
+      fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1200,system:`Generate 3 realistic fictional flights Madrid→${dest}. ${lp} Reply ONLY raw JSON array, no backticks.
 [{"airline":"...","departure":"HH:MM","arrival":"HH:MM","duration":"XhYm","stops":0,"price":XXX,"class":"${travelerStyle==="luxury"?"Business":"Economy"}"}]
 Vary airlines. ~${Math.round(budget*.35)}€/person. ${travelerStyle==="luxury"?"Include premium options.":""}`,messages:[{role:"user",content:`Flights to ${dest}`}]})}),
       // Hotels
-      fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":import.meta.env.VITE_ANTHROPIC_KEY,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1800,system:`Hotel expert. ${lp} Reply ONLY raw JSON array, no backticks.
+      fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1800,system:`Hotel expert. ${lp} Reply ONLY raw JSON array, no backticks.
 [{"name":"...","category":"...","stars":${tsCfg.hotelStars},"neighborhood":"...","description":"...","highlights":["..."],"price_per_night":XX,"lat":0.0,"lng":0.0}]
 3 real ${tsCfg.hotelStars}-star hotels in ${dest}. ~${hotelBudget}€/night. Trip types: ${tripTypesStr}.`,messages:[{role:"user",content:`Hotels in ${dest}`}]})}),
       // Restaurants
-      fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":import.meta.env.VITE_ANTHROPIC_KEY,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1600,system:`Restaurant expert. ${lp} Reply ONLY raw JSON array, no backticks.
+      fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1600,system:`Restaurant expert. ${lp} Reply ONLY raw JSON array, no backticks.
 [{"name":"...","cuisine":"...","rating":4.2,"price_range":"€€","description":"...","neighborhood":"...","lat":0.0,"lng":0.0}]
 6 real restaurants in ${dest} matching ${tripTypesStr} trip styles. ${travelerStyle==="backpacker"?"Focus on local street food.":travelerStyle==="luxury"?"Include fine dining.":""} No vegetarian/vegan only places.`,messages:[{role:"user",content:`Restaurants in ${dest}`}]})}),
       // Veg restaurants
-      fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":import.meta.env.VITE_ANTHROPIC_KEY,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1400,system:`Vegetarian and vegan restaurant expert. ${lp} Reply ONLY raw JSON array, no backticks.
+      fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1400,system:`Vegetarian and vegan restaurant expert. ${lp} Reply ONLY raw JSON array, no backticks.
 [{"name":"...","cuisine":"...","diet":"vegetarian|vegan","rating":4.2,"price_range":"€€","description":"...","neighborhood":"...","lat":0.0,"lng":0.0,"signature_dish":"..."}]
 4-5 real vegetarian or vegan restaurants in ${dest}. Mix types.`,messages:[{role:"user",content:`Veg restaurants in ${dest}`}]})}),
       // Promotions & discounts
-      fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":import.meta.env.VITE_ANTHROPIC_KEY,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:800,system:`Travel promotions expert. ${lp} Reply ONLY raw JSON array, no backticks.
+      fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:800,system:`Travel promotions expert. ${lp} Reply ONLY raw JSON array, no backticks.
 [{"title":"...","icon":"emoji","description":"...","discount":10,"code":"PROMO123","type":"theater|restaurant|museum|transport|hotel"}]
 4-5 realistic promotional offers for ${dest} matching ${tripTypesStr} travel. Include theater/show deals, restaurant discounts, museum passes, transport cards. Make discount codes realistic.`,messages:[{role:"user",content:`Promotions in ${dest}`}]})}),
       // Spiritual retreats (always generated, enriched when retreat type selected)
-      fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":import.meta.env.VITE_ANTHROPIC_KEY,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1600,system:`Spiritual retreat and wellness expert. ${lp} Reply ONLY raw JSON array, no backticks.
+      fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1600,system:`Spiritual retreat and wellness expert. ${lp} Reply ONLY raw JSON array, no backticks.
 [{"name":"...","type":"yoga|meditation|ayahuasca|breathwork|sound|digital|shamanic|silent","center":"...","description":"...","duration_days":N,"level":"beginner|intermediate|advanced","price_total":XXX,"spots_left":N,"highlights":["..."],"includes":["..."],"facilitator":"...","neighborhood":"...","lat":0.0,"lng":0.0}]
 ${isRetreat?"Generate 4 rich detailed":"Generate 2 brief"} spiritual retreats near ${dest}. ${isRetreat?"Mix types: yoga retreat, meditation, ayahuasca ceremony, breathwork, sound healing, digital detox, shamanic. Include real-sounding center names, authentic facilitators, realistic prices (100-3000€), specific highlights and what's included.":"Include at least 1 yoga and 1 meditation option."} Trip context: ${tripTypesStr}.`,messages:[{role:"user",content:`Spiritual retreats near ${dest}`}]})}),
     ]);
