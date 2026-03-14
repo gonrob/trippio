@@ -1246,6 +1246,7 @@ Include 8-10 map_places with real precise GPS. Also include destination lat/lng 
       const d=await r.json();
       planData=JSON.parse((d.content||[]).map(b=>b.text||"").join("").replace(/```json|```/g,"").trim());
       setPlan(planData);
+      setLoading(false);
     }catch(e){setLoading(false);setLoadStep(-1);setApiError(t.errorMsg||"Error al generar el itinerario. Inténtalo de nuevo.");return;}
 
     const dest=planData.destination;
@@ -1306,8 +1307,8 @@ ${isRetreat?"Generate 4 rich detailed":"Generate 2 brief"} spiritual retreats ne
       setWeather(wx);
     }
 
-    setLoadStep(5);await sleep(200);
     setLoading(false);setLoadStep(-1);
+    setLoadStep(5);await sleep(200);
   }
 
   function reset(){
@@ -1556,7 +1557,7 @@ ${isRetreat?"Generate 4 rich detailed":"Generate 2 brief"} spiritual retreats ne
         )}
 
         {/* ══ LOADING ══ */}
-        {loading&&(
+        {loading&&!plan&&(
           <div style={{maxWidth:480,margin:"60px auto 0",padding:"0 20px"}} className="fade">
             {/* Logo + text */}
             <div style={{textAlign:"center",marginBottom:28}}>
@@ -1601,7 +1602,7 @@ ${isRetreat?"Generate 4 rich detailed":"Generate 2 brief"} spiritual retreats ne
         )}
 
         {/* ══ RESULTS ══ */}
-        {plan&&!loading&&(
+        {plan&&(
           <div className="fade">
             {/* Hero image */}
             <div className="hero-img" style={{position:"relative",height:340,borderRadius:"0 0 32px 32px",overflow:"hidden",marginBottom:28,boxShadow:"0 16px 48px rgba(0,0,0,.7)"}}>
