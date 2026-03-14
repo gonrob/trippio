@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { supabase } from "./supabase.js";
 
 /* ── Design tokens — Trippio Elegant Palette ────────────────────────────────
    Three colours only:
@@ -1167,6 +1168,9 @@ export default function ViajeIA(){
   const[end,setEnd]=useState("");
   const[travelers,setTravelers]=useState(1);
   const[currency,setCurrency]=useState("EUR");
+  const[origin,setOrigin]=useState("Madrid, España");
+  const[destination,setDestination]=useState("");
+  const[budget,setBudget]=useState("");
 
   /* ── Results ── */
   const[loading,setLoading]=useState(false);
@@ -1226,7 +1230,8 @@ export default function ViajeIA(){
   }
 
   async function generate(){
-    if(!input.trim())return;
+    if(!destination.trim())return;
+    const input=`${destination} · ${budget?budget+"€":""}`;
     setApiError(null);
     setLoading(true);setPlan(null);setFlights([]);setHotels([]);setRests([]);setVegRests([]);setPromos([]);setRetreats([]);setWeather(null);setSelF(null);setSelH(null);setMapPlaces([]);setBooked(false);
     const dctx=start&&end?`Dates: ${start} to ${end} (${days} days). Travelers: ${travelers}.`:"";
@@ -1270,7 +1275,7 @@ Include 8-10 map_places with real precise GPS. Also include destination lat/lng 
     const parseJ=async r=>{try{const d=await r.json();return JSON.parse((d.content||[]).map(b=>b.text||"").join("").replace(/```json|```/g,"").trim());}catch{return[];}};
     const[r1,r2,r3,r4,r5,r6]=await Promise.all([
       // Flights
-      fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1200,system:`Generate 3 realistic fictional flights Madrid→${dest}. ${lp} Reply ONLY raw JSON array, no backticks.
+      fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1200,system:`Generate 3 realistic fictional flights ${origin||"Madrid"}→${dest}. ${lp} Reply ONLY raw JSON array, no backticks.
 [{"airline":"...","departure":"HH:MM","arrival":"HH:MM","duration":"XhYm","stops":0,"price":XXX,"class":"${travelerStyle==="luxury"?"Business":"Economy"}"}]
 Vary airlines. ~${Math.round(budget*.35)}€/person. ${travelerStyle==="luxury"?"Include premium options.":""}`,messages:[{role:"user",content:`Flights to ${dest}`}]})}),
       // Hotels
@@ -1298,7 +1303,11 @@ ${isRetreat?"Generate 4 rich detailed":"Generate 2 brief"} spiritual retreats ne
     setLoadStep(2);
     let hs=[],rs=[],vrs=[];
     parseJ(r1).then(fl=>{if(fl.length){setFlights(fl);setSelF(0);}});
-    parseJ(r2).then(h=>{hs=h.map((x,i)=>({...x,_imgIdx:i}));if(hs.length){setHotels(hs);setSelH(0);setMapPlaces(buildPlaces(planData,hs,rs,vrs));}});
+    parseJ(r2).then(h=>{
+      const sorted=h.sort((a,b)=>travelerStyle==="luxury"?b.price_per_night-a.price_per_night:a.price_per_night-b.price_per_night);
+      hs=sorted.map((x,i)=>({...x,_imgIdx:i}));
+      if(hs.length){setHotels(hs);setSelH(0);setMapPlaces(buildPlaces(planData,hs,rs,vrs));}
+    });
     parseJ(r3).then(r=>{rs=r;if(rs.length){setRests(rs);setMapPlaces(buildPlaces(planData,hs,rs,vrs));}});
     parseJ(r4).then(v=>{vrs=v;if(vrs.length)setVegRests(vrs);});
     parseJ(r5).then(p=>{if(p.length)setPromos(p);});
@@ -1322,7 +1331,7 @@ ${isRetreat?"Generate 4 rich detailed":"Generate 2 brief"} spiritual retreats ne
   function reset(){
     setPlan(null);setFlights([]);setHotels([]);setRests([]);setVegRests([]);setPromos([]);setRetreats([]);setWeather(null);
     setSelF(null);setSelH(null);setMapPlaces([]);setBooked(false);setApiError(null);
-    setInput("");setStart("");setEnd("");setTravelers(1);
+    setInput("");setDestination("");setOrigin("Madrid, España");setBudget("");setStart("");setEnd("");setTravelers(1);
     setOnboardStep(0);setTripTypes([]);setTravelerStyle(null);
   }
 
@@ -1526,9 +1535,20 @@ ${isRetreat?"Generate 4 rich detailed":"Generate 2 brief"} spiritual retreats ne
                   <span style={{background:TRAVELER_STYLES[travelerStyle].grad,color:"#fff",borderRadius:10,padding:"6px 14px",fontSize:13,fontWeight:800}}>{TRAVELER_STYLES[travelerStyle].icon} {t.travelerStyles[travelerStyle]}</span>
                 </div>
                 <div style={{background:P.card,borderRadius:20,padding:"24px 26px",boxShadow:"0 20px 60px rgba(0,0,0,.7)",border:`1px solid ${P.border}`}}>
-                  <div style={{fontSize:11,fontWeight:700,color:"rgba(235,235,245,.4)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>{t.whereQ}</div>
-                  <textarea value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&e.metaKey)generate();}} placeholder={t.examples[exIdx]} rows={2}
-                    style={{width:"100%",background:"transparent",border:"none",color:"#fff",fontSize:19,lineHeight:1.6,resize:"none",boxSizing:"border-box",fontFamily:"-apple-system,sans-serif",fontWeight:600,letterSpacing:"-.01em"}}/>
+                  <div style={{display:"flex",flexDirection:"column",gap:12,marginBottom:16}}>
+                    <div>
+                      <div style={{fontSize:11,fontWeight:700,color:"rgba(235,235,245,.4)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>✈️ Origen</div>
+                      <input value={origin} onChange={e=>setOrigin(e.target.value)} placeholder="Madrid, España" style={{width:"100%",background:"#2C2C2E",border:"1.5px solid #3A3A3C",borderRadius:12,color:"#fff",fontSize:15,padding:"12px 14px",fontFamily:"-apple-system,sans-serif",boxSizing:"border-box",outline:"none"}} onFocus={e=>e.target.style.borderColor=P.gold} onBlur={e=>e.target.style.borderColor="#3A3A3C"}/>
+                    </div>
+                    <div>
+                      <div style={{fontSize:11,fontWeight:700,color:"rgba(235,235,245,.4)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>🌍 Destino</div>
+                      <input value={destination} onChange={e=>setDestination(e.target.value)} placeholder="Tokio, París, Bangkok..." style={{width:"100%",background:"#2C2C2E",border:"1.5px solid #3A3A3C",borderRadius:12,color:"#fff",fontSize:15,padding:"12px 14px",fontFamily:"-apple-system,sans-serif",boxSizing:"border-box",outline:"none"}} onFocus={e=>e.target.style.borderColor=P.gold} onBlur={e=>e.target.style.borderColor="#3A3A3C"}/>
+                    </div>
+                    <div>
+                      <div style={{fontSize:11,fontWeight:700,color:"rgba(235,235,245,.4)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>💰 Presupuesto (€)</div>
+                      <input value={budget} onChange={e=>setBudget(e.target.value)} placeholder="1000" type="number" min="100" style={{width:"100%",background:"#2C2C2E",border:"1.5px solid #3A3A3C",borderRadius:12,color:"#fff",fontSize:15,padding:"12px 14px",fontFamily:"-apple-system,sans-serif",boxSizing:"border-box",outline:"none"}} onFocus={e=>e.target.style.borderColor=P.gold} onBlur={e=>e.target.style.borderColor="#3A3A3C"}/>
+                    </div>
+                  </div>
                   <div style={{height:"0.5px",background:"rgba(255,255,255,.07)",margin:"16px 0"}}/>
                   <div style={{marginBottom:16}}><DateInput start={start} end={end} onChange={(f,v)=>{if(f==="start"){setStart(v);if(end&&v>end)setEnd("");}else setEnd(v);}} t={t}/></div>
                   <div style={{marginBottom:16}}>
@@ -1546,7 +1566,7 @@ ${isRetreat?"Generate 4 rich detailed":"Generate 2 brief"} spiritual retreats ne
                       <span style={{fontSize:12,color:P.gold,fontWeight:600}}>{days} {t.days(days).split(" ")[1]||"días"} · {fmtDate(start,{day:"numeric",month:"long"},locale)} – {fmtDate(end,{day:"numeric",month:"long",year:"numeric"},locale)}</span>
                     </div>
                   )}
-                  <IBtn full size="lg" style={{background:GOLD_GRAD,color:P.black,fontWeight:800}} onClick={generate} disabled={!input.trim()}>{t.searchBtn}</IBtn>
+                  <IBtn full size="lg" style={{background:GOLD_GRAD,color:P.black,fontWeight:800}} onClick={generate} disabled={!destination.trim()}>{t.searchBtn}</IBtn>
                 </div>
                 <div style={{display:"flex",gap:8,flexWrap:"wrap",justifyContent:"center",marginTop:16}} className="fade4">
                   {t.examples.map((ex,i)=>(
@@ -1652,7 +1672,7 @@ ${isRetreat?"Generate 4 rich detailed":"Generate 2 brief"} spiritual retreats ne
                 {/* Flights */}
                 {flights.length>0&&(
                   <div style={{marginBottom:32}} className="pop">
-                    <SectionHdr icon="✈️" title={t.flightsT} sub={t.flightsSub(plan.destination,travelers)} color={iOS.blue}/>
+                    <SectionHdr icon="✈️" title={t.flightsT} sub={t.flightsSub(plan.destination,travelers,origin)} color={iOS.blue}/>
                     {flights.map((fl,i)=><FlightCard key={i} flight={fl} selected={selF===i} onSelect={()=>setSelF(i)} t={t}/>)}
                   </div>
                 )}
