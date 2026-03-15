@@ -499,7 +499,7 @@ export default function ViajeIA(){
     if(i>=0){setActiveMap(i);document.getElementById("mapsec")?.scrollIntoView({behavior:"smooth",block:"center"});}
   }
 
-  const pJ=async r=>{try{const d=await r.json();return JSON.parse((d.content||[]).map(b=>b.text||"").join("").replace(/```json|```/g,"").trim());}catch{return[];}};
+  const pJ=async r=>{try{const d=await r.json();const txt=(d.content||[]).map(b=>b.text||"").join("").trim();const m=txt.match(/\[[\s\S]*\]|\{[\s\S]*\}/);return m?JSON.parse(m[0]):[];}catch{return[];}};
 
   async function generate(){
     if(!dest.trim())return;
@@ -520,9 +520,9 @@ Return exactly: {"destination":"city, country","days":N,"budget":"X€","summary
       const d=await r.json();
       if(d.error){throw new Error(d.error.message||"API error");}
       const raw=(d.content||[]).map(b=>b.text||"").join("").trim();
-      const jsonMatch=raw.match(/\{[\s\S]*\}/);
-      if(!jsonMatch)throw new Error("No JSON found in response");
-      planData=JSON.parse(jsonMatch[0]);
+      const m=raw.match(/\{[\s\S]*\}/);
+      if(!m)throw new Error("No JSON in response");
+      planData=JSON.parse(m[0]);
       setPlan(planData);setLoading(false);
       setGuideMood("excited");setGuideSpeak(true);setTimeout(()=>{setGuideMood("happy");setGuideSpeak(false);},3000);
     }catch(e){
@@ -730,7 +730,6 @@ Return exactly: {"destination":"city, country","days":N,"budget":"X€","summary
               <div style={{margin:"0 auto 18px",width:68,display:"flex",justifyContent:"center",animation:"float 3s ease-in-out infinite"}}><TrippioLogo size={68}/></div>
               <h2 style={{fontSize:21,fontWeight:800,margin:"0 0 5px"}}>{t.loadTitle}</h2>
               <p style={{fontSize:12,color:P.muted}}>{t.loadSub}</p>
-      <p style={{fontSize:11,color:P.gold,marginTop:8,fontWeight:600}}>⏱ Esto puede tardar hasta 1 minuto...</p>
             </div>
             <div style={{background:P.card,borderRadius:16,padding:"7px 16px 9px",border:`1px solid ${P.border}`,marginBottom:20}}>
               {t.steps.map((label,i)=>(
