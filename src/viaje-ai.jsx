@@ -339,12 +339,15 @@ function GuideModal({place,plan,lang,onClose}){
     .then(d=>{
       const txt=(d.content||[]).map(b=>b.text||"").join("");
       setStory(txt);setLoading(false);
-      // Auto speak
-      setSpeaking(true);
-      speakText(txt).then(a=>{
-        setAudio(a);
-        if(a)a.onended=()=>setSpeaking(false);
-      });
+      // Show text first, speak in background
+      setTimeout(()=>{
+        setSpeaking(true);
+        speakText(txt).then(a=>{
+          setAudio(a);
+          if(a)a.onended=()=>setSpeaking(false);
+          else setSpeaking(false);
+        }).catch(()=>setSpeaking(false));
+      }, 500);
     })
     .catch(()=>setLoading(false));
     return()=>{if(audio){audio.pause();audio.src="";}};
@@ -359,10 +362,7 @@ function GuideModal({place,plan,lang,onClose}){
   function replay(){
     if(audio){audio.pause();audio.src="";}
     setSpeaking(true);
-    speakText(story).then(a=>{
-      setAudio(a);
-      if(a)a.onended=()=>setSpeaking(false);
-    });
+    speakText(story).then(a=>{setAudio(a);if(a)a.onended=()=>setSpeaking(false);else setSpeaking(false);}).catch(()=>setSpeaking(false));
   }
 
   return(
@@ -517,7 +517,7 @@ function AudioGuide({places,userPos,lang,city,onClose}){
     if(nearest.dist<150&&nearest.name!==lastSpoken){
       setLastSpoken(nearest.name);
       // Get story and speak
-      fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:200,system:`Eres Sofia, audioguia turistica. ${t.lp} Habla como si estuvieras ahi con el turista. Max 3 frases cortas.`,messages:[{role:"user",content:`El turista acaba de llegar a ${nearest.name} en ${city}. Cuenta algo interesante.`}]})})
+      fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:200,system:`Eres Sofia, audioguia turistica. ${t.lp} Habla como si estuvieras ahi. Max 2 frases MUY cortas.`,messages:[{role:"user",content:`El turista acaba de llegar a ${nearest.name} en ${city}. Cuenta algo interesante.`}]})})
       .then(r=>r.json())
       .then(d=>{
         const txt=(d.content||[]).map(b=>b.text||"").join("");
@@ -1314,6 +1314,7 @@ IMPORTANT: Start your response with { and end with }. Nothing else.`;
               <div style={{margin:"0 auto 18px",width:68,display:"flex",justifyContent:"center",animation:"float 3s ease-in-out infinite"}}><TrippioLogo size={68}/></div>
               <h2 style={{fontSize:21,fontWeight:800,margin:"0 0 5px"}}>{t.loadTitle}</h2>
               <p style={{fontSize:12,color:P.muted}}>{t.loadSub}</p>
+              <p style={{fontSize:12,color:P.gold,marginTop:8,fontWeight:600}}>⏱ Puede tardar hasta 1 minuto...</p>
             </div>
             <div style={{background:P.card,borderRadius:16,padding:"7px 16px 9px",border:`1px solid ${P.border}`,marginBottom:20}}>
               {t.steps.map((label,i)=>(
