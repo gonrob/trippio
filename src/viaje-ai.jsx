@@ -946,7 +946,7 @@ function AffiliatePanel({t}){
       </button>
       {open&&(
         <div style={{marginTop:12,display:"flex",flexDirection:"column",gap:8}}>
-          {[{name:"Booking.com",icon:"🏨",grad:"linear-gradient(135deg,#003580,#0057B8)",url:"https://www.booking.com",cta:"~€50/booking"},{name:"Skyscanner",icon:"✈️",grad:"linear-gradient(135deg,#0770E3,#0557B0)",url:"https://www.skyscanner.es",cta:"CPA/flight"},{name:"GetYourGuide",icon:"🎟️",grad:"linear-gradient(135deg,#FF5533,#CC3311)",url:"https://www.getyourguide.es",cta:"8% commission"}].map((al,i)=>(
+          {[{name:"Booking.com",icon:"🏨",grad:"linear-gradient(135deg,#003580,#0057B8)",url:"https://www.booking.com",cta:"~€50/booking"},{name:"Skyscanner",icon:"✈️",grad:"linear-gradient(135deg,#0770E3,#0557B0)",url:"https://www.skyscanner.es",cta:"CPA/flight"},{name:"GetYourGuide",icon:"🎟️",grad:"linear-gradient(135deg,#FF5533,#CC3311)",url:"https://www.getyourguide.es?partner_id=YYAW5I0",cta:"8% commission"}].map((al,i)=>(
             <a key={i} href={al.url} target="_blank" rel="noopener noreferrer" style={{background:"#2C2C2E",borderRadius:11,padding:"11px 13px",textDecoration:"none",display:"flex",alignItems:"center",gap:10,transition:"all .2s"}} onMouseEnter={e=>{e.currentTarget.style.background="#38383A";}} onMouseLeave={e=>{e.currentTarget.style.background="#2C2C2E";}}>
               <div style={{width:30,height:30,background:al.grad,borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,flexShrink:0}}>{al.icon}</div>
               <div style={{flex:1}}><div style={{fontSize:12,fontWeight:700,color:"#fff"}}>{al.name}</div></div>
@@ -1455,7 +1455,7 @@ IMPORTANT: Start your response with { and end with }. Nothing else.`;
                   <SHdr icon="🎟️" title="Tours & Actividades" sub="Experiencias únicas en destino"/>
                   <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
                     {["Visita guiada","Tour gastronómico","Excursión de día","Experiencia local","Aventura"].map((tour,i)=>(
-                      <button key={i} onClick={()=>window.open(`https://www.getyourguide.es/s/?q=${encodeURIComponent((plan.destination||"")+" "+tour)}`,"_blank")}
+                      <button key={i} onClick={()=>window.open(`https://www.getyourguide.es?partner_id=YYAW5I0/s/?partner_id=YYAW5I0&q=${encodeURIComponent((plan.destination||"")+" "+tour)}`,"_blank")}
                         style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:12,padding:"12px 14px",cursor:"pointer",textAlign:"left",flex:"1 1 150px",transition:"all .2s"}}
                         onMouseEnter={e=>{e.currentTarget.style.borderColor=P.gold;e.currentTarget.style.transform="translateY(-2px)";}}
                         onMouseLeave={e=>{e.currentTarget.style.borderColor=P.border;e.currentTarget.style.transform="none";}}>
