@@ -278,19 +278,34 @@ function VirtualGuide({plan,places,userPos,lang,onClose}){
 
 const VOICE_ID = "yiWEefwu5z3DQCM79clN";
 
-async function speakText(text, lang) {
+async function speakText(text) {
   try {
     const r = await fetch("/api/elevenlabs", {
       method: "POST",
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify({text, voiceId: VOICE_ID})
     });
+    if(!r.ok) return null;
     const blob = await r.blob();
     const url = URL.createObjectURL(blob);
     const audio = new Audio(url);
-    audio.play();
+    await audio.play();
     return audio;
   } catch { return null; }
+}
+
+function getBearing(lat1,lon1,lat2,lon2){
+  const p=Math.PI/180;
+  const dL=(lon2-lon1)*p;
+  const y=Math.sin(dL)*Math.cos(lat2*p);
+  const x=Math.cos(lat1*p)*Math.sin(lat2*p)-Math.sin(lat1*p)*Math.cos(lat2*p)*Math.cos(dL);
+  const b=Math.atan2(y,x)/p;
+  return((b+360)%360);
+}
+
+function getDirection(bearing){
+  const dirs=["norte","noreste","este","sureste","sur","suroeste","oeste","noroeste"];
+  return dirs[Math.round(bearing/45)%8];
 }
 
 function GuideModal({place,plan,lang,onClose}){
@@ -326,7 +341,7 @@ function GuideModal({place,plan,lang,onClose}){
       setStory(txt);setLoading(false);
       // Auto speak
       setSpeaking(true);
-      speakText(txt,lang).then(a=>{
+      speakText(txt).then(a=>{
         setAudio(a);
         if(a)a.onended=()=>setSpeaking(false);
       });
@@ -344,7 +359,7 @@ function GuideModal({place,plan,lang,onClose}){
   function replay(){
     if(audio){audio.pause();audio.src="";}
     setSpeaking(true);
-    speakText(story,lang).then(a=>{
+    speakText(story).then(a=>{
       setAudio(a);
       if(a)a.onended=()=>setSpeaking(false);
     });
@@ -458,6 +473,106 @@ function MyTrips({user,onClose,onLoad}){
 }
 
 
+
+function AudioGuide({places,userPos,lang,city,onClose}){
+  const t=T[lang||"es"];
+  const[active,setActive]=useState(false);
+  const[speaking,setSpeaking]=useState(false);
+  const[lastSpoken,setLastSpoken]=useState(null);
+  const[log,setLog]=useState([]);
+  const audioRef=useRef(null);
+
+  async function announce(text){
+    if(audioRef.current){audioRef.current.pause();}
+    setSpeaking(true);
+    const a=await speakText(text);
+    audioRef.current=a;
+    if(a)a.onended=()=>setSpeaking(false);
+    setLog(prev=>[{text,time:new Date().toLocaleTimeString()},...prev.slice(0,4)]);
+  }
+
+  useEffect(()=>{
+    if(!active||!userPos||!places.length)return;
+    // Find nearest place
+    const withDist=places.map(p=>({...p,dist:haversine(userPos.lat,userPos.lng,p.lat,p.lng)})).sort((a,b)=>a.dist-b.dist);
+    const nearest=withDist[0];
+    const second=withDist[1];
+
+    if(nearest.dist<150&&nearest.name!==lastSpoken){
+      setLastSpoken(nearest.name);
+      // Get story and speak
+      fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:200,system:`Eres Sofia, audioguia turistica. ${t.lp} Habla como si estuvieras ahi con el turista. Max 3 frases cortas.`,messages:[{role:"user",content:`El turista acaba de llegar a ${nearest.name} en ${city}. Cuenta algo interesante.`}]})})
+      .then(r=>r.json())
+      .then(d=>{
+        const txt=(d.content||[]).map(b=>b.text||"").join("");
+        // Add navigation hint to next place
+        let nav="";
+        if(second&&second.dist<500){
+          const bearing=getBearing(userPos.lat,userPos.lng,second.lat,second.lng);
+          const dir=getDirection(bearing);
+          const dist=Math.round(second.dist);
+          nav=` El siguiente lugar es ${second.name}, a ${dist} metros hacia el ${dir}.`;
+        }
+        announce(txt+nav);
+      });
+    }
+  },[userPos,active,places]);
+
+  return(
+    <div style={{position:"fixed",inset:0,background:"#0D0D0D",zIndex:1100,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"24px"}}>
+      <button onClick={onClose} style={{position:"absolute",top:20,right:20,background:"#2C2C2E",border:"none",color:"#fff",borderRadius:"50%",width:36,height:36,cursor:"pointer",fontSize:16,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+      
+      {/* Sofia avatar */}
+      <div style={{width:100,height:100,borderRadius:"50%",overflow:"hidden",border:`3px solid ${speaking?"#22C55E":"#C9A96E"}`,boxShadow:`0 0 ${speaking?40:20}px ${speaking?"rgba(34,197,94,.5)":"rgba(201,169,110,.3)"}`,marginBottom:24,transition:"all .3s"}}>
+        <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=200&q=80" alt="Sofia" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
+      </div>
+
+      <div style={{fontSize:22,fontWeight:900,color:"#fff",marginBottom:4}}>Sofia</div>
+      <div style={{fontSize:13,color:"#C9A96E",marginBottom:32}}>Audioguia · {city}</div>
+
+      {/* Status */}
+      <div style={{background:"#1C1C1E",borderRadius:20,padding:"20px 24px",width:"100%",maxWidth:340,marginBottom:24,textAlign:"center"}}>
+        {speaking?(
+          <div>
+            <div style={{display:"flex",gap:6,justifyContent:"center",marginBottom:10}}>
+              {[0,1,2,3,4].map(i=><div key={i} style={{width:4,background:"#22C55E",borderRadius:2,animation:`soundWave .6s ${i*.1}s ease-in-out infinite`,height:20}}/>)}
+            </div>
+            <div style={{fontSize:13,color:"#22C55E",fontWeight:600}}>Sofia esta hablando...</div>
+          </div>
+        ):active?(
+          <div>
+            <div style={{fontSize:28,marginBottom:8}}>👂</div>
+            <div style={{fontSize:13,color:"#A0A0A0"}}>Caminando... Sofia te avisara cuando llegues a un lugar</div>
+          </div>
+        ):(
+          <div>
+            <div style={{fontSize:28,marginBottom:8}}>🎧</div>
+            <div style={{fontSize:13,color:"#A0A0A0"}}>Ponte los auriculares y pulsa Iniciar</div>
+          </div>
+        )}
+      </div>
+
+      {/* Log */}
+      {log.length>0&&(
+        <div style={{width:"100%",maxWidth:340,marginBottom:20}}>
+          {log.map((l,i)=>(
+            <div key={i} style={{background:"#1C1C1E",borderRadius:10,padding:"9px 13px",marginBottom:6,opacity:1-i*.15}}>
+              <div style={{fontSize:9,color:"#48484A",marginBottom:2}}>{l.time}</div>
+              <div style={{fontSize:11,color:"#A0A0A0",lineHeight:1.4}}>{l.text.slice(0,80)}...</div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <button onClick={()=>setActive(!active)} style={{background:active?"rgba(224,90,78,.2)":"linear-gradient(135deg,#C9A96E,#E8C98A)",color:active?"#E05A4E":"#0D0D0D",border:active?"1px solid rgba(224,90,78,.4)":"none",borderRadius:50,padding:"16px 40px",fontSize:16,fontWeight:800,cursor:"pointer",fontFamily:"-apple-system,sans-serif"}}>
+        {active?"⏹ Detener guia":"▶️ Iniciar audioguia"}
+      </button>
+
+      <style>{`@keyframes soundWave{0%,100%{height:6px}50%{height:22px}}`}</style>
+    </div>
+  );
+}
+
 function ExploreMode({lang,onClose}){
   const t=T[lang||"es"];
   const[city,setCity]=useState("");
@@ -469,6 +584,7 @@ function ExploreMode({lang,onClose}){
   const[gpsActive,setGpsActive]=useState(false);
   const[showMap,setShowMap]=useState(false);
   const[activeMap,setActiveMap]=useState(null);
+  const[audioGuide,setAudioGuide]=useState(false);
   const lastNearRef=useRef(null);
   const leafReady=useLeaflet();
 
@@ -541,6 +657,7 @@ function ExploreMode({lang,onClose}){
         {places.length>0&&(
           <div style={{display:"flex",gap:7,marginTop:9}}>
             {!gpsActive&&<button onClick={enableGPS} style={{flex:1,background:"rgba(59,130,246,.12)",border:"1px solid rgba(59,130,246,.25)",color:"#60A5FA",borderRadius:9,padding:"7px",fontSize:11,fontWeight:600,cursor:"pointer"}}>📍 Activar GPS</button>}
+            <button onClick={()=>setAudioGuide(true)} style={{flex:1,background:"rgba(34,197,94,.12)",border:"1px solid rgba(34,197,94,.25)",color:"#22C55E",borderRadius:9,padding:"7px",fontSize:11,fontWeight:600,cursor:"pointer"}}>🎧 Audioguia</button>
             <button onClick={()=>setShowMap(!showMap)} style={{flex:1,background:showMap?"rgba(201,169,110,.2)":"rgba(201,169,110,.08)",border:"1px solid rgba(201,169,110,.25)",color:"#C9A96E",borderRadius:9,padding:"7px",fontSize:11,fontWeight:600,cursor:"pointer"}}>🗺️ {showMap?"Ocultar mapa":"Ver mapa"}</button>
           </div>
         )}
@@ -586,6 +703,7 @@ function ExploreMode({lang,onClose}){
         </div>
       )}
 
+      {audioGuide&&<AudioGuide places={places} userPos={userPos} lang={lang} city={city} onClose={()=>setAudioGuide(false)}/> }
       {selPlace&&<GuideModal place={selPlace} plan={{destination:city}} lang={lang} onClose={()=>setSelPlace(null)}/>}
     </div>
   );
