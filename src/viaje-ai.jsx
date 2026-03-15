@@ -1036,7 +1036,7 @@ IMPORTANT: Start your response with { and end with }. Nothing else.`;
         <div style={{display:"flex",gap:7,alignItems:"center"}}>
           <LangSel lang={lang} setLang={setLang}/>
           {plan&&<button onClick={share} style={{background:P.card2,border:`1px solid ${P.border}`,color:P.sub,borderRadius:8,padding:"5px 11px",fontSize:12,cursor:"pointer",fontWeight:600}}>↑ {t.shareBtn}</button>}
-          <button onClick={()=>setExploreOpen(true)} style={{background:"rgba(201,169,110,.15)",border:"1px solid rgba(201,169,110,.25)",color:"#C9A96E",borderRadius:8,padding:"5px 11px",fontSize:12,cursor:"pointer",fontWeight:600}}>🔍 Explorar</button>
+          <button onClick={()=>setExploreOpen(true)} style={{background:"rgba(201,169,110,.15)",border:"1px solid rgba(201,169,110,.25)",color:"#C9A96E",borderRadius:8,padding:"5px 11px",fontSize:12,cursor:"pointer",fontWeight:600}}>🔍 Explorar ciudad</button>
           {user&&<button onClick={()=>setMyTripsOpen(true)} style={{background:P.card2,border:`1px solid ${P.border}`,color:P.sub,borderRadius:8,padding:"5px 11px",fontSize:12,cursor:"pointer",fontWeight:600}}>📚 Mis viajes</button>}
           {plan&&<button onClick={saveTrip} style={{background:P.goldDim,border:`1px solid ${P.goldBorder}`,color:P.gold,borderRadius:8,padding:"5px 11px",fontSize:12,cursor:"pointer",fontWeight:600}}>🔖 Guardar</button>}
           {plan&&<IBtn size="sm" outline color={P.muted} onClick={reset}>{t.newSearch}</IBtn>}
