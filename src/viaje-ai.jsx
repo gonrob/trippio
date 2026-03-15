@@ -637,8 +637,13 @@ function ExploreMode({lang,onClose}){
       const raw=(d.content||[]).map(b=>b.text||"").join("").trim();
       const m=raw.match(/\[[\s\S]*\]/);
       if(m)setPlaces(JSON.parse(m[0]));
-    }catch{}
-    setLoading(false);setShowMap(true);
+      let parsed=null;
+      try{parsed=JSON.parse(raw);}catch(e){}
+      if(!parsed){try{const i=raw.indexOf('[');const j=raw.lastIndexOf(']');if(i>=0&&j>i)parsed=JSON.parse(raw.slice(i,j+1));}catch(e){}}
+      if(!parsed){try{parsed=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){}}
+      if(parsed&&Array.isArray(parsed)&&parsed.length>0){setPlaces(parsed);setShowMap(true);}
+    }catch(e){console.error('Explore error:',e);}
+    setLoading(false);
   }
 
   const typeIcon=type=>({church:"⛪",park:"🌳",museum:"🏛️",statue:"🗿",monument:"🏛️",temple:"🕌",building:"🏢"})[type]||"📍";
