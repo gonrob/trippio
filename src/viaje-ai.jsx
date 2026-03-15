@@ -474,6 +474,22 @@ function MyTrips({user,onClose,onLoad}){
 
 
 
+
+function WikiImg({name}){
+  const[src,setSrc]=useState(null);
+  useEffect(()=>{
+    fetch(`https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(name)}&prop=pageimages&format=json&pithumbsize=400&origin=*`)
+      .then(r=>r.json())
+      .then(d=>{
+        const pages=d.query?.pages;
+        if(pages){const p=Object.values(pages)[0];if(p.thumbnail?.source)setSrc(p.thumbnail.source);}
+      }).catch(()=>{});
+  },[name]);
+  return src
+    ?<img src={src} alt={name} style={{width:"100%",height:"100%",objectFit:"cover",opacity:.8}}/>
+    :<div style={{width:"100%",height:"100%",background:"#252525",display:"flex",alignItems:"center",justifyContent:"center",fontSize:28}}>🏛️</div>;
+}
+
 function AudioGuide({places,userPos,lang,city,onClose}){
   const t=T[lang||"es"];
   const[active,setActive]=useState(false);
@@ -623,10 +639,11 @@ function ExploreMode({lang,onClose}){
       const m=raw.match(/\[[\s\S]*\]/);
       if(m)setPlaces(JSON.parse(m[0]));
     }catch{}
-    setLoading(false);
+    setLoading(false);setShowMap(true);
   }
 
   const typeIcon=type=>({church:"⛪",park:"🌳",museum:"🏛️",statue:"🗿",monument:"🏛️",temple:"🕌",building:"🏢"})[type]||"📍";
+  const wikiImg=name=>`https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(name)}&prop=pageimages&format=json&pithumbsize=400&origin=*`;
 
   return(
     <div style={{position:"fixed",inset:0,background:"#0D0D0D",zIndex:1000,display:"flex",flexDirection:"column"}}>
@@ -689,7 +706,7 @@ function ExploreMode({lang,onClose}){
           {places.map((place,i)=>(
             <div key={i} onClick={()=>setSelPlace(place)} style={{background:"#1C1C1E",border:`1px solid ${selPlace?.name===place.name?"#C9A96E":"#2A2A2A"}`,borderRadius:13,overflow:"hidden",cursor:"pointer",transition:"all .2s"}}>
               <div style={{height:95,background:"#252525",position:"relative",overflow:"hidden"}}>
-                <img src={`https://images.unsplash.com/photo-150083555${i}837-99ac94a94552?w=300&q=60`} alt={place.name} style={{width:"100%",height:"100%",objectFit:"cover",opacity:.6}} onError={e=>{e.target.style.display="none";e.target.parentElement.style.background="#2A2A2A";}}/>
+                <WikiImg name={place.name}/>
                 <div style={{position:"absolute",inset:0,background:"linear-gradient(to top,rgba(0,0,0,.6),transparent)"}}/>
                 <div style={{position:"absolute",bottom:6,left:8,fontSize:16}}>{typeIcon(place.type)}</div>
               </div>
