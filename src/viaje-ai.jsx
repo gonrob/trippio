@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "./supabase.js";
 
 const P = {
@@ -270,6 +270,131 @@ function VirtualGuide({plan,places,userPos,lang,onClose}){
       <div style={{padding:"9px",borderTop:`1px solid ${P.border}`,display:"flex",gap:6}}>
         <input value={inp} onChange={e=>setInp(e.target.value)} onKeyDown={e=>e.key==="Enter"&&send()} placeholder={t.guidePh} style={{flex:1,background:"#2C2C2E",border:`1px solid ${P.border}`,borderRadius:9,padding:"8px 11px",fontSize:12,color:"#fff",outline:"none",fontFamily:"-apple-system,sans-serif"}} onFocus={e=>e.target.style.borderColor=P.gold} onBlur={e=>e.target.style.borderColor=P.border}/>
         <button onClick={send} disabled={!inp.trim()||load} style={{background:GOLD_GRAD,border:"none",borderRadius:9,width:36,height:36,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,opacity:!inp.trim()||load?.5:1}}>↑</button>
+      </div>
+    </div>
+  );
+}
+
+
+const VOICE_ID = "yiWEefwu5z3DQCM79clN";
+
+async function speakText(text, lang) {
+  try {
+    const r = await fetch("/api/elevenlabs", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({text, voiceId: VOICE_ID})
+    });
+    const blob = await r.blob();
+    const url = URL.createObjectURL(blob);
+    const audio = new Audio(url);
+    audio.play();
+    return audio;
+  } catch { return null; }
+}
+
+function GuideModal({place,plan,lang,onClose}){
+  const t=T[lang||"es"];
+  const[story,setStory]=useState("");
+  const[loading,setLoading]=useState(true);
+  const[speaking,setSpeaking]=useState(false);
+  const[audio,setAudio]=useState(null);
+  const[photos,setPhotos]=useState([]);
+  const[photoIdx,setPhotoIdx]=useState(0);
+
+  useEffect(()=>{
+    // Get photos from Unsplash
+    const q=encodeURIComponent(place.name);
+    fetch(`https://api.unsplash.com/search/photos?query=${q}&per_page=4&client_id=yDqpMxCkCWDRSRJAXRRR0pBJyLdQUXfTTMjvTdA_3Yw`)
+      .then(r=>r.json())
+      .then(d=>setPhotos(d.results?.map(p=>p.urls?.regular)||[]))
+      .catch(()=>{});
+    // Generate story with Claude
+    fetch("/api/anthropic",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01"},
+      body:JSON.stringify({
+        model:"claude-haiku-4-5-20251001",
+        max_tokens:400,
+        system:`Eres Sofia, una guia turistica experta, carismática y apasionada. ${t.lp} Habla en primera persona como si estuvieras ahi con el turista. Maximo 4 frases cortas y emocionantes.`,
+        messages:[{role:"user",content:`Cuenta la historia y curiosidades de: ${place.name}. Contexto: estamos en ${plan?.destination||"este destino"}.`}]
+      })
+    })
+    .then(r=>r.json())
+    .then(d=>{
+      const txt=(d.content||[]).map(b=>b.text||"").join("");
+      setStory(txt);setLoading(false);
+      // Auto speak
+      setSpeaking(true);
+      speakText(txt,lang).then(a=>{
+        setAudio(a);
+        if(a)a.onended=()=>setSpeaking(false);
+      });
+    })
+    .catch(()=>setLoading(false));
+    return()=>{if(audio){audio.pause();audio.src="";}};
+  },[]);
+
+  useEffect(()=>{
+    if(!photos.length)return;
+    const i=setInterval(()=>setPhotoIdx(x=>(x+1)%photos.length),3000);
+    return()=>clearInterval(i);
+  },[photos]);
+
+  function replay(){
+    if(audio){audio.pause();audio.src="";}
+    setSpeaking(true);
+    speakText(story,lang).then(a=>{
+      setAudio(a);
+      if(a)a.onended=()=>setSpeaking(false);
+    });
+  }
+
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.92)",zIndex:2000,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-end"}} onClick={e=>{if(e.target===e.currentTarget)onClose();}}>
+      {/* Photo background */}
+      {photos.length>0&&(
+        <div style={{position:"absolute",inset:0,overflow:"hidden"}}>
+          <img src={photos[photoIdx]} alt={place.name} style={{width:"100%",height:"100%",objectFit:"cover",opacity:.35,transition:"opacity .5s"}}/>
+          <div style={{position:"absolute",inset:0,background:"linear-gradient(to top,rgba(0,0,0,.95) 40%,rgba(0,0,0,.3) 100%)"}}/>
+        </div>
+      )}
+      
+      {/* Content */}
+      <div style={{position:"relative",width:"100%",maxWidth:500,padding:"0 20px 48px",zIndex:1}}>
+        {/* Guide avatar */}
+        <div style={{display:"flex",alignItems:"flex-end",gap:16,marginBottom:20}}>
+          <div style={{position:"relative",flexShrink:0}}>
+            <div style={{width:72,height:72,borderRadius:"50%",overflow:"hidden",border:`3px solid ${P.gold}`,boxShadow:`0 0 20px ${P.goldGlow}`}}>
+              <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=200&q=80" alt="Sofia" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
+            </div>
+            {speaking&&<div style={{position:"absolute",bottom:2,right:2,width:16,height:16,background:"#22C55E",borderRadius:"50%",border:"2px solid #0D0D0D",animation:"pulse 1s ease infinite"}}/>}
+          </div>
+          <div>
+            <div style={{fontSize:18,fontWeight:900,color:"#fff"}}>Sofia</div>
+            <div style={{fontSize:12,color:P.gold}}>Guía · {place.name}</div>
+          </div>
+          <button onClick={onClose} style={{marginLeft:"auto",background:"rgba(255,255,255,.1)",border:"none",color:"#fff",borderRadius:"50%",width:36,height:36,cursor:"pointer",fontSize:18,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+        </div>
+
+        {/* Story */}
+        <div style={{background:"rgba(0,0,0,.6)",backdropFilter:"blur(20px)",borderRadius:20,padding:"20px",border:`1px solid ${P.goldBorder}`,marginBottom:16,minHeight:100}}>
+          {loading?(
+            <div style={{display:"flex",gap:5,justifyContent:"center",padding:"20px 0"}}>
+              {[0,1,2].map(i=><div key={i} style={{width:8,height:8,background:P.gold,borderRadius:"50%",animation:`dot .8s ${i*.2}s ease-in-out infinite`}}/>)}
+            </div>
+          ):(
+            <p style={{margin:0,fontSize:15,color:"#fff",lineHeight:1.7,fontStyle:"italic"}}>"{story}"</p>
+          )}
+        </div>
+
+        {/* Controls */}
+        <div style={{display:"flex",gap:10}}>
+          <button onClick={replay} disabled={loading||!story} style={{flex:1,padding:"13px",background:GOLD_GRAD,color:"#0D0D0D",border:"none",borderRadius:12,fontSize:14,fontWeight:700,cursor:"pointer",fontFamily:"-apple-system,sans-serif",display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
+            {speaking?"🔊 Hablando...":"▶️ Escuchar de nuevo"}
+          </button>
+          <button onClick={onClose} style={{padding:"13px 18px",background:"rgba(255,255,255,.1)",color:"#fff",border:"1px solid rgba(255,255,255,.2)",borderRadius:12,fontSize:14,cursor:"pointer"}}>Cerrar</button>
+        </div>
       </div>
     </div>
   );
@@ -562,6 +687,7 @@ export default function ViajeIA(){
   const[activeMap,setActiveMap]=useState(null);
   const[toast,setToast]=useState(false);
   const[bookingOpen,setBookingOpen]=useState(false);
+  const[nearbyModal,setNearbyModal]=useState(null);
   const leafReady=useLeaflet();
   const days=diffDays(start,end);
   const nights=days?days-1:plan?.days||5;
@@ -572,14 +698,26 @@ export default function ViajeIA(){
     return()=>subscription.unsubscribe();
   },[]);
 
+  const lastNearRef = useRef(null);
   useEffect(()=>{
     if(!navigator.geolocation||!plan)return;
     const id=navigator.geolocation.watchPosition(
-      p=>{setUserPos({lat:p.coords.latitude,lng:p.coords.longitude});},
+      p=>{
+        const pos={lat:p.coords.latitude,lng:p.coords.longitude};
+        setUserPos(pos);
+        // Check nearby places
+        if(places.length){
+          const nearby=places.find(pl=>pl.lat&&pl.lng&&haversine(pos.lat,pos.lng,pl.lat,pl.lng)<150);
+          if(nearby&&nearby.name!==lastNearRef.current){
+            lastNearRef.current=nearby.name;
+            setNearbyModal(nearby);
+          }
+        }
+      },
       ()=>{},{enableHighAccuracy:true,maximumAge:5000}
     );
     return()=>navigator.geolocation.clearWatch(id);
-  },[plan]);
+  },[plan,places]);
 
   function buildPlaces(p,hs,rs){
     const out=[];
@@ -718,6 +856,7 @@ IMPORTANT: Start your response with { and end with }. Nothing else.`;
       </nav>
 
       {authOpen&&<AuthModal onClose={()=>setAuthOpen(false)} onAuth={u=>setUser(u)}/>}
+  {nearbyModal&&<GuideModal place={nearbyModal} plan={plan} lang={lang} onClose={()=>setNearbyModal(null)}/> }
   {bookingOpen&&fSel&&hSel&&<BookingFlow flight={fSel} hotel={hSel} dest={plan?.destination} travelers={travelers} nights={nights} t={t} onClose={()=>setBookingOpen(false)}/>}
       {plan&&guideOpen&&<VirtualGuide plan={plan} places={places} userPos={userPos} lang={lang} onClose={()=>setGuideOpen(false)}/>}
       {plan&&!guideOpen&&<GuideBubble onClick={()=>setGuideOpen(true)} mood={guideMood} speak={guideSpeak}/>}
@@ -939,7 +1078,7 @@ IMPORTANT: Start your response with { and end with }. Nothing else.`;
                                   {h.lat&&h.lng&&<button onClick={e=>{e.stopPropagation();flyTo(h);}} style={{background:"none",border:`1px solid ${P.border2}`,color:P.muted,borderRadius:7,padding:"2px 8px",fontSize:9,cursor:"pointer"}}>{t.mapBtn}</button>}
                                   {nights&&<span style={{fontSize:11,color:sel?P.gold:P.muted,fontWeight:600}}>{h.price_per_night*nights}€</span>}
                                 </div>
-                                <button onClick={e=>{e.stopPropagation();window.open(`https://www.booking.com/search.html?ss=${encodeURIComponent(h.name)}&dest_type=property&search_type=property`,"_blank");}} style={{background:GOLD_GRAD,color:"#0D0D0D",border:"none",borderRadius:7,padding:"4px 11px",fontSize:11,fontWeight:700,cursor:"pointer"}}>{t.bookHotel}</button>
+                                <button onClick={e=>{e.stopPropagation();window.open(`https://www.booking.com/search.html?ss=${encodeURIComponent(h.name+" "+plan.destination)}`,"_blank");}} style={{background:GOLD_GRAD,color:"#0D0D0D",border:"none",borderRadius:7,padding:"4px 11px",fontSize:11,fontWeight:700,cursor:"pointer"}}>{t.bookHotel}</button>
                               </div>
                             </div>
                           </div>
