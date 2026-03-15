@@ -519,7 +519,10 @@ Return exactly: {"destination":"city, country","days":N,"budget":"X€","summary
       const r=await fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:3000,system:sys,messages:[{role:"user",content:`${dest}${budget?" · "+budget+"€":""}${dctx?" · "+dctx:""}`}]})});
       const d=await r.json();
       if(d.error){throw new Error(d.error.message||"API error");}
-      planData=JSON.parse((d.content||[]).map(b=>b.text||"").join("").replace(/```json|```/g,"").trim());
+      const raw=(d.content||[]).map(b=>b.text||"").join("").trim();
+      const jsonMatch=raw.match(/\{[\s\S]*\}/);
+      if(!jsonMatch)throw new Error("No JSON found in response");
+      planData=JSON.parse(jsonMatch[0]);
       setPlan(planData);setLoading(false);
       setGuideMood("excited");setGuideSpeak(true);setTimeout(()=>{setGuideMood("happy");setGuideSpeak(false);},3000);
     }catch(e){
@@ -727,6 +730,7 @@ Return exactly: {"destination":"city, country","days":N,"budget":"X€","summary
               <div style={{margin:"0 auto 18px",width:68,display:"flex",justifyContent:"center",animation:"float 3s ease-in-out infinite"}}><TrippioLogo size={68}/></div>
               <h2 style={{fontSize:21,fontWeight:800,margin:"0 0 5px"}}>{t.loadTitle}</h2>
               <p style={{fontSize:12,color:P.muted}}>{t.loadSub}</p>
+      <p style={{fontSize:11,color:P.gold,marginTop:8,fontWeight:600}}>⏱ Esto puede tardar hasta 1 minuto...</p>
             </div>
             <div style={{background:P.card,borderRadius:16,padding:"7px 16px 9px",border:`1px solid ${P.border}`,marginBottom:20}}>
               {t.steps.map((label,i)=>(
