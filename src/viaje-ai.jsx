@@ -339,15 +339,12 @@ function GuideModal({place,plan,lang,onClose}){
     .then(d=>{
       const txt=(d.content||[]).map(b=>b.text||"").join("");
       setStory(txt);setLoading(false);
-      // Show text first, speak in background
-      setTimeout(()=>{
-        setSpeaking(true);
-        speakText(txt).then(a=>{
-          setAudio(a);
-          if(a)a.onended=()=>setSpeaking(false);
-          else setSpeaking(false);
-        }).catch(()=>setSpeaking(false));
-      }, 500);
+      // Auto speak
+      setSpeaking(true);
+      speakText(txt).then(a=>{
+        setAudio(a);
+        if(a)a.onended=()=>setSpeaking(false);
+      });
     })
     .catch(()=>setLoading(false));
     return()=>{if(audio){audio.pause();audio.src="";}};
@@ -362,7 +359,10 @@ function GuideModal({place,plan,lang,onClose}){
   function replay(){
     if(audio){audio.pause();audio.src="";}
     setSpeaking(true);
-    speakText(story).then(a=>{setAudio(a);if(a)a.onended=()=>setSpeaking(false);else setSpeaking(false);}).catch(()=>setSpeaking(false));
+    speakText(story).then(a=>{
+      setAudio(a);
+      if(a)a.onended=()=>setSpeaking(false);
+    });
   }
 
   return(
@@ -381,7 +381,7 @@ function GuideModal({place,plan,lang,onClose}){
         <div style={{display:"flex",alignItems:"flex-end",gap:16,marginBottom:20}}>
           <div style={{position:"relative",flexShrink:0}}>
             <div style={{width:72,height:72,borderRadius:"50%",overflow:"hidden",border:`3px solid ${P.gold}`,boxShadow:`0 0 20px ${P.goldGlow}`}}>
-              <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=200&q=80" alt="Sofia" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
+              <img src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=200&q=80" alt="Sofia" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
             </div>
             {speaking&&<div style={{position:"absolute",bottom:2,right:2,width:16,height:16,background:"#22C55E",borderRadius:"50%",border:"2px solid #0D0D0D",animation:"pulse 1s ease infinite"}}/>}
           </div>
@@ -478,16 +478,15 @@ function MyTrips({user,onClose,onLoad}){
 function WikiImg({name}){
   const[src,setSrc]=useState(null);
   useEffect(()=>{
-    fetch(`https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(name)}&prop=pageimages&format=json&pithumbsize=400&origin=*`)
+    fetch("https://en.wikipedia.org/w/api.php?action=query&titles="+encodeURIComponent(name)+"&prop=pageimages&format=json&pithumbsize=400&origin=*")
       .then(r=>r.json())
       .then(d=>{
-        const pages=d.query?.pages;
-        if(pages){const p=Object.values(pages)[0];if(p.thumbnail?.source)setSrc(p.thumbnail.source);}
+        const pages=d?.query?.pages;
+        if(pages){const p=Object.values(pages)[0];if(p?.thumbnail?.source)setSrc(p.thumbnail.source);}
       }).catch(()=>{});
   },[name]);
-  return src
-    ?<img src={src} alt={name} style={{width:"100%",height:"100%",objectFit:"cover",opacity:.8}}/>
-    :<div style={{width:"100%",height:"100%",background:"#252525",display:"flex",alignItems:"center",justifyContent:"center",fontSize:28}}>🏛️</div>;
+  if(src)return<img src={src} alt={name} style={{width:"100%",height:"100%",objectFit:"cover",opacity:.85}}/>;
+  return<div style={{width:"100%",height:"100%",background:"#252525",display:"flex",alignItems:"center",justifyContent:"center",fontSize:26}}>🏛️</div>;
 }
 
 function AudioGuide({places,userPos,lang,city,onClose}){
@@ -517,7 +516,7 @@ function AudioGuide({places,userPos,lang,city,onClose}){
     if(nearest.dist<150&&nearest.name!==lastSpoken){
       setLastSpoken(nearest.name);
       // Get story and speak
-      fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:200,system:`Eres Sofia, audioguia turistica. ${t.lp} Habla como si estuvieras ahi. Max 2 frases MUY cortas.`,messages:[{role:"user",content:`El turista acaba de llegar a ${nearest.name} en ${city}. Cuenta algo interesante.`}]})})
+      fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:200,system:`Eres Sofia, audioguia turistica. ${t.lp} Habla como si estuvieras ahi con el turista. Max 3 frases cortas.`,messages:[{role:"user",content:`El turista acaba de llegar a ${nearest.name} en ${city}. Cuenta algo interesante.`}]})})
       .then(r=>r.json())
       .then(d=>{
         const txt=(d.content||[]).map(b=>b.text||"").join("");
@@ -643,13 +642,12 @@ function ExploreMode({lang,onClose}){
   }
 
   const typeIcon=type=>({church:"⛪",park:"🌳",museum:"🏛️",statue:"🗿",monument:"🏛️",temple:"🕌",building:"🏢"})[type]||"📍";
-  const wikiImg=name=>`https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(name)}&prop=pageimages&format=json&pithumbsize=400&origin=*`;
 
   return(
     <div style={{position:"fixed",inset:0,background:"#0D0D0D",zIndex:1000,display:"flex",flexDirection:"column"}}>
       <div style={{background:"rgba(13,13,13,.96)",backdropFilter:"blur(20px)",borderBottom:"1px solid #2A2A2A",padding:"12px 16px",display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
         <button onClick={onClose} style={{background:"#2C2C2E",border:"none",color:"#fff",borderRadius:"50%",width:32,height:32,cursor:"pointer",fontSize:15,display:"flex",alignItems:"center",justifyContent:"center"}}>←</button>
-        <div style={{flex:1}}><div style={{fontSize:15,fontWeight:900,color:"#fff"}}>🔍 Explorar ciudad</div><div style={{fontSize:10,color:"#C9A96E"}}>Sofia te guia por donde estes</div></div>
+        <div style={{flex:1}}><div style={{fontSize:15,fontWeight:900,color:"#fff"}}>🔍 Explorar ciudad o monumento</div><div style={{fontSize:10,color:"#C9A96E"}}>Sofia te guia por donde estes</div></div>
         {gpsActive&&<div style={{background:"rgba(34,197,94,.15)",border:"1px solid rgba(34,197,94,.3)",color:"#22C55E",borderRadius:7,padding:"3px 9px",fontSize:10,fontWeight:600}}>📍 GPS</div>}
       </div>
 
@@ -963,7 +961,7 @@ function AffiliatePanel({t}){
       </button>
       {open&&(
         <div style={{marginTop:12,display:"flex",flexDirection:"column",gap:8}}>
-          {[{name:"Booking.com",icon:"🏨",grad:"linear-gradient(135deg,#003580,#0057B8)",url:"https://www.booking.com",cta:"~€50/booking"},{name:"Skyscanner",icon:"✈️",grad:"linear-gradient(135deg,#0770E3,#0557B0)",url:"https://www.skyscanner.es",cta:"CPA/flight"},{name:"GetYourGuide",icon:"🎟️",grad:"linear-gradient(135deg,#FF5533,#CC3311)",url:"https://www.getyourguide.es?partner_id=YYAW5I0",cta:"8% commission"}].map((al,i)=>(
+          {[{name:"Booking.com",icon:"🏨",grad:"linear-gradient(135deg,#003580,#0057B8)",url:"https://www.booking.com",cta:"~€50/booking"},{name:"Skyscanner",icon:"✈️",grad:"linear-gradient(135deg,#0770E3,#0557B0)",url:"https://www.skyscanner.es",cta:"CPA/flight"},{name:"GetYourGuide",icon:"🎟️",grad:"linear-gradient(135deg,#FF5533,#CC3311)",url:"https://www.getyourguide.es",cta:"8% commission"}].map((al,i)=>(
             <a key={i} href={al.url} target="_blank" rel="noopener noreferrer" style={{background:"#2C2C2E",borderRadius:11,padding:"11px 13px",textDecoration:"none",display:"flex",alignItems:"center",gap:10,transition:"all .2s"}} onMouseEnter={e=>{e.currentTarget.style.background="#38383A";}} onMouseLeave={e=>{e.currentTarget.style.background="#2C2C2E";}}>
               <div style={{width:30,height:30,background:al.grad,borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,flexShrink:0}}>{al.icon}</div>
               <div style={{flex:1}}><div style={{fontSize:12,fontWeight:700,color:"#fff"}}>{al.name}</div></div>
@@ -1314,7 +1312,7 @@ IMPORTANT: Start your response with { and end with }. Nothing else.`;
               <div style={{margin:"0 auto 18px",width:68,display:"flex",justifyContent:"center",animation:"float 3s ease-in-out infinite"}}><TrippioLogo size={68}/></div>
               <h2 style={{fontSize:21,fontWeight:800,margin:"0 0 5px"}}>{t.loadTitle}</h2>
               <p style={{fontSize:12,color:P.muted}}>{t.loadSub}</p>
-              <p style={{fontSize:12,color:P.gold,marginTop:8,fontWeight:600}}>⏱ Puede tardar hasta 1 minuto...</p>
+              <p style={{fontSize:12,color:P.gold,marginTop:8,fontWeight:600}}>Puede tardar hasta 1 minuto...</p>
             </div>
             <div style={{background:P.card,borderRadius:16,padding:"7px 16px 9px",border:`1px solid ${P.border}`,marginBottom:20}}>
               {t.steps.map((label,i)=>(
@@ -1473,7 +1471,7 @@ IMPORTANT: Start your response with { and end with }. Nothing else.`;
                   <SHdr icon="🎟️" title="Tours & Actividades" sub="Experiencias únicas en destino"/>
                   <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
                     {["Visita guiada","Tour gastronómico","Excursión de día","Experiencia local","Aventura"].map((tour,i)=>(
-                      <button key={i} onClick={()=>window.open(`https://www.getyourguide.es?partner_id=YYAW5I0/s/?partner_id=YYAW5I0&q=${encodeURIComponent((plan.destination||"")+" "+tour)}`,"_blank")}
+                      <button key={i} onClick={()=>window.open(`https://www.getyourguide.es/s/?q=${encodeURIComponent((plan.destination||"")+" "+tour)}`,"_blank")}
                         style={{background:P.card,border:`1px solid ${P.border}`,borderRadius:12,padding:"12px 14px",cursor:"pointer",textAlign:"left",flex:"1 1 150px",transition:"all .2s"}}
                         onMouseEnter={e=>{e.currentTarget.style.borderColor=P.gold;e.currentTarget.style.transform="translateY(-2px)";}}
                         onMouseLeave={e=>{e.currentTarget.style.borderColor=P.border;e.currentTarget.style.transform="none";}}>
