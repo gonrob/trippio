@@ -453,8 +453,8 @@ function ExploreMode({lang,onClose}){
 
     {!loading&&places.length>0&&<div style={{flex:1,overflowY:"auto",padding:"10px",display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
       {places.map((p,i)=><div key={i} onClick={()=>setSelPlace(p)} style={{background:"#1C1C1E",border:`1px solid ${selPlace?.name===p.name?P.gold:P.border}`,borderRadius:12,overflow:"hidden",cursor:"pointer",transition:"all .2s"}}>
-        <div style={{height:90,background:"#252525",position:"relative",overflow:"hidden"}}><WikiImg name={p.name}/><div style={{position:"absolute",inset:0,background:"linear-gradient(to top,rgba(0,0,0,.65),transparent)"}}/><div style={{position:"absolute",bottom:5,left:7,fontSize:14}}>{typeIcon(p.type)}</div></div>
-        <div style={{padding:"8px 9px"}}><div style={{fontSize:11,fontWeight:700,color:"#fff",marginBottom:2,lineHeight:1.3}}>{p.name}</div><div style={{fontSize:9,color:P.muted,lineHeight:1.4,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{p.description}</div><div style={{fontSize:9,color:P.gold,fontWeight:600,marginTop:4}}>Sofia te cuenta →</div></div>
+        <div style={{height:90,background:"#252525",position:"relative",overflow:"hidden"}}><WikiImg name={p.name}/><div style={{position:"absolute",inset:0,background:"linear-gradient(to top,rgba(0,0,0,.8),transparent)"}}/><div style={{position:"absolute",bottom:5,left:7,fontSize:13}}>{typeIcon(p.type)}</div><div style={{position:"absolute",bottom:5,right:7,left:24,fontSize:10,fontWeight:700,color:"#fff",lineHeight:1.2,textShadow:"0 1px 3px rgba(0,0,0,.8)"}}>{p.name}</div></div>
+        <div style={{padding:"8px 9px"}}><div style={{fontSize:10,fontWeight:600,color:P.gold,marginBottom:2,lineHeight:1.3}}>{p.curiosity||p.description?.slice(0,50)}</div><div style={{fontSize:9,color:P.muted,lineHeight:1.4,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{p.description}</div><div style={{fontSize:9,color:P.gold,fontWeight:600,marginTop:4}}>Sofia te cuenta →</div></div>
       </div>)}
     </div>}
 
