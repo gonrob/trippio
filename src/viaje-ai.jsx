@@ -457,6 +457,122 @@ function MyTrips({user,onClose,onLoad}){
   );
 }
 
+
+function ExploreMode({lang,onClose}){
+  const t=T[lang||"es"];
+  const[city,setCity]=useState("");
+  const[userPos,setUserPos]=useState(null);
+  const[places,setPlaces]=useState([]);
+  const[loading,setLoading]=useState(false);
+  const[activePlace,setActivePlace]=useState(null);
+  const[gpsActive,setGpsActive]=useState(false);
+  const lastNearRef=useRef(null);
+
+  function enableGPS(){
+    if(!navigator.geolocation)return;
+    setGpsActive(true);
+    navigator.geolocation.watchPosition(
+      p=>{
+        const pos={lat:p.coords.latitude,lng:p.coords.longitude};
+        setUserPos(pos);
+        if(places.length){
+          const nearby=places.find(pl=>pl.lat&&pl.lng&&haversine(pos.lat,pos.lng,pl.lat,pl.lng)<200);
+          if(nearby&&nearby.name!==lastNearRef.current){
+            lastNearRef.current=nearby.name;
+            setActivePlace(nearby);
+          }
+        }
+      },
+      ()=>{},{enableHighAccuracy:true,maximumAge:3000}
+    );
+  }
+
+  async function explore(){
+    if(!city.trim())return;
+    setLoading(true);setPlaces([]);setActivePlace(null);
+    try{
+      const r=await fetch("/api/anthropic",{
+        method:"POST",
+        headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01"},
+        body:JSON.stringify({
+          model:"claude-haiku-4-5-20251001",
+          max_tokens:1500,
+          system:`Expert local guide. ${t.lp} Reply ONLY raw JSON array, no backticks:
+[{"name":"...","type":"monument|church|park|museum|statue|building","description":"...","lat":0.0,"lng":0.0,"curiosity":"one fascinating fact"}]
+Return 10 interesting places in the city with real GPS coordinates.`,
+          messages:[{role:"user",content:`Most interesting monuments, statues, churches, parks and historic buildings in ${city}`}]
+        })
+      });
+      const d=await r.json();
+      const raw=(d.content||[]).map(b=>b.text||"").join("").trim();
+      const m=raw.match(/\[[\s\S]*\]/);
+      if(m){const ps=JSON.parse(m[0]);setPlaces(ps);}
+    }catch{}
+    setLoading(false);
+  }
+
+  const typeIcon=t=>t==="church"?"⛪":t==="park"?"🌳":t==="museum"?"🏛️":t==="statue"?"🗿":t==="monument"?"🏛️":"📍";
+
+  return(
+    <div style={{position:"fixed",inset:0,background:"#0D0D0D",zIndex:1000,display:"flex",flexDirection:"column",overflow:"hidden"}}>
+      {/* Header */}
+      <div style={{background:"rgba(13,13,13,.96)",backdropFilter:"blur(20px)",borderBottom:"1px solid #2A2A2A",padding:"14px 18px",display:"flex",alignItems:"center",gap:12}}>
+        <button onClick={onClose} style={{background:"#2C2C2E",border:"none",color:"#fff",borderRadius:"50%",width:34,height:34,cursor:"pointer",fontSize:16,display:"flex",alignItems:"center",justifyContent:"center"}}>←</button>
+        <div>
+          <div style={{fontSize:16,fontWeight:900,color:"#fff"}}>🔍 Explorar ciudad</div>
+          <div style={{fontSize:11,color:"#C9A96E"}}>Sofia te guía por donde estés</div>
+        </div>
+        {gpsActive&&<div style={{marginLeft:"auto",background:"rgba(34,197,94,.15)",border:"1px solid rgba(34,197,94,.3)",color:"#22C55E",borderRadius:8,padding:"4px 10px",fontSize:11,fontWeight:600}}>📍 GPS activo</div>}
+      </div>
+
+      {/* Search */}
+      <div style={{padding:"16px 18px",borderBottom:"1px solid #2A2A2A"}}>
+        <div style={{display:"flex",gap:9}}>
+          <input value={city} onChange={e=>setCity(e.target.value)} onKeyDown={e=>e.key==="Enter"&&explore()} placeholder="Barcelona, Bangkok, Roma..." style={{flex:1,background:"#2C2C2E",border:"1.5px solid #3A3A3C",borderRadius:12,color:"#fff",fontSize:14,padding:"11px 14px",outline:"none",fontFamily:"-apple-system,sans-serif"}} onFocus={e=>e.target.style.borderColor="#C9A96E"} onBlur={e=>e.target.style.borderColor="#3A3A3C"}/>
+          <button onClick={explore} disabled={!city.trim()||loading} style={{background:"linear-gradient(135deg,#C9A96E,#E8C98A)",color:"#0D0D0D",border:"none",borderRadius:12,padding:"11px 18px",fontSize:14,fontWeight:700,cursor:"pointer"}}>
+            {loading?"...":"Explorar"}
+          </button>
+        </div>
+        {!gpsActive&&places.length>0&&(
+          <button onClick={enableGPS} style={{width:"100%",marginTop:9,background:"rgba(59,130,246,.15)",border:"1px solid rgba(59,130,246,.3)",color:"#60A5FA",borderRadius:10,padding:"9px",fontSize:12,fontWeight:600,cursor:"pointer"}}>
+            📍 Activar GPS para detección automática
+          </button>
+        )}
+      </div>
+
+      {/* Places list */}
+      <div style={{flex:1,overflowY:"auto",padding:"12px"}}>
+        {loading&&(
+          <div style={{textAlign:"center",padding:"40px"}}>
+            <div style={{fontSize:36,marginBottom:12,animation:"float 2s ease-in-out infinite"}}>🔍</div>
+            <div style={{color:"#C9A96E",fontWeight:600}}>Buscando lugares interesantes...</div>
+          </div>
+        )}
+        {!loading&&places.length===0&&city&&(
+          <div style={{textAlign:"center",padding:"40px",color:"#6B6B6B"}}>Escribe una ciudad y pulsa Explorar</div>
+        )}
+        {places.map((place,i)=>(
+          <div key={i} onClick={()=>setActivePlace(place)} style={{background:"#1C1C1E",border:`1px solid ${activePlace?.name===place.name?"#C9A96E":"#2A2A2A"}`,borderRadius:14,padding:"14px 16px",marginBottom:9,cursor:"pointer",transition:"all .2s"}}
+            onMouseEnter={e=>e.currentTarget.style.borderColor="#C9A96E"}
+            onMouseLeave={e=>{if(activePlace?.name!==place.name)e.currentTarget.style.borderColor="#2A2A2A";}}>
+            <div style={{display:"flex",alignItems:"center",gap:12}}>
+              <div style={{width:40,height:40,background:"rgba(201,169,110,.15)",border:"1px solid rgba(201,169,110,.25)",borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flexShrink:0}}>{typeIcon(place.type)}</div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontSize:14,fontWeight:700,color:"#fff",marginBottom:2}}>{place.name}</div>
+                <div style={{fontSize:11,color:"#6B6B6B",lineHeight:1.4,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{place.description}</div>
+              </div>
+              <div style={{fontSize:12,color:"#C9A96E",fontWeight:600,flexShrink:0}}>Sofia →</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Sofia appears when place selected */}
+      {activePlace&&<GuideModal place={activePlace} plan={{destination:city}} lang={lang} onClose={()=>setActivePlace(null)}/>}
+    </div>
+  );
+}
+
 function GuideBubble({onClick,mood,speak}){
   return(
     <button onClick={onClick} style={{position:"fixed",bottom:20,right:20,width:64,height:64,background:"#1E1E20",border:`2px solid ${P.goldBorder}`,borderRadius:"50%",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 8px 32px rgba(0,0,0,.5),0 0 0 4px rgba(201,169,110,.08)",zIndex:499,padding:0}}>
@@ -746,6 +862,7 @@ export default function ViajeIA(){
   const[bookingOpen,setBookingOpen]=useState(false);
   const[nearbyModal,setNearbyModal]=useState(null);
   const[myTripsOpen,setMyTripsOpen]=useState(false);
+  const[exploreOpen,setExploreOpen]=useState(false);
   const leafReady=useLeaflet();
   const days=diffDays(start,end);
   const nights=days?days-1:plan?.days||5;
@@ -919,6 +1036,7 @@ IMPORTANT: Start your response with { and end with }. Nothing else.`;
         <div style={{display:"flex",gap:7,alignItems:"center"}}>
           <LangSel lang={lang} setLang={setLang}/>
           {plan&&<button onClick={share} style={{background:P.card2,border:`1px solid ${P.border}`,color:P.sub,borderRadius:8,padding:"5px 11px",fontSize:12,cursor:"pointer",fontWeight:600}}>↑ {t.shareBtn}</button>}
+          <button onClick={()=>setExploreOpen(true)} style={{background:"rgba(201,169,110,.15)",border:"1px solid rgba(201,169,110,.25)",color:"#C9A96E",borderRadius:8,padding:"5px 11px",fontSize:12,cursor:"pointer",fontWeight:600}}>🔍 Explorar</button>
           {user&&<button onClick={()=>setMyTripsOpen(true)} style={{background:P.card2,border:`1px solid ${P.border}`,color:P.sub,borderRadius:8,padding:"5px 11px",fontSize:12,cursor:"pointer",fontWeight:600}}>📚 Mis viajes</button>}
           {plan&&<button onClick={saveTrip} style={{background:P.goldDim,border:`1px solid ${P.goldBorder}`,color:P.gold,borderRadius:8,padding:"5px 11px",fontSize:12,cursor:"pointer",fontWeight:600}}>🔖 Guardar</button>}
           {plan&&<IBtn size="sm" outline color={P.muted} onClick={reset}>{t.newSearch}</IBtn>}
@@ -930,6 +1048,7 @@ IMPORTANT: Start your response with { and end with }. Nothing else.`;
       </nav>
 
       {authOpen&&<AuthModal onClose={()=>setAuthOpen(false)} onAuth={u=>setUser(u)}/>}
+  {exploreOpen&&<ExploreMode lang={lang} onClose={()=>setExploreOpen(false)}/> }
   {myTripsOpen&&user&&<MyTrips user={user} onClose={()=>setMyTripsOpen(false)} onLoad={trip=>{setPlan(trip.plan);setOrigin(trip.origin||'');setDest(trip.destination||'');setBudget(trip.budget||'');}} />}
   {nearbyModal&&<GuideModal place={nearbyModal} plan={plan} lang={lang} onClose={()=>setNearbyModal(null)}/> }
   {bookingOpen&&fSel&&hSel&&<BookingFlow flight={fSel} hotel={hSel} dest={plan?.destination} travelers={travelers} nights={nights} t={t} onClose={()=>setBookingOpen(false)}/>}
