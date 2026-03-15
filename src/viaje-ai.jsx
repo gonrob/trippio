@@ -431,6 +431,49 @@ function DateInput({start,end,onChange,t}){
 const Sk=({w="100%",h=14,r=8,mb=0})=><div style={{width:w,height:h,borderRadius:r,background:`linear-gradient(90deg,${P.card2} 25%,${P.card3} 50%,${P.card2} 75%)`,backgroundSize:"200% 100%",animation:"shimmer 1.4s infinite",marginBottom:mb,flexShrink:0}}/>;
 
 
+
+function BookingFlow({flight,hotel,dest,travelers,nights,t,onClose}){
+  const[step,setStep]=useState(0);
+  const fT=flight?flight.price*travelers:0;
+  const hT=hotel?hotel.price_per_night*nights:0;
+  const tax=Math.round((fT+hT)*.10);
+  const total=fT+hT+tax;
+  const steps=[
+    {icon:"✈️",title:"Paso 1: Reserva tu vuelo",sub:flight?`${flight.airline} · ${flight.price}€ × ${travelers} = ${fT}€`:"Sin vuelo",url:`https://www.skyscanner.es/transporte/vuelos/?query=${encodeURIComponent(dest||"")}`,btn:"Ir a Skyscanner →"},
+    {icon:"🏨",title:"Paso 2: Reserva tu hotel",sub:hotel?`${hotel.name} · ${hotel.price_per_night}€ × ${nights}n = ${hT}€`:"Sin hotel",url:`https://www.booking.com/search.html?ss=${encodeURIComponent((hotel?.name||"")+" "+dest)}`,btn:"Ir a Booking.com →"},
+  ];
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.8)",zIndex:1000,display:"flex",alignItems:"flex-end",justifyContent:"center",backdropFilter:"blur(12px)"}} onClick={e=>{if(e.target===e.currentTarget)onClose();}}>
+      <div style={{background:"#1C1C1E",borderRadius:"26px 26px 0 0",width:"100%",maxWidth:500,padding:"22px 24px 44px",boxShadow:"0 -8px 60px rgba(0,0,0,.6)"}}>
+        <div style={{width:38,height:5,background:"#3A3A3C",borderRadius:3,margin:"0 auto 20px"}}/>
+        {step<2?(
+          <>
+            <div style={{display:"flex",gap:8,marginBottom:20}}>
+              {[0,1].map(s=><div key={s} style={{flex:1,height:4,borderRadius:2,background:s<=step?"#C9A96E":"#2A2A2A",transition:"all .3s"}}/>)}
+            </div>
+            <div style={{fontSize:22,fontWeight:900,color:"#fff",marginBottom:6}}>{steps[step].icon} {steps[step].title}</div>
+            <div style={{fontSize:14,color:"#A0A0A0",marginBottom:24}}>{steps[step].sub}</div>
+            <div style={{background:"rgba(201,169,110,.1)",border:"1px solid rgba(201,169,110,.2)",borderRadius:14,padding:"16px 18px",marginBottom:20}}>
+              <div style={{fontSize:12,color:"#C9A96E",marginBottom:4}}>💡 Cómo funciona</div>
+              <div style={{fontSize:13,color:"#fff",lineHeight:1.6}}>{step===0?"Haz clic para ir a Skyscanner. Busca el vuelo y completa la reserva. Luego vuelve aquí para reservar el hotel.":"Haz clic para ir a Booking.com. Busca el hotel y completa la reserva. ¡Tu paquete estará listo!"}</div>
+            </div>
+            <button onClick={()=>{window.open(steps[step].url,"_blank");setStep(step+1);}} style={{width:"100%",padding:"15px",background:"linear-gradient(135deg,#C9A96E,#E8C98A)",color:"#0D0D0D",border:"none",borderRadius:13,fontSize:15,fontWeight:800,cursor:"pointer",fontFamily:"-apple-system,sans-serif",marginBottom:10}}>{steps[step].btn}</button>
+            <button onClick={onClose} style={{width:"100%",padding:"12px",background:"transparent",color:"#6B6B6B",border:"1px solid #2A2A2A",borderRadius:13,fontSize:14,cursor:"pointer",fontFamily:"-apple-system,sans-serif"}}>Cancelar</button>
+          </>
+        ):(
+          <div style={{textAlign:"center",padding:"20px 0"}}>
+            <div style={{width:70,height:70,background:"linear-gradient(135deg,#C9A96E,#E8C98A)",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 18px",fontSize:32}}>✓</div>
+            <div style={{fontSize:22,fontWeight:900,color:"#fff",marginBottom:8}}>¡Paquete completado!</div>
+            <div style={{fontSize:14,color:"#A0A0A0",marginBottom:6}}>Vuelo + Hotel reservados en</div>
+            <div style={{fontSize:28,fontWeight:700,color:"#C9A96E",marginBottom:24}}>{total}€</div>
+            <button onClick={onClose} style={{width:"100%",padding:"14px",background:"linear-gradient(135deg,#C9A96E,#E8C98A)",color:"#0D0D0D",border:"none",borderRadius:13,fontSize:15,fontWeight:800,cursor:"pointer",fontFamily:"-apple-system,sans-serif"}}>Cerrar</button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function DayCard({day,i,t}){
   const[open,setOpen]=useState(i===0);
   return(
@@ -518,6 +561,7 @@ export default function ViajeIA(){
   const[places,setPlaces]=useState([]);
   const[activeMap,setActiveMap]=useState(null);
   const[toast,setToast]=useState(false);
+  const[bookingOpen,setBookingOpen]=useState(false);
   const leafReady=useLeaflet();
   const days=diffDays(start,end);
   const nights=days?days-1:plan?.days||5;
@@ -674,6 +718,7 @@ IMPORTANT: Start your response with { and end with }. Nothing else.`;
       </nav>
 
       {authOpen&&<AuthModal onClose={()=>setAuthOpen(false)} onAuth={u=>setUser(u)}/>}
+  {bookingOpen&&fSel&&hSel&&<BookingFlow flight={fSel} hotel={hSel} dest={plan?.destination} travelers={travelers} nights={nights} t={t} onClose={()=>setBookingOpen(false)}/>}
       {plan&&guideOpen&&<VirtualGuide plan={plan} places={places} userPos={userPos} lang={lang} onClose={()=>setGuideOpen(false)}/>}
       {plan&&!guideOpen&&<GuideBubble onClick={()=>setGuideOpen(true)} mood={guideMood} speak={guideSpeak}/>}
       {toast&&<div style={{position:"fixed",bottom:30,left:"50%",transform:"translateX(-50%)",background:P.card2,border:`1px solid ${P.goldBorder}`,color:P.gold,borderRadius:11,padding:"11px 20px",fontSize:13,fontWeight:600,zIndex:999}}>✓ {t.shareCopied}</div>}
@@ -997,8 +1042,12 @@ IMPORTANT: Start your response with { and end with }. Nothing else.`;
                         <div style={{fontSize:9,fontWeight:600,color:P.gold,textTransform:"uppercase",letterSpacing:".1em",marginBottom:3}}>{t.totalL}</div>
                         <span style={{fontSize:28,fontWeight:700,color:P.gold}}>{total}€</span>
                       </div>
-                      <button onClick={()=>{window.open(`https://www.skyscanner.es/transporte/vuelos/?query=${encodeURIComponent(plan.destination)}`,"_blank");setTimeout(()=>window.open(`https://www.booking.com/search.html?ss=${encodeURIComponent(plan.destination)}`,"_blank"),600);}} style={{width:"100%",padding:"13px",background:GOLD_GRAD,color:"#0D0D0D",border:"none",borderRadius:11,fontSize:13,fontWeight:800,cursor:"pointer",fontFamily:"-apple-system,sans-serif",marginBottom:7}}>{t.bookBtn}</button>
-                      <div style={{fontSize:9,color:"#48484A",textAlign:"center"}}>{t.demoSmall}</div>
+                      <button onClick={()=>setBookingOpen(true)} style={{width:"100%",padding:"13px",background:GOLD_GRAD,color:"#0D0D0D",border:"none",borderRadius:11,fontSize:13,fontWeight:800,cursor:"pointer",fontFamily:"-apple-system,sans-serif",marginBottom:7}}>{t.bookBtn}</button>
+                      <div style={{fontSize:9,color:"#48484A",textAlign:"center",marginBottom:10}}>{t.demoSmall}</div>
+                      <div style={{display:"flex",gap:7}}>
+                        <button onClick={()=>window.open(`https://www.skyscanner.es/transporte/vuelos/?query=${encodeURIComponent(plan.destination)}`,"_blank")} style={{flex:1,padding:"9px",background:"transparent",color:P.gold,border:`1px solid ${P.goldBorder}`,borderRadius:9,fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"-apple-system,sans-serif"}}>✈️ Solo vuelo</button>
+                        <button onClick={()=>window.open(`https://www.booking.com/search.html?ss=${encodeURIComponent(plan.destination)}`,"_blank")} style={{flex:1,padding:"9px",background:"transparent",color:P.gold,border:`1px solid ${P.goldBorder}`,borderRadius:9,fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"-apple-system,sans-serif"}}>🏨 Solo hotel</button>
+                      </div>
                     </>);})()}
                   </div>
                 )}
