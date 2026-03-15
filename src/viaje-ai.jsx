@@ -939,7 +939,7 @@ IMPORTANT: Start your response with { and end with }. Nothing else.`;
                                   {h.lat&&h.lng&&<button onClick={e=>{e.stopPropagation();flyTo(h);}} style={{background:"none",border:`1px solid ${P.border2}`,color:P.muted,borderRadius:7,padding:"2px 8px",fontSize:9,cursor:"pointer"}}>{t.mapBtn}</button>}
                                   {nights&&<span style={{fontSize:11,color:sel?P.gold:P.muted,fontWeight:600}}>{h.price_per_night*nights}€</span>}
                                 </div>
-                                <button onClick={e=>{e.stopPropagation();window.open(`https://www.booking.com/search.html?ss=${encodeURIComponent(h.name+" "+plan.destination)}`,"_blank");}} style={{background:GOLD_GRAD,color:"#0D0D0D",border:"none",borderRadius:7,padding:"4px 11px",fontSize:11,fontWeight:700,cursor:"pointer"}}>{t.bookHotel}</button>
+                                <button onClick={e=>{e.stopPropagation();window.open(`https://www.booking.com/search.html?ss=${encodeURIComponent(h.name)}&dest_type=property&search_type=property`,"_blank");}} style={{background:GOLD_GRAD,color:"#0D0D0D",border:"none",borderRadius:7,padding:"4px 11px",fontSize:11,fontWeight:700,cursor:"pointer"}}>{t.bookHotel}</button>
                               </div>
                             </div>
                           </div>
