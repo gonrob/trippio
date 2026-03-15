@@ -430,6 +430,57 @@ function DateInput({start,end,onChange,t}){
 
 const Sk=({w="100%",h=14,r=8,mb=0})=><div style={{width:w,height:h,borderRadius:r,background:`linear-gradient(90deg,${P.card2} 25%,${P.card3} 50%,${P.card2} 75%)`,backgroundSize:"200% 100%",animation:"shimmer 1.4s infinite",marginBottom:mb,flexShrink:0}}/>;
 
+
+function DayCard({day,i,t}){
+  const[open,setOpen]=useState(i===0);
+  return(
+    <div style={{background:"#1C1C1E",border:`1px solid ${open?P.goldBorder:P.border}`,borderRadius:18,marginBottom:9,overflow:"hidden",transition:"all .3s"}}>
+      <button onClick={()=>setOpen(!open)} style={{width:"100%",background:"none",border:"none",padding:"15px 18px",cursor:"pointer",display:"flex",alignItems:"center",gap:13}}>
+        <div style={{width:34,height:34,background:open?P.goldDim:P.card3,border:`1px solid ${open?P.goldBorder:P.border}`,borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,fontWeight:900,color:open?P.gold:P.muted,flexShrink:0}}>{i+1}</div>
+        <div style={{flex:1,textAlign:"left"}}>
+          <div style={{fontSize:14,fontWeight:700,color:"#fff"}}>{day.day?.replace(/^(Día|Day|Jour) \d+ [-–] /,"")||day.title||"Día "+(i+1)}</div>
+          {day.theme&&<div style={{fontSize:11,color:P.muted,marginTop:1}}>{day.theme}</div>}
+        </div>
+        <span style={{color:P.muted,fontSize:18,transform:open?"rotate(90deg)":"none",transition:".2s"}}>›</span>
+      </button>
+      {open&&(
+        <div style={{padding:"2px 17px 17px",borderTop:"0.5px solid rgba(255,255,255,.06)"}}>
+          {[{k:"morning",l:t.morning},{k:"afternoon",l:t.afternoon},{k:"evening",l:t.evening},{k:"transport",l:t.transport}].map(({k,l})=>day[k]&&(
+            <div key={k} style={{marginTop:12}}>
+              <div style={{fontSize:10,fontWeight:700,color:P.gold,textTransform:"uppercase",letterSpacing:".06em",marginBottom:4}}>{l}</div>
+              <p style={{margin:0,fontSize:12,color:"rgba(255,255,255,.7)",lineHeight:1.65}}>{day[k]}</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function AffiliatePanel({t}){
+  const[open,setOpen]=useState(false);
+  return(
+    <div style={{background:P.card,borderRadius:14,padding:"16px",border:`1px solid ${P.border}`}}>
+      <button onClick={()=>setOpen(!open)} style={{width:"100%",background:"none",border:"none",cursor:"pointer",display:"flex",alignItems:"center",gap:9,color:"#fff",fontFamily:"-apple-system,sans-serif"}}>
+        <div style={{width:26,height:26,background:P.goldDim,border:`1px solid ${P.goldBorder}`,borderRadius:7,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13}}>💰</div>
+        <div style={{flex:1,textAlign:"left"}}><div style={{fontSize:12,fontWeight:600,color:P.white}}>{t.affiliateT}</div><div style={{fontSize:10,color:P.muted}}>{t.affiliateSub}</div></div>
+        <span style={{color:P.muted,fontSize:14,transform:open?"rotate(180deg)":"none",transition:".2s"}}>▾</span>
+      </button>
+      {open&&(
+        <div style={{marginTop:12,display:"flex",flexDirection:"column",gap:8}}>
+          {[{name:"Booking.com",icon:"🏨",grad:"linear-gradient(135deg,#003580,#0057B8)",url:"https://www.booking.com",cta:"~€50/booking"},{name:"Skyscanner",icon:"✈️",grad:"linear-gradient(135deg,#0770E3,#0557B0)",url:"https://www.skyscanner.es",cta:"CPA/flight"},{name:"GetYourGuide",icon:"🎟️",grad:"linear-gradient(135deg,#FF5533,#CC3311)",url:"https://www.getyourguide.es",cta:"8% commission"}].map((al,i)=>(
+            <a key={i} href={al.url} target="_blank" rel="noopener noreferrer" style={{background:"#2C2C2E",borderRadius:11,padding:"11px 13px",textDecoration:"none",display:"flex",alignItems:"center",gap:10,transition:"all .2s"}} onMouseEnter={e=>{e.currentTarget.style.background="#38383A";}} onMouseLeave={e=>{e.currentTarget.style.background="#2C2C2E";}}>
+              <div style={{width:30,height:30,background:al.grad,borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,flexShrink:0}}>{al.icon}</div>
+              <div style={{flex:1}}><div style={{fontSize:12,fontWeight:700,color:"#fff"}}>{al.name}</div></div>
+              <span style={{fontSize:9,fontWeight:600,color:P.gold,background:P.goldDim,border:`1px solid ${P.goldBorder}`,borderRadius:4,padding:"2px 7px"}}>{al.cta}</span>
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function ViajeIA(){
   const[lang,setLang]=useState("es");
   const t=T[lang];
@@ -511,12 +562,13 @@ export default function ViajeIA(){
     const bNum=budget?parseInt(budget):800;
 
     setLoadStep(0);
-    const sys=`Expert travel planner. ${lp} Reply ONLY valid raw JSON, no backticks, no markdown. ${dctx}
-Return exactly: {"destination":"city, country","days":N,"budget":"X€","summary":"2 sentences","map_places":[{"name":"...","lat":0.0,"lng":0.0,"description":"..."}],"itinerary":[{"day":"Day N - Name","theme":"...","morning":"...","afternoon":"...","evening":"...","transport":"...","budget":"~X€"}],"tips":["..."],"lat":0.0,"lng":0.0}`;
+    const sys=`You are a travel planner. ${lp} YOU MUST reply with ONLY a raw JSON object. NO backticks. NO markdown. NO explanation. Just the JSON. ${dctx}
+Format: {"destination":"city, country","days":5,"budget":"1000€","summary":"short summary","map_places":[{"name":"place","lat":35.6,"lng":139.7,"description":"desc"}],"itinerary":[{"day":"Day 1 - Name","theme":"theme","morning":"activities","afternoon":"activities","evening":"activities","transport":"how to get around","budget":"~50€"}],"tips":["tip1","tip2"],"lat":35.6,"lng":139.7}
+IMPORTANT: Start your response with { and end with }. Nothing else.`;
 
     let planData=null;
     try{
-      const r=await fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:3000,system:sys,messages:[{role:"user",content:`${dest}${budget?" · "+budget+"€":""}${dctx?" · "+dctx:""}`}]})});
+      const r=await fetch("/api/anthropic",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:4000,system:sys,messages:[{role:"user",content:`${dest}${budget?" · "+budget+"€":""}${dctx?" · "+dctx:""}`}]})});
       const d=await r.json();
       if(d.error){throw new Error(d.error.message||"API error");}
       const raw=(d.content||[]).map(b=>b.text||"").join("").trim();
@@ -925,31 +977,7 @@ Return exactly: {"destination":"city, country","days":N,"budget":"X€","summary
                 {plan.itinerary?.length>0&&(
                   <div style={{marginBottom:28}} className="pop">
                     <SHdr icon="📅" title={t.itinT} sub={t.itinSub}/>
-                    {plan.itinerary.map((day,i)=>{
-                      const[open,setOpen]=useState(i===0);
-                      return(
-                        <div key={i} style={{background:"#1C1C1E",border:`1px solid ${open?P.goldBorder:P.border}`,borderRadius:18,marginBottom:9,overflow:"hidden",transition:"all .3s"}}>
-                          <button onClick={()=>setOpen(!open)} style={{width:"100%",background:"none",border:"none",padding:"15px 18px",cursor:"pointer",display:"flex",alignItems:"center",gap:13}}>
-                            <div style={{width:34,height:34,background:open?P.goldDim:P.card3,border:`1px solid ${open?P.goldBorder:P.border}`,borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,fontWeight:900,color:open?P.gold:P.muted,flexShrink:0}}>{i+1}</div>
-                            <div style={{flex:1,textAlign:"left"}}>
-                              <div style={{fontSize:14,fontWeight:700,color:"#fff"}}>{day.day.replace(/^(Día|Day|Jour) \d+ [-–] /,"")}</div>
-                              {day.theme&&<div style={{fontSize:11,color:P.muted,marginTop:1}}>{day.theme}</div>}
-                            </div>
-                            <span style={{color:P.muted,fontSize:18,transform:open?"rotate(90deg)":"none",transition:".2s"}}>›</span>
-                          </button>
-                          {open&&(
-                            <div style={{padding:"2px 17px 17px",borderTop:"0.5px solid rgba(255,255,255,.06)"}}>
-                              {[{k:"morning",l:t.morning},{k:"afternoon",l:t.afternoon},{k:"evening",l:t.evening},{k:"transport",l:t.transport}].map(({k,l})=>day[k]&&(
-                                <div key={k} style={{marginTop:12}}>
-                                  <div style={{fontSize:10,fontWeight:700,color:P.gold,textTransform:"uppercase",letterSpacing:".06em",marginBottom:4}}>{l}</div>
-                                  <p style={{margin:0,fontSize:12,color:"rgba(255,255,255,.7)",lineHeight:1.65}}>{day[k]}</p>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
+                    {plan.itinerary.map((day,i)=><DayCard key={i} day={day} i={i} t={t}/>)}
                   </div>
                 )}
               </div>
@@ -991,30 +1019,7 @@ Return exactly: {"destination":"city, country","days":N,"budget":"X€","summary
                   </div>
                 )}
 
-                {/* Affiliates */}
-                {(()=>{
-                  const[open,setOpen]=useState(false);
-                  return(
-                    <div style={{background:P.card,borderRadius:14,padding:"16px",border:`1px solid ${P.border}`}}>
-                      <button onClick={()=>setOpen(!open)} style={{width:"100%",background:"none",border:"none",cursor:"pointer",display:"flex",alignItems:"center",gap:9,color:"#fff",fontFamily:"-apple-system,sans-serif"}}>
-                        <div style={{width:26,height:26,background:P.goldDim,border:`1px solid ${P.goldBorder}`,borderRadius:7,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13}}>💰</div>
-                        <div style={{flex:1,textAlign:"left"}}><div style={{fontSize:12,fontWeight:600,color:P.white}}>{t.affiliateT}</div><div style={{fontSize:10,color:P.muted}}>{t.affiliateSub}</div></div>
-                        <span style={{color:P.muted,fontSize:14,transform:open?"rotate(180deg)":"none",transition:".2s"}}>▾</span>
-                      </button>
-                      {open&&(
-                        <div style={{marginTop:12,display:"flex",flexDirection:"column",gap:8}}>
-                          {[{name:"Booking.com",icon:"🏨",grad:"linear-gradient(135deg,#003580,#0057B8)",url:"https://www.booking.com",cta:"~€50/booking"},{name:"Skyscanner",icon:"✈️",grad:"linear-gradient(135deg,#0770E3,#0557B0)",url:"https://www.skyscanner.es",cta:"CPA/flight"},{name:"GetYourGuide",icon:"🎟️",grad:"linear-gradient(135deg,#FF5533,#CC3311)",url:"https://www.getyourguide.es",cta:"8% commission"}].map((al,i)=>(
-                            <a key={i} href={al.url} target="_blank" rel="noopener noreferrer" style={{background:"#2C2C2E",borderRadius:11,padding:"11px 13px",textDecoration:"none",display:"flex",alignItems:"center",gap:10,transition:"all .2s"}} onMouseEnter={e=>{e.currentTarget.style.background="#38383A";e.currentTarget.style.transform="translateX(2px)";}} onMouseLeave={e=>{e.currentTarget.style.background="#2C2C2E";e.currentTarget.style.transform="none";}}>
-                              <div style={{width:30,height:30,background:al.grad,borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,flexShrink:0}}>{al.icon}</div>
-                              <div style={{flex:1}}><div style={{fontSize:12,fontWeight:700,color:"#fff"}}>{al.name}</div></div>
-                              <span style={{fontSize:9,fontWeight:600,color:P.gold,background:P.goldDim,border:`1px solid ${P.goldBorder}`,borderRadius:4,padding:"2px 7px"}}>{al.cta}</span>
-                            </a>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })()}
+                <AffiliatePanel t={t}/>
               </div>
             </div>
           </div>
