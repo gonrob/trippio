@@ -795,6 +795,20 @@ IMPORTANT: Start your response with { and end with }. Nothing else.`;
     setStep(0);setTripTypes([]);setTStyle(null);setGuideOpen(false);setUserPos(null);
   }
 
+  async function saveTrip(){
+    if(!plan||!user){setAuthOpen(true);return;}
+    try{
+      await supabase.from('trips').insert({
+        user_id:user.id,
+        destination:plan.destination,
+        origin:origin,
+        budget:budget,
+        plan:plan,
+      });
+      setToast(true);setTimeout(()=>setToast(false),2500);
+    }catch(e){console.error(e);}
+  }
+
   function share(){
     if(!plan)return;
     const txt=`✈️ ${plan.destination} · ${plan.days} dias · ${plan.budget}\nhttps://trippio.travel`;
@@ -847,6 +861,7 @@ IMPORTANT: Start your response with { and end with }. Nothing else.`;
         <div style={{display:"flex",gap:7,alignItems:"center"}}>
           <LangSel lang={lang} setLang={setLang}/>
           {plan&&<button onClick={share} style={{background:P.card2,border:`1px solid ${P.border}`,color:P.sub,borderRadius:8,padding:"5px 11px",fontSize:12,cursor:"pointer",fontWeight:600}}>↑ {t.shareBtn}</button>}
+          {plan&&<button onClick={saveTrip} style={{background:P.goldDim,border:`1px solid ${P.goldBorder}`,color:P.gold,borderRadius:8,padding:"5px 11px",fontSize:12,cursor:"pointer",fontWeight:600}}>🔖 Guardar</button>}
           {plan&&<IBtn size="sm" outline color={P.muted} onClick={reset}>{t.newSearch}</IBtn>}
           {!user
             ?<button onClick={()=>setAuthOpen(true)} style={{background:GOLD_GRAD,color:"#0D0D0D",border:"none",borderRadius:9,padding:"7px 13px",fontSize:12,fontWeight:700,cursor:"pointer"}}>{t.loginBtn}</button>
@@ -860,7 +875,7 @@ IMPORTANT: Start your response with { and end with }. Nothing else.`;
   {bookingOpen&&fSel&&hSel&&<BookingFlow flight={fSel} hotel={hSel} dest={plan?.destination} travelers={travelers} nights={nights} t={t} onClose={()=>setBookingOpen(false)}/>}
       {plan&&guideOpen&&<VirtualGuide plan={plan} places={places} userPos={userPos} lang={lang} onClose={()=>setGuideOpen(false)}/>}
       {plan&&!guideOpen&&<GuideBubble onClick={()=>setGuideOpen(true)} mood={guideMood} speak={guideSpeak}/>}
-      {toast&&<div style={{position:"fixed",bottom:30,left:"50%",transform:"translateX(-50%)",background:P.card2,border:`1px solid ${P.goldBorder}`,color:P.gold,borderRadius:11,padding:"11px 20px",fontSize:13,fontWeight:600,zIndex:999}}>✓ {t.shareCopied}</div>}
+      {toast&&<div style={{position:"fixed",bottom:30,left:"50%",transform:"translateX(-50%)",background:P.card2,border:`1px solid ${P.goldBorder}`,color:P.gold,borderRadius:11,padding:"11px 20px",fontSize:13,fontWeight:600,zIndex:999}}>✓ {t.shareCopied||'Enlace copiado'}</div>}
 
       <main style={{maxWidth:1080,margin:"0 auto",padding:"0 18px 100px"}}>
 
