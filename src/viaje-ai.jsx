@@ -106,6 +106,28 @@ function TravelMap({places,active,onSelect,userPos,height=300}){
   return<div ref={nRef} style={{height,borderRadius:14,overflow:"hidden"}}/>;
 }
 
+
+function PkgSummary({fSel,hSel,travelers,nights,plan,t,onBook}){
+  const fT=fSel?fSel.price*travelers:0;
+  const hT=hSel?hSel.price_per_night*nights:0;
+  const tax=Math.round((fT+hT)*.10);
+  const total=fT+hT+tax;
+  return<div style={{background:"#1E1E20",borderRadius:16,padding:"16px",boxShadow:"0 12px 40px rgba(0,0,0,.5)",border:"0.5px solid rgba(255,255,255,.07)",marginBottom:11}}>
+    <div style={{fontSize:12,fontWeight:900,marginBottom:11,color:"#fff"}}>{t.pkgTitle}</div>
+    {fSel&&<div style={{display:"flex",justifyContent:"space-between",marginBottom:6,fontSize:11}}><span style={{color:C.sub}}>✈️ {fSel.airline} × {travelers}</span><span style={{fontWeight:700,color:"#fff"}}>{fT}€</span></div>}
+    {hSel&&nights&&<div style={{display:"flex",justifyContent:"space-between",marginBottom:6,fontSize:11}}><span style={{color:C.sub}}>🏨 {hSel.name} × {nights}n</span><span style={{fontWeight:700,color:"#fff"}}>{hT}€</span></div>}
+    <div style={{height:"0.5px",background:"rgba(255,255,255,.07)",margin:"9px 0"}}/>
+    <div style={{display:"flex",justifyContent:"space-between",marginBottom:6,fontSize:11}}><span style={{color:C.muted}}>🧾 {t.taxes}</span><span style={{fontWeight:700,color:C.muted}}>{tax}€</span></div>
+    <div style={{background:C.goldDim,borderRadius:9,padding:"10px 12px",margin:"9px 0 11px",border:`1px solid ${C.goldBorder}`}}><div style={{fontSize:8,fontWeight:600,color:C.gold,textTransform:"uppercase",letterSpacing:".1em",marginBottom:2}}>{t.total}</div><span style={{fontSize:24,fontWeight:700,color:C.gold}}>{total}€</span></div>
+    <button onClick={onBook} style={{width:"100%",padding:"11px",background:"linear-gradient(135deg,#C9A96E,#E8C98A)",color:"#0D0D0D",border:"none",borderRadius:9,fontSize:12,fontWeight:800,cursor:"pointer",fontFamily:"-apple-system,sans-serif",marginBottom:6}}>{t.bookPkg}</button>
+    <div style={{display:"flex",gap:5,marginBottom:5}}>
+      <button onClick={()=>window.open("https://www.skyscanner.es/transporte/vuelos/?query="+encodeURIComponent(plan.destination),"_blank")} style={{flex:1,padding:"6px",background:"transparent",color:C.gold,border:"1px solid "+C.goldBorder,borderRadius:7,fontSize:9,fontWeight:700,cursor:"pointer"}}>✈️ {t.onlyFlight}</button>
+      <button onClick={()=>window.open("https://www.booking.com/search.html?ss="+encodeURIComponent(plan.destination),"_blank")} style={{flex:1,padding:"6px",background:"transparent",color:C.gold,border:"1px solid "+C.goldBorder,borderRadius:7,fontSize:9,fontWeight:700,cursor:"pointer"}}>🏨 {t.onlyHotel}</button>
+    </div>
+    <div style={{fontSize:8,color:"#48484A",textAlign:"center"}}>Demo · Precios orientativos</div>
+  </div>;
+}
+
 function DayCard({day,i,t}){
   const[open,setOpen]=useState(i===0);
   const title=day.day?.replace(/^(Día|Day)\s*\d+\s*[-–]\s*/,"")||day.title||`Día ${i+1}`;
@@ -846,22 +868,7 @@ export default function App(){
 
           {/* SIDEBAR */}
           <div style={{position:"sticky",top:60}}>
-            {(fSel||hSel)&&<div style={{background:"#1E1E20",borderRadius:16,padding:"16px",boxShadow:"0 12px 40px rgba(0,0,0,.5)",border:"0.5px solid rgba(255,255,255,.07)",marginBottom:11}}>
-              <div style={{fontSize:12,fontWeight:900,marginBottom:11,color:"#fff"}}>{t.pkgTitle}</div>
-              {fSel&&<div style={{display:"flex",justifyContent:"space-between",marginBottom:6,fontSize:11}}><span style={{color:C.sub}}>✈️ {fSel.airline} × {travelers}</span><span style={{fontWeight:700,color:"#fff"}}>{fSel.price*travelers}€</span></div>}
-              {hSel&&nights&&<div style={{display:"flex",justifyContent:"space-between",marginBottom:6,fontSize:11}}><span style={{color:C.sub}}>🏨 {hSel.name} × {nights}n</span><span style={{fontWeight:700,color:"#fff"}}>{hSel.price_per_night*nights}€</span></div>}
-              <div style={{height:"0.5px",background:"rgba(255,255,255,.07)",margin:"9px 0"}}/>
-              {(()=>{const fT=fSel?fSel.price*travelers:0;const hT=hSel?hSel.price_per_night*nights:0;const tax=Math.round((fT+hT)*.10);const total=fT+hT+tax;return<>
-                <div style={{display:"flex",justifyContent:"space-between",marginBottom:6,fontSize:11}}><span style={{color:C.muted}}>🧾 {t.taxes}</span><span style={{fontWeight:700,color:C.muted}}>{tax}€</span></div>
-                <div style={{background:C.goldDim,borderRadius:9,padding:"10px 12px",margin:"9px 0 11px",border:`1px solid ${C.goldBorder}`}}><div style={{fontSize:8,fontWeight:600,color:C.gold,textTransform:"uppercase",letterSpacing:".1em",marginBottom:2}}>{t.total}</div><span style={{fontSize:24,fontWeight:700,color:C.gold}}>{total}€</span></div>
-                <button onClick={()=>setBookingOpen(true)} style={{width:"100%",padding:"11px",background:GOLD,color:"#0D0D0D",border:"none",borderRadius:9,fontSize:12,fontWeight:800,cursor:"pointer",fontFamily:"-apple-system,sans-serif",marginBottom:6}}>{t.bookPkg}</button>
-                <div style={{display:"flex",gap:5,marginBottom:5}}>
-                  <button onClick={()=>window.open(`https://www.skyscanner.es/transporte/vuelos/?query=${encodeURIComponent(plan.destination)}`,"_blank")} style={{flex:1,padding:"6px",background:"transparent",color:C.gold,border:`1px solid ${C.goldBorder}`,borderRadius:7,fontSize:9,fontWeight:700,cursor:"pointer"}}>✈️ {t.onlyFlight}</button>
-                  <button onClick={()=>window.open(`https://www.booking.com/search.html?ss=${encodeURIComponent(plan.destination)}`,"_blank")} style={{flex:1,padding:"6px",background:"transparent",color:C.gold,border:`1px solid ${C.goldBorder}`,borderRadius:7,fontSize:9,fontWeight:700,cursor:"pointer"}}>🏨 {t.onlyHotel}</button>
-                </div>
-                <div style={{fontSize:8,color:"#48484A",textAlign:"center"}}>Demo · Precios orientativos</div>
-              </>;}())()}
-            </div>}
+            {(fSel||hSel)&&<PkgSummary fSel={fSel} hSel={hSel} travelers={travelers} nights={nights} plan={plan} t={t} onBook={()=>setBookingOpen(true)}/>}
 
             {plan.tips?.length>0&&<div style={{background:C.card,borderRadius:12,padding:"13px",marginBottom:11,border:`1px solid ${C.border}`}}>
               <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:9}}><div style={{width:22,height:22,background:C.goldDim,border:`1px solid ${C.goldBorder}`,borderRadius:6,display:"flex",alignItems:"center",justifyContent:"center",fontSize:11}}>💡</div><span style={{fontSize:12,fontWeight:800}}>{t.tipsT}</span></div>
