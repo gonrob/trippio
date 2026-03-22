@@ -398,7 +398,7 @@ function VirtualGuide({ plan, places, userPos, lang, onClose }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "claude-3-haiku-20240307", // Haiku stable
+          model: "claude-haiku-4-5",
           max_tokens: 600,              // FIX: was 300, too short
           system: `Eres Marco, guía turístico virtual amigable y experto. ${t.lp} ${ctx} Responde de forma concisa pero completa. Máximo 4 frases.`,
           messages: [
@@ -561,7 +561,7 @@ function GuideModal({ place, plan, lang, onClose }) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            model: "claude-3-haiku-20240307", // Haiku stable
+            model: "claude-haiku-4-5",
             max_tokens: 400,
             system: `Eres Sofia, guía turística experta, carismática y apasionada. ${t.lp} Habla en primera persona como si estuvieras ahí con el turista. Máximo 4 frases cortas y emocionantes.`,
             messages: [{ role: "user", content: `Cuenta la historia y curiosidades de: ${place.name}. Contexto: estamos en ${plan?.destination || "este destino"}.` }]
@@ -907,7 +907,7 @@ IMPORTANTE:
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "claude-3-5-sonnet-20241022",  // Sonnet with fallback
+          model: "claude-sonnet-4-5",
           max_tokens: 4000,
           system: "Eres un experto planificador de viajes. Responde SOLO con JSON válido, sin markdown, sin texto adicional.",
           messages: [{ role: "user", content: prompt }]
