@@ -1,4 +1,3 @@
-// api/anthropic.js — Vercel serverless function
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
@@ -9,7 +8,7 @@ export default async function handler(req, res) {
 
   const apiKey = process.env.ANTHROPIC_KEY;
   if (!apiKey) {
-    return res.status(500).json({ error: "ANTHROPIC_API_KEY not configured in Vercel environment variables" });
+    return res.status(500).json({ error: "ANTHROPIC_KEY not configured in Vercel" });
   }
 
   try {
@@ -18,14 +17,9 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "messages array required" });
     }
 
-    // Use correct current model strings
-    const MODELS = {
-      "claude-sonnet-4-5":        "claude-sonnet-4-5",
-      "claude-haiku-4-5":         "claude-haiku-4-5",
-      "claude-3-5-sonnet-20241022":"claude-3-5-sonnet-20241022", // fallback
-      "claude-3-haiku-20240307":  "claude-3-haiku-20240307",     // fallback
-    };
-    const model = MODELS[body.model] || "claude-3-5-sonnet-20241022";
+    // Use claude-sonnet-4-5 for main plan, haiku for chat
+    const ALLOWED = ["claude-sonnet-4-5", "claude-haiku-4-5", "claude-opus-4-5"];
+    const model = ALLOWED.includes(body.model) ? body.model : "claude-sonnet-4-5";
 
     const payload = {
       model,
@@ -56,6 +50,6 @@ export default async function handler(req, res) {
     return res.status(200).json(data);
   } catch (error) {
     console.error("Proxy error:", error);
-    return res.status(500).json({ error: "Internal server error", detail: error.message });
+    return res.status(500).json({ error: error.message });
   }
 }
