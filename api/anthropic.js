@@ -7,22 +7,27 @@ export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
   const apiKey = process.env.ANTHROPIC_KEY;
-  if (!apiKey) {
-    return res.status(500).json({ error: "ANTHROPIC_KEY not configured in Vercel" });
-  }
+  if (!apiKey) return res.status(500).json({ error: "ANTHROPIC_KEY not set" });
 
   try {
     const body = req.body;
     if (!body?.messages || !Array.isArray(body.messages)) {
-      return res.status(400).json({ error: "messages array required" });
+      return res.status(400).json({ error: "messages required" });
     }
 
-    // Use claude-sonnet-4-5 for main plan, haiku for chat
-    const ALLOWED = ["claude-sonnet-4-5", "claude-haiku-4-5", "claude-opus-4-5"];
-    const model = ALLOWED.includes(body.model) ? body.model : "claude-sonnet-4-5";
+    // FORCE claude-sonnet-4-5 regardless of what frontend sends
+    // This fixes the claude-3-5-sonnet-20241022 error permanently
+    const modelMap = {
+      "claude-3-5-sonnet-20241022": "claude-sonnet-4-5",
+      "claude-3-haiku-20240307":    "claude-haiku-4-5",
+      "claude-3-opus-20240229":     "claude-sonnet-4-5",
+    };
+    const model = modelMap[body.model] || body.model || "claude-sonnet-4-5";
+    const VALID = ["claude-sonnet-4-5", "claude-haiku-4-5", "claude-opus-4-5"];
+    const finalModel = VALID.includes(model) ? model : "claude-sonnet-4-5";
 
     const payload = {
-      model,
+      model: finalModel,
       max_tokens: Math.min(body.max_tokens || 1024, 8000),
       messages: body.messages,
     };
