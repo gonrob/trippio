@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { supabase } from "./supabase.js";
 
 const P = {
   black:"#0D0D0D",card:"#141414",card2:"#1A1A1A",card3:"#252525",
